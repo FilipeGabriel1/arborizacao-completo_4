@@ -1,7 +1,6 @@
 package br.com.amasvisa.arborizacao.arvore.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvoreRequest;
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvoreResponse;
 import br.com.amasvisa.arborizacao.arvore.service.EspecieArvoreService;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
+import br.com.amasvisa.arborizacao.comum.PaginaUtils;
 import jakarta.validation.Valid;
 
 @RestController
@@ -38,8 +39,11 @@ public class EspecieArvoreController {
     }
 
     @GetMapping
-    public List<EspecieArvoreResponse> listar(@RequestParam(required = false) String nomePopular) {
-        return service.listar(nomePopular);
+    public PaginaResponse<EspecieArvoreResponse> listar(
+            @RequestParam(required = false) String nomePopular,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return service.listar(nomePopular, PaginaUtils.de(page, size));
     }
 
     @GetMapping("/{id}")

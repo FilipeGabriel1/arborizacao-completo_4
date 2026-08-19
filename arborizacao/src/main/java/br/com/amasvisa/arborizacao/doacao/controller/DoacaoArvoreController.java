@@ -1,7 +1,6 @@
 package br.com.amasvisa.arborizacao.doacao.controller;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,12 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreRequest;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreResponse;
 import br.com.amasvisa.arborizacao.doacao.service.DoacaoArvoreService;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
+import br.com.amasvisa.arborizacao.comum.PaginaUtils;
 import jakarta.validation.Valid;
 
 @RestController
@@ -37,8 +39,10 @@ public class DoacaoArvoreController {
     }
 
     @GetMapping
-    public List<DoacaoArvoreResponse> listar() {
-        return service.listar();
+    public PaginaResponse<DoacaoArvoreResponse> listar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        return service.listar(PaginaUtils.de(page, size));
     }
 
     @GetMapping("/{id}")

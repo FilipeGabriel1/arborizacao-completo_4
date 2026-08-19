@@ -2,6 +2,8 @@ package br.com.amasvisa.arborizacao.arvore.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.amasvisa.arborizacao.area.models.AreaArborizada;
@@ -17,6 +19,7 @@ import br.com.amasvisa.arborizacao.arvore.repository.ArvoreRepository;
 import br.com.amasvisa.arborizacao.auditoria.models.AcaoAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.models.TipoEntidadeAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.service.AuditoriaService;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -44,22 +47,19 @@ public class ArvoreService {
         return response;
     }
 
-    public List<ArvoreResponse> listar(Long areaId, Long especieId, String nome) {
-        List<Arvore> arvores = repository.findAll();
-
+    public PaginaResponse<ArvoreResponse> listar(Long areaId, Long especieId, String nome, Pageable pageable) {
+        Page<Arvore> pagina;
         if (areaId != null) {
-            arvores = repository.findByArea_Id(areaId);
+            pagina = repository.findByArea_Id(areaId, pageable);
+        } else if (especieId != null) {
+            pagina = repository.findByEspecie_Id(especieId, pageable);
+        } else if (nome != null && !nome.isBlank()) {
+            pagina = repository.findByNomeContainingIgnoreCase(nome, pageable);
+        } else {
+            pagina = repository.findAll(pageable);
         }
 
-        if (especieId != null) {
-            arvores = repository.findByEspecie_Id(especieId);
-        }
-
-        if (nome != null && !nome.isBlank()) {
-            arvores = repository.findByNomeContainingIgnoreCase(nome);
-        }
-
-        return arvores.stream().map(this::toResponse).toList();
+        return PaginaResponse.of(pagina.map(this::toResponse));
     }
 
     public ArvoreResponse buscarPorId(Long id) {

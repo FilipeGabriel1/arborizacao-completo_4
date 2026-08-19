@@ -2,6 +2,7 @@ package br.com.amasvisa.arborizacao.arvore.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvore;
@@ -11,6 +12,7 @@ import br.com.amasvisa.arborizacao.arvore.repository.EspecieArvoreRepository;
 import br.com.amasvisa.arborizacao.auditoria.models.AcaoAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.models.TipoEntidadeAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.service.AuditoriaService;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -39,12 +41,12 @@ public class EspecieArvoreService {
         return response;
     }
 
-    public List<EspecieArvoreResponse> listar(String nomePopular) {
+    public PaginaResponse<EspecieArvoreResponse> listar(String nomePopular, Pageable pageable) {
         if (nomePopular == null || nomePopular.isBlank()) {
-            return repository.findAll().stream().map(this::toResponse).toList();
+            return PaginaResponse.of(repository.findAll(pageable).map(this::toResponse));
         }
 
-        return repository.findByNomePopularContainingIgnoreCase(nomePopular).stream().map(this::toResponse).toList();
+        return PaginaResponse.of(repository.findByNomePopularContainingIgnoreCase(nomePopular, pageable).map(this::toResponse));
     }
 
     public EspecieArvoreResponse buscarPorId(Long id) {

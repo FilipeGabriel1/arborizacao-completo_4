@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 /**
  * Autenticação por sessão (cookie), com login em formulário HTML.
@@ -50,6 +52,8 @@ public class SecurityConfig {
                         "/arborizacao/index.html",
                         "/arborizacao/mapa-publico.js",
                         "/arborizacao/styles.css",
+                        "/arborizacao/csrf.js",
+                        "/api/csrf",
                         "/login"
                 ).permitAll()
                 // Consultas públicas (somente leitura) para usuários normais.
@@ -77,11 +81,16 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/arborizacao/login.html?saiu=1")
                 .permitAll()
             )
-            // Front-end estático (sem template engine), então não há como
-            // embutir o token CSRF automaticamente nos formulários/fetch.
-            // Como é uma ferramenta interna, atrás de login, desativamos o
-            // CSRF por completo em vez de só nas rotas /api/**.
-            .csrf(csrf -> csrf.disable())
+            // Front-end estático (sem template engine): o token CSRF é
+            // entregue em um cookie não-HttpOnly (XSRF-TOKEN) e o script
+            // /arborizacao/csrf.js o envia de volta como header X-XSRF-TOKEN
+            // (e como campo _csrf nos formulários, como o de login/logout).
+            // Usamos o CsrfTokenRequestAttributeHandler (sem mascaramento XOR)
+            // porque o valor do cookie é enviado de forma crua no header.
+            .csrf(csrf -> csrf
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+            )
             .exceptionHandling(ex -> ex
                 // Chamadas fetch para /api/** que não estiverem autenticadas
                 // recebem 401 em vez de serem redirecionadas para o HTML de login.

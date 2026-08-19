@@ -39,7 +39,7 @@ function obterUrlImagem(url) {
     return texto;
   }
 
-  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id);
+  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id) + '=w2000';
 }
 
 const map = new maplibregl.Map({
@@ -112,13 +112,27 @@ function emptyFeatureCollection() {
   return { type: 'FeatureCollection', features: [] };
 }
 
+async function buscarTudo(url, pageSize = 200) {
+  const todos = [];
+  let pagina = 0;
+  for (;;) {
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const itens = Array.isArray(data) ? data : (data.value ?? []);
+    todos.push(...itens);
+    if (Array.isArray(data) || itens.length < pageSize) return todos;
+    pagina++;
+  }
+}
+
 async function carregarDados() {
-  const [areasRes, arvoresRes] = await Promise.all([
-    fetch('/api/areas'),
-    fetch('/api/arvores')
+  const [carregadasAreas, carregadasArvores] = await Promise.all([
+    buscarTudo('/api/areas'),
+    buscarTudo('/api/arvores')
   ]);
-  areas = areasRes.ok ? await areasRes.json() : [];
-  arvores = arvoresRes.ok ? await arvoresRes.json() : [];
+  areas = carregadasAreas ?? [];
+  arvores = carregadasArvores ?? [];
 
   totalAreasEl.textContent = areas.length;
   totalArvoresEl.textContent = arvores.length;

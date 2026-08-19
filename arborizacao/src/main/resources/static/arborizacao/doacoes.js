@@ -80,11 +80,23 @@ function renderizarCardsEncontrados(lista, container) {
   });
 }
 
+async function buscarTudo(url, pageSize = 200) {
+  const todos = [];
+  let pagina = 0;
+  for (;;) {
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const itens = Array.isArray(data) ? data : (data.value ?? []);
+    todos.push(...itens);
+    if (Array.isArray(data) || itens.length < pageSize) return todos;
+    pagina++;
+  }
+}
+
 async function carregarArvoresSelect() {
-  const res = await fetch('/api/arvores');
-  if (!res.ok) return;
-  const arvores = await res.json();
-  arvores.forEach((arvore) => {
+  const arvores = await buscarTudo('/api/arvores');
+  (arvores ?? []).forEach((arvore) => {
     const option = document.createElement('option');
     option.value = arvore.id;
     option.textContent = arvore.nome || `Árvore #${arvore.id}`;
@@ -93,10 +105,9 @@ async function carregarArvoresSelect() {
 }
 
 async function carregarDoacoes() {
-  const res = await fetch(apiBase);
-  if (!res.ok) return;
-  const data = await res.json();
-  doacoes = Array.isArray(data) ? data : (data.value ?? []);
+  const itens = await buscarTudo(apiBase);
+  if (itens === null) return;
+  doacoes = itens;
   renderizar(doacoes);
 }
 

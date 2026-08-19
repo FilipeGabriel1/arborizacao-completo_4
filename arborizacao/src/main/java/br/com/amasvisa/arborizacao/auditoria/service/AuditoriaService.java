@@ -1,8 +1,8 @@
 package br.com.amasvisa.arborizacao.auditoria.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,7 @@ import br.com.amasvisa.arborizacao.auditoria.models.AuditoriaResponse;
 import br.com.amasvisa.arborizacao.auditoria.models.RegistroAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.models.TipoEntidadeAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.repository.AuditoriaRepository;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 
 @Service
 public class AuditoriaService {
@@ -46,9 +47,8 @@ public class AuditoriaService {
         return authentication.getName();
     }
 
-    public List<AuditoriaResponse> listar() {
-        return repository.findAllByOrderByDataHoraDesc().stream()
-                .map(registro -> new AuditoriaResponse(
+    public PaginaResponse<AuditoriaResponse> listar(Pageable pageable) {
+        return PaginaResponse.of(repository.findAllByOrderByDataHoraDesc(pageable).map(registro -> new AuditoriaResponse(
                         registro.getId(),
                         registro.getDataHora(),
                         registro.getUsuarioEmail(),
@@ -56,7 +56,6 @@ public class AuditoriaService {
                         registro.getEntidade(),
                         registro.getEntidadeId(),
                         registro.getDetalhe()
-                ))
-                .toList();
+                )));
     }
 }

@@ -639,15 +639,27 @@ function buildPayload() {
   };
 }
 
+async function buscarTudo(url, pageSize = 200) {
+  const todos = [];
+  let pagina = 0;
+  for (;;) {
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const itens = Array.isArray(data) ? data : (data.value ?? []);
+    todos.push(...itens);
+    if (Array.isArray(data) || itens.length < pageSize) return todos;
+    pagina++;
+  }
+}
+
 async function loadAreas() {
   try {
-    const response = await fetch(apiBase);
-    if (!response.ok) {
-      throw new Error(`Falha ao carregar áreas: ${response.status}`);
+    const carregadas = await buscarTudo(apiBase);
+    if (carregadas === null) {
+      throw new Error('Falha ao carregar áreas');
     }
-
-    const data = await response.json();
-    areas = Array.isArray(data) ? data : (data.value ?? []);
+    areas = carregadas;
     renderAreaList();
     updateCounters();
     refreshMap();
@@ -764,7 +776,7 @@ function obterUrlImagem(url) {
     return texto;
   }
 
-  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id);
+  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id) + '=w2000';
 }
 
 function getFotosDaArea(area) {

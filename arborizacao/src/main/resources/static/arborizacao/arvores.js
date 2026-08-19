@@ -44,7 +44,7 @@ function obterUrlImagem(url) {
     return texto;
   }
 
-  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id);
+  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id) + '=w2000';
 }
 
 buscaForm.addEventListener('submit', async (event) => {
@@ -133,36 +133,48 @@ function renderizarCardsEncontrados(lista, container) {
   });
 }
 
-async function carregarSelects() {
-  const [areasRes, especiesRes, doacoesRes] = await Promise.all([
-    fetch('/api/areas'),
-    fetch('/api/especies'),
-    fetch('/api/doacoes')
-  ]);
-  const areas = areasRes.ok ? await areasRes.json() : [];
-  const especies = especiesRes.ok ? await especiesRes.json() : [];
-  doacoesCache = doacoesRes.ok ? await doacoesRes.json() : [];
+async function buscarTudo(url, pageSize = 200) {
+  const todos = [];
+  let pagina = 0;
+  for (;;) {
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const itens = Array.isArray(data) ? data : (data.value ?? []);
+    todos.push(...itens);
+    if (Array.isArray(data) || itens.length < pageSize) return todos;
+    pagina++;
+  }
+}
 
-  areas.forEach((area) => {
+async function carregarSelects() {
+  const [areas, especies, doacoes] = await Promise.all([
+    buscarTudo('/api/areas'),
+    buscarTudo('/api/especies'),
+    buscarTudo('/api/doacoes')
+  ]);
+
+  (areas ?? []).forEach((area) => {
     const option = document.createElement('option');
     option.value = area.id;
     option.textContent = area.nome;
     areaIdInput.appendChild(option);
   });
 
-  especies.forEach((especie) => {
+  (especies ?? []).forEach((especie) => {
     const option = document.createElement('option');
     option.value = especie.id;
     option.textContent = especie.nomePopular;
     especieIdInput.appendChild(option);
   });
+
+  doacoesCache = doacoes ?? [];
 }
 
 async function carregarArvores() {
-  const res = await fetch(apiBase);
-  if (!res.ok) return;
-  const data = await res.json();
-  arvores = Array.isArray(data) ? data : (data.value ?? []);
+  const itens = await buscarTudo(apiBase);
+  if (itens === null) return;
+  arvores = itens;
   renderizar(arvores);
 }
 

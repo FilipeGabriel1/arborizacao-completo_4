@@ -79,11 +79,24 @@ function renderizarCardsEncontrados(lista, container) {
   });
 }
 
+async function buscarTudo(url, pageSize = 200) {
+  const todos = [];
+  let pagina = 0;
+  for (;;) {
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const itens = Array.isArray(data) ? data : (data.value ?? []);
+    todos.push(...itens);
+    if (Array.isArray(data) || itens.length < pageSize) return todos;
+    pagina++;
+  }
+}
+
 async function carregar() {
-  const res = await fetch(apiBase);
-  if (!res.ok) return;
-  const data = await res.json();
-  especies = Array.isArray(data) ? data : (data.value ?? []);
+  const itens = await buscarTudo(apiBase);
+  if (itens === null) return;
+  especies = itens;
   renderizar(especies);
 }
 

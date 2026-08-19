@@ -3,6 +3,7 @@ package br.com.amasvisa.arborizacao.area.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.amasvisa.arborizacao.area.models.AreaArborizada;
@@ -17,6 +18,7 @@ import br.com.amasvisa.arborizacao.area.models.AreaFotoResponse;
 import br.com.amasvisa.arborizacao.area.models.PontoGeografico;
 import br.com.amasvisa.arborizacao.area.models.PontoGeograficoDTO;
 import br.com.amasvisa.arborizacao.area.repository.AreaArborizadaRepository;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -51,11 +53,11 @@ public class AreaArborizadaService {
         return response;
     }
 
-    public List<AreaArborizadaResponse> listar(String nome) {
+    public PaginaResponse<AreaArborizadaResponse> listar(String nome, Pageable pageable) {
         if (nome == null || nome.isBlank()) {
-            return repository.findAll().stream().map(this::toResponse).toList();
+            return PaginaResponse.of(repository.findAll(pageable).map(this::toResponse));
         }
-        return repository.findByNomeContainingIgnoreCase(nome).stream().map(this::toResponse).toList();
+        return PaginaResponse.of(repository.findByNomeContainingIgnoreCase(nome, pageable).map(this::toResponse));
     }
 
     public AreaArborizadaResponse buscarPorId(Long id) {

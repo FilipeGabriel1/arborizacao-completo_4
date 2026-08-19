@@ -2,6 +2,7 @@ package br.com.amasvisa.arborizacao.doacao.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.amasvisa.arborizacao.arvore.models.Arvore;
@@ -13,6 +14,7 @@ import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvore;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreRequest;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreResponse;
 import br.com.amasvisa.arborizacao.doacao.repository.DoacaoArvoreRepository;
+import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -43,8 +45,8 @@ public class DoacaoArvoreService {
         return response;
     }
 
-    public List<DoacaoArvoreResponse> listar() {
-        return repository.findAll().stream().map(this::toResponse).toList();
+    public PaginaResponse<DoacaoArvoreResponse> listar(Pageable pageable) {
+        return PaginaResponse.of(repository.findAll(pageable).map(this::toResponse));
     }
 
     public DoacaoArvoreResponse buscarPorId(Long id) {

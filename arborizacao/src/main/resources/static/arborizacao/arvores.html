@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Árvores • Arborização</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,7 +19,9 @@
       <a href="./doacoes.html" class="ghost-button">Doações</a>
       <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
       <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
-      <a href="/logout" class="ghost-button">Sair</a>
+      <form action="/logout" method="post" class="logout-form">
+        <button type="submit" class="ghost-button">Sair</button>
+      </form>
     </div>
 
     <section class="hero">
@@ -142,7 +145,9 @@
     </section>
   </main>
 
+  <script src="./csrf.js"></script>
   <script src="./auth.js"></script>
   <script src="./arvores.js"></script>
 </body>
 </html>
+

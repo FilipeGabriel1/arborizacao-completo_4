@@ -448,7 +448,7 @@ button:hover {
 .photo-viewer-card-front img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -570,6 +570,10 @@ button:hover {
   margin-right: auto;
   font-weight: 600;
   color: var(--accent);
+}
+
+.logout-form {
+  margin: 0;
 }
 
 .item-actions {
@@ -707,7 +711,8 @@ button:hover {
   display: block;
   width: 100%;
   max-height: 260px;
-  object-fit: cover;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .area-foto:has(img + img) {
@@ -739,7 +744,8 @@ button:hover {
 }
 
 @media (max-width: 1280px) {
-  .workspace {
+  .workspace,
+  .public-workspace {
     grid-template-columns: 1fr;
   }
 
@@ -753,12 +759,26 @@ button:hover {
     padding: 14px;
   }
 
+  .user-bar {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .user-bar #userEmail {
+    flex-basis: 100%;
+    margin-right: 0;
+  }
+
   .hero,
   .panel-header,
   .area-item header,
   .map-footer {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  .hero {
+    gap: 18px;
   }
 
   .hero-stats,
@@ -771,10 +791,63 @@ button:hover {
     min-width: unset;
   }
 
+  .workspace,
+  .public-workspace {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  #map {
+    min-height: 60vh;
+    min-height: 420px;
+  }
+
+  .map-footer {
+    gap: 16px;
+  }
+
+  .place-details {
+    margin: 0;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+
   .place-details-header,
   .place-links {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  .foto-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .foto-input-row .ghost-button {
+    justify-self: end;
+  }
+
+  .busca-form .primary-button,
+  .busca-form .ghost-button,
+  .form-grid .primary-button,
+  .form-grid .ghost-button,
+  .form-grid .danger-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .area-actions .ghost-button,
+  .area-actions .danger-button,
+  .item-actions button {
+    flex: 1 1 100%;
+  }
+
+  .photo-viewer {
+    padding: 8px;
   }
 
   .photo-viewer-shell {
@@ -782,12 +855,48 @@ button:hover {
   }
 
   .photo-viewer-stage {
-    height: 56vh;
+    height: 50vh;
   }
 
   .photo-viewer-header,
   .photo-viewer-footer {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  .photo-viewer-header {
+    align-items: center;
+  }
+
+  .photo-viewer-actions {
+    margin-top: 10px;
+  }
+
+  .photo-nav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
+  }
+
+  .photo-nav-prev {
+    left: 10px;
+  }
+
+  .photo-nav-next {
+    right: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .photo-viewer-stage {
+    height: 42vh;
+  }
+
+  .photo-viewer-shell {
+    padding: 10px;
+  }
+
+  .photo-viewer-footer {
+    gap: 10px;
   }
 }
