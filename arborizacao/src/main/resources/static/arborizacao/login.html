@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login • Arborização</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .login-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .login-panel {
+      width: 100%;
+      max-width: 380px;
+    }
+    .login-panel h1 {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    .login-panel p {
+      margin-top: 0;
+      margin-bottom: 20px;
+      opacity: 0.75;
+    }
+    .login-message {
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .login-message.erro {
+      background: rgba(220, 60, 60, 0.15);
+      border: 1px solid rgba(220, 60, 60, 0.4);
+    }
+    .login-message.info {
+      background: rgba(60, 140, 220, 0.12);
+      border: 1px solid rgba(60, 140, 220, 0.35);
+    }
+  </style>
+</head>
+<body>
+  <main class="login-shell">
+    <form class="panel login-panel" method="post" action="/login">
+      <h1>Arborização</h1>
+      <p>Entre com seu e-mail corporativo para cadastrar áreas e árvores.</p>
+
+      <div id="loginMessage"></div>
+
+      <div class="form-grid">
+        <label>
+          E-mail
+          <input type="email" name="email" required autofocus autocomplete="username" />
+        </label>
+        <label>
+          Senha
+          <input type="password" name="senha" required autocomplete="current-password" />
+        </label>
+      </div>
+
+      <button type="submit" class="primary-button" style="width: 100%; margin-top: 16px;">Entrar</button>
+    </form>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const messageEl = document.getElementById('loginMessage');
+
+    if (params.get('erro')) {
+      messageEl.innerHTML = '<div class="login-message erro">E-mail ou senha inválidos.</div>';
+    } else if (params.get('expirou')) {
+      messageEl.innerHTML = '<div class="login-message info">Sua sessão expirou. Entre novamente.</div>';
+    } else if (params.get('saiu')) {
+      messageEl.innerHTML = '<div class="login-message info">Você saiu da sua conta.</div>';
+    }
+  </script>
+</body>
+</html>

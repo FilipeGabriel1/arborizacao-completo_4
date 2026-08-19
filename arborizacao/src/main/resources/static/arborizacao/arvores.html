@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Árvores • Arborização</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="user-bar">
+      <span id="userEmail">...</span>
+      <a href="./cadastro-areas.html" class="ghost-button">← Áreas</a>
+      <a href="./especies.html" class="ghost-button">Espécies</a>
+      <a href="./doacoes.html" class="ghost-button">Doações</a>
+      <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
+      <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
+      <a href="/logout" class="ghost-button">Sair</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
+        <h1>Árvores cadastradas</h1>
+        <p class="hero-copy">Vincule cada árvore a uma área e, se souber, a uma espécie.</p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel">
+        <div class="panel-header">
+          <h2 id="formTitle">Nova árvore</h2>
+        </div>
+        <div id="formMessage"></div>
+        <form id="arvoreForm" class="form-grid">
+          <label>
+            Nome / apelido
+            <input type="text" id="nome" placeholder="Ex: Ipê da entrada" />
+          </label>
+          <label>
+            Área
+            <select id="areaId">
+              <option value="">Selecione...</option>
+            </select>
+          </label>
+          <label>
+            Espécie
+            <select id="especieId">
+              <option value="">Não informada</option>
+            </select>
+          </label>
+          <label>
+            Tipo
+            <select id="tipoArvore" required>
+              <option value="NATIVA">Nativa</option>
+              <option value="EXOTICA">Exótica</option>
+              <option value="FRUTIFERA">Frutífera</option>
+              <option value="ORNAMENTAL">Ornamental</option>
+              <option value="OUTRA">Outra</option>
+            </select>
+          </label>
+          <label>
+            Porte
+            <select id="porte" required>
+              <option value="PEQUENO">Pequeno</option>
+              <option value="MEDIO">Médio</option>
+              <option value="GRANDE">Grande</option>
+            </select>
+          </label>
+          <label>
+            Origem
+            <select id="origem" required>
+              <option value="PLANTIO_PROPRIO">Plantio próprio</option>
+              <option value="DOACAO">Doação</option>
+              <option value="OBRIGACAO_LEGAL">Obrigação legal</option>
+              <option value="OUTRA">Outra</option>
+            </select>
+          </label>
+          <label>
+            Status
+            <select id="status" required>
+              <option value="ATIVA">Ativa</option>
+              <option value="EM_MANUTENCAO">Em manutenção</option>
+              <option value="INATIVA">Inativa</option>
+              <option value="REMOVIDA">Removida</option>
+            </select>
+          </label>
+          <label class="checkbox-field">
+            <input type="checkbox" id="georreferenciada" />
+            Georreferenciada (tem latitude/longitude)
+          </label>
+          <label>
+            Latitude
+            <input type="number" step="any" id="latitude" />
+          </label>
+          <label>
+            Longitude
+            <input type="number" step="any" id="longitude" />
+          </label>
+          <label>
+            Data do plantio
+            <input type="date" id="dataPlantio" />
+          </label>
+          <label>
+            Número do processo
+            <input type="text" id="numeroProcesso" />
+          </label>
+          <label>
+            Foto (URL)
+            <input type="text" id="fotoUrl" placeholder="https://drive.google.com/... ou https://..." />
+          </label>
+          <label>
+            Descrição
+            <textarea id="descricao" rows="3"></textarea>
+          </label>
+          <button type="submit" class="primary-button" id="saveBtn">Salvar</button>
+          <button type="button" class="ghost-button hidden" id="cancelEditBtn">Cancelar edição</button>
+        </form>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Buscar árvore</h2>
+        </div>
+        <form id="buscaForm" class="busca-form">
+          <input type="text" id="buscaTermo" placeholder="Digite o nome ou o ID da árvore..." />
+          <button type="submit" class="primary-button">Buscar</button>
+        </form>
+        <p class="area-description">Você pode digitar o nome da árvore ou o ID.</p>
+        <div id="buscaResultado"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Árvores</h2>
+        </div>
+        <div id="arvoresList" class="areas-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./auth.js"></script>
+  <script src="./arvores.js"></script>
+</body>
+</html>

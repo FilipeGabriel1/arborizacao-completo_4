@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espécies • Arborização</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="user-bar">
+      <span id="userEmail">...</span>
+      <a href="./cadastro-areas.html" class="ghost-button">← Áreas</a>
+      <a href="./arvores.html" class="ghost-button">Árvores</a>
+      <a href="./doacoes.html" class="ghost-button">Doações</a>
+      <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
+      <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
+      <a href="/logout" class="ghost-button">Sair</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
+        <h1>Espécies cadastradas</h1>
+        <p class="hero-copy">Cadastre as espécies de árvores usadas na arborização (nome popular, científico, família, porte).</p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel">
+        <div class="panel-header">
+          <h2 id="formTitle">Nova espécie</h2>
+        </div>
+        <div id="formMessage"></div>
+        <form id="especieForm" class="form-grid">
+          <label>
+            Nome popular
+            <input type="text" id="nomePopular" required />
+          </label>
+          <label>
+            Nome científico
+            <input type="text" id="nomeCientifico" />
+          </label>
+          <label>
+            Família
+            <input type="text" id="familia" />
+          </label>
+          <label>
+            Porte padrão
+            <select id="portePadrao">
+              <option value="">Não informado</option>
+              <option value="PEQUENO">Pequeno</option>
+              <option value="MEDIO">Médio</option>
+              <option value="GRANDE">Grande</option>
+            </select>
+          </label>
+          <label>
+            Observações
+            <textarea id="observacoes" rows="3"></textarea>
+          </label>
+          <button type="submit" class="primary-button" id="saveBtn">Salvar</button>
+          <button type="button" class="ghost-button hidden" id="cancelEditBtn">Cancelar edição</button>
+        </form>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Buscar espécie</h2>
+        </div>
+        <form id="buscaForm" class="busca-form">
+          <input type="text" id="buscaTermo" placeholder="Digite o nome ou o ID da espécie..." />
+          <button type="submit" class="primary-button">Buscar</button>
+        </form>
+        <p class="area-description">Você pode digitar o nome popular, o nome científico ou o ID.</p>
+        <div id="buscaResultado"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Espécies</h2>
+        </div>
+        <div id="especiesList" class="areas-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="./auth.js"></script>
+  <script src="./especies.js"></script>
+</body>
+</html>

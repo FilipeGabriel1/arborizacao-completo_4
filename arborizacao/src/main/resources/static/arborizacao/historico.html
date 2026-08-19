@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Histórico de atividades • Arborização</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="user-bar">
+      <span id="userEmail">...</span>
+      <a href="./cadastro-areas.html" class="ghost-button">Áreas</a>
+      <a href="./arvores.html" class="ghost-button">Árvores</a>
+      <a href="./especies.html" class="ghost-button">Espécies</a>
+      <a href="./doacoes.html" class="ghost-button">Doações</a>
+      <a href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
+      <a href="./historico.html" class="ghost-button">Histórico</a>
+      <a href="/logout" class="ghost-button">Sair</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
+        <h1>Histórico de atividades</h1>
+        <p class="hero-copy">Tudo o que os funcionários fizeram no sistema: criações, edições e exclusões, com quem fez e quando.</p>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Atividades recentes</h2>
+        </div>
+
+        <div class="historico-filtros">
+          <input type="search" id="filtroTexto" placeholder="Buscar por usuário ou detalhe..." />
+          <select id="filtroEntidade">
+            <option value="">Todas as entidades</option>
+            <option value="AREA">Áreas</option>
+            <option value="ARVORE">Árvores</option>
+            <option value="ESPECIE">Espécies</option>
+            <option value="DOACAO">Doações</option>
+            <option value="USUARIO">Usuários</option>
+          </select>
+          <select id="filtroAcao">
+            <option value="">Todas as ações</option>
+            <option value="CRIACAO">Criação</option>
+            <option value="EDICAO">Edição</option>
+            <option value="EXCLUSAO">Exclusão</option>
+          </select>
+          <button type="button" class="ghost-button" id="recarregarBtn">Recarregar</button>
+        </div>
+
+        <div id="historicoList" class="areas-list"></div>
+        <p id="historicoVazio" class="historico-vazio hidden">Nenhuma atividade encontrada.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="./auth.js"></script>
+  <script src="./historico.js"></script>
+</body>
+</html>

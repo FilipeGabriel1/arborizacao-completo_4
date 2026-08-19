@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arborização</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="user-bar">
+      <span id="userEmail">...</span>
+      <a href="./index.html" class="ghost-button">Ver painel público</a>
+      <a href="./arvores.html" class="ghost-button">Árvores</a>
+      <a href="./especies.html" class="ghost-button">Espécies</a>
+      <a href="./doacoes.html" class="ghost-button">Doações</a>
+      <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
+      <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
+      <a href="/logout" class="ghost-button">Sair</a>
+    </div>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
+        <h1>Cadastro e visualização de áreas arborizadas no mapa.</h1>
+        <p class="hero-copy">
+          Marque pontos ou desenhe polígonos, salve no MySQL e visualize tudo no OpenStreetMap com MapLibre.
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span id="totalAreas">0</span>
+          <small>áreas cadastradas</small>
+        </div>
+        <div>
+          <span id="totalVertices">0</span>
+          <small>pontos de polígono</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Cadastro</p>
+            <h2 id="formTitle">Nova área</h2>
+          </div>
+          <button id="cancelEditBtn" class="ghost-button hidden" type="button">Cancelar edição</button>
+        </div>
+
+        <form id="areaForm" class="form-grid">
+          <input type="hidden" id="areaId" />
+
+          <label>
+            Nome
+            <input id="nome" type="text" placeholder="Ex.: Praça Central" required />
+          </label>
+
+          <label>
+            Descrição
+            <textarea id="descricao" rows="3" placeholder="Detalhes da área"></textarea>
+          </label>
+          <label>
+            Fotos (URLs)
+            <div id="fotosContainer" class="fotos-container"></div>
+            <button id="addFotoBtn" class="ghost-button" type="button">Adicionar foto</button>
+          </label>
+
+          <div class="two-columns">
+            <label>
+              Tipo
+              <select id="tipo">
+                <option value="PRACA">Praça</option>
+                <option value="PARQUE">Parque</option>
+                <option value="BOSQUE">Bosque</option>
+                <option value="RUA">Rua</option>
+                <option value="AVENIDA">Avenida</option>
+                <option value="OUTRA">Outra</option>
+              </select>
+            </label>
+
+            <label>
+              Status
+              <select id="status">
+                <option value="ATIVA">Ativa</option>
+                <option value="INATIVA">Inativa</option>
+                <option value="EM_ANALISE">Em análise</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Modo de desenho
+            <select id="drawMode">
+              <option value="point">Ponto único</option>
+              <option value="polygon">Polígono</option>
+            </select>
+          </label>
+
+          <div class="two-columns">
+            <label>
+              Latitude
+              <input id="latitude" type="number" step="any" placeholder="Ex: -23.5505" />
+            </label>
+
+            <label>
+              Longitude
+              <input id="longitude" type="number" step="any" placeholder="Ex: -46.6333" />
+            </label>
+          </div>
+
+          <div id="polygonManualEntry" class="hidden">
+            <label>Adicionar ponto do polígono manualmente</label>
+            <div class="two-columns">
+              <input id="vertexLatitude" type="number" step="any" placeholder="Latitude do ponto" />
+              <input id="vertexLongitude" type="number" step="any" placeholder="Longitude do ponto" />
+            </div>
+            <button id="addVertexBtn" class="ghost-button" type="button">Adicionar ponto à lista</button>
+            <ul id="verticesList" class="detalhe-lista"></ul>
+          </div>
+
+          <div class="polygon-tools">
+            <button id="clearVerticesBtn" class="ghost-button" type="button">Limpar pontos do polígono</button>
+            <button id="saveBtn" class="primary-button" type="submit">Salvar área</button>
+          </div>
+
+          <div class="hint-box">
+            <strong>Como usar</strong>
+            <p>Clique no mapa ou digite a latitude/longitude diretamente nos campos. No modo polígono, adicione cada ponto digitando os valores e clicando em "Adicionar ponto à lista", ou clicando no mapa.</p>
+          </div>
+        </form>
+      </aside>
+
+      <section class="map-card">
+        <div id="map"></div>
+        <div class="map-footer">
+          <div>
+            <strong>Seleção atual</strong>
+            <span id="selectionInfo">Nenhum ponto selecionado</span>
+          </div>
+          <div>
+            <strong>Exploração</strong>
+            <span>Clique em explorar e toque no mapa para ver fotos e detalhes do local</span>
+          </div>
+        </div>
+
+        <section class="place-details" aria-live="polite">
+          <div class="place-details-media">
+            <img id="placePhoto" alt="Foto do local" class="place-photo hidden" />
+            <div id="placePhotoFallback" class="place-photo-fallback">Clique em um local para carregar fotos e detalhes.</div>
+          </div>
+          <div class="place-details-body">
+            <div class="place-details-header">
+              <div>
+                <p class="panel-kicker">Detalhes do local</p>
+                <h2 id="placeTitle">Nenhum local selecionado</h2>
+              </div>
+              <button id="inspectModeBtn" class="ghost-button" type="button">Explorar local</button>
+            </div>
+            <p id="placeDisplayName" class="place-description">Clique em Explorar local e depois toque no mapa, ou selecione uma área salva.</p>
+            <div id="placeMeta" class="place-meta"></div>
+            <div id="placeAddress" class="place-address"></div>
+            <div class="place-links">
+              <a id="placeSourceLink" href="#" target="_blank" rel="noreferrer" class="ghost-button disabled-link">Abrir no OSM</a>
+              <a id="placeWikiLink" href="#" target="_blank" rel="noreferrer" class="ghost-button disabled-link">Fonte adicional</a>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="panel list-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Registros</p>
+            <h2>Áreas salvas</h2>
+          </div>
+          <button id="reloadBtn" class="ghost-button" type="button">Atualizar</button>
+        </div>
+
+        <form id="buscaForm" class="busca-form">
+          <input type="text" id="buscaTermo" placeholder="Digite o nome ou o ID da área..." />
+          <button type="submit" class="primary-button">Buscar</button>
+        </form>
+        <p class="area-description">Você pode digitar o nome da área ou o ID.</p>
+        <div id="buscaResultado"></div>
+
+        <div id="areasList" class="areas-list"></div>
+      </aside>
+    </section>
+  </main>
+
+  <template id="areaItemTemplate">
+    <article class="area-item">
+      <header>
+        <div>
+          <h3></h3>
+          <p class="area-meta"></p>
+        </div>
+        <span class="pill"></span>
+      </header>
+      <div class="area-foto"></div>
+      <p class="area-description"></p>
+      <div class="area-actions">
+        <button class="ghost-button view-btn" type="button">Ver no mapa</button>
+        <button class="ghost-button edit-btn" type="button">Editar</button>
+        <button class="danger-button delete-btn" type="button">Excluir</button>
+      </div>
+    </article>
+  </template>
+
+  <div id="photoViewer" class="photo-viewer hidden" aria-hidden="true">
+    <div class="photo-viewer-backdrop"></div>
+    <section class="photo-viewer-shell" role="dialog" aria-modal="true" aria-labelledby="photoViewerTitle">
+      <div class="photo-viewer-header">
+        <div>
+          <p class="panel-kicker">Fotos em 3D</p>
+          <h2 id="photoViewerTitle">Visualização imersiva</h2>
+        </div>
+        <button id="closeViewerBtn" class="ghost-button" type="button">Fechar</button>
+      </div>
+
+      <div class="photo-viewer-viewport">
+        <div class="photo-viewer-stage">
+          <div class="photo-viewer-card photo-viewer-card-front">
+            <img id="viewerPhoto" alt="Foto imersiva do local" />
+          </div>
+        </div>
+        <button id="prevPhotoBtn" class="photo-nav-btn photo-nav-prev" type="button" aria-label="Foto anterior">‹</button>
+        <button id="nextPhotoBtn" class="photo-nav-btn photo-nav-next" type="button" aria-label="Próxima foto">›</button>
+      </div>
+
+      <div class="photo-viewer-footer">
+        <div>
+          <strong id="viewerPlaceName">Selecione uma área para abrir em 3D</strong>
+          <span id="viewerPlaceMeta">A foto e os detalhes do local aparecem aqui.</span>
+        </div>
+        <span id="viewerCounter" class="viewer-counter hidden" aria-live="polite"></span>
+        <div class="photo-viewer-actions">
+          <a id="viewerSourceLink" href="#" target="_blank" rel="noreferrer" class="ghost-button disabled-link">Abrir fonte</a>
+          <a id="viewerWikiLink" href="#" target="_blank" rel="noreferrer" class="ghost-button disabled-link">Abrir detalhes</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script src="./auth.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

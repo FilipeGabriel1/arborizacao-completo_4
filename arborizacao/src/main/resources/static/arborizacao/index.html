@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arborização Urbana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="user-bar">
+      <span>Consulta pública</span>
+      <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
+        <h1>Áreas e árvores cadastradas na cidade</h1>
+        <p class="hero-copy">
+          Consulte no mapa as áreas arborizadas e as árvores cadastradas por espécie, porte e origem. Clique em um marcador para ver os detalhes.
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span id="totalAreas">0</span>
+          <small>áreas cadastradas</small>
+        </div>
+        <div>
+          <span id="totalArvores">0</span>
+          <small>árvores cadastradas</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace public-workspace">
+      <div class="panel map-card">
+        <div id="map"></div>
+      </div>
+
+      <aside class="panel list-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Registros</p>
+            <h2>Áreas arborizadas</h2>
+          </div>
+        </div>
+
+        <form id="buscaForm" class="busca-form">
+          <input type="text" id="buscaTermo" placeholder="Digite o nome ou o ID da área..." />
+          <button type="submit" class="primary-button">Buscar</button>
+        </form>
+        <p class="area-description">Você pode digitar o nome da área ou o ID.</p>
+        <div id="buscaResultado"></div>
+
+        <div id="areasList" class="areas-list"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script src="./mapa-publico.js"></script>
+</body>
+</html>
