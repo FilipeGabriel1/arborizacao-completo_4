@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvore;
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvoreRequest;
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvoreResponse;
+import br.com.amasvisa.arborizacao.arvore.models.EspecieFoto;
+import br.com.amasvisa.arborizacao.arvore.models.EspecieFotoRequest;
+import br.com.amasvisa.arborizacao.arvore.models.EspecieFotoResponse;
 import br.com.amasvisa.arborizacao.arvore.repository.EspecieArvoreRepository;
 import br.com.amasvisa.arborizacao.auditoria.models.AcaoAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.models.TipoEntidadeAuditoria;
@@ -33,6 +36,9 @@ public class EspecieArvoreService {
         especie.setFamilia(request.familia());
         especie.setPortePadrao(request.portePadrao());
         especie.setObservacoes(request.observacoes());
+        especie.setIndicacaoPlantio(request.indicacaoPlantio());
+        especie.setFotoUrl(request.fotoUrl());
+        atualizarFotos(especie, request.fotos());
         especie.prepararPersistencia();
 
         EspecieArvoreResponse response = toResponse(repository.save(especie));
@@ -60,6 +66,9 @@ public class EspecieArvoreService {
         especie.setFamilia(request.familia());
         especie.setPortePadrao(request.portePadrao());
         especie.setObservacoes(request.observacoes());
+        especie.setIndicacaoPlantio(request.indicacaoPlantio());
+        especie.setFotoUrl(request.fotoUrl());
+        atualizarFotos(especie, request.fotos());
         especie.prepararPersistencia();
 
         EspecieArvoreResponse response = toResponse(repository.save(especie));
@@ -80,7 +89,27 @@ public class EspecieArvoreService {
                 .orElseThrow(() -> new EntityNotFoundException("Espécie de árvore não encontrada: " + id));
     }
 
+    private void atualizarFotos(EspecieArvore especie, List<EspecieFotoRequest> fotos) {
+        especie.getFotos().clear();
+        if (fotos == null) {
+            return;
+        }
+
+        for (EspecieFotoRequest fotoRequest : fotos) {
+            EspecieFoto foto = new EspecieFoto();
+            foto.setEspecie(especie);
+            foto.setUrl(fotoRequest.url());
+            foto.setDescricao(fotoRequest.descricao());
+            foto.prepararPersistencia();
+            especie.getFotos().add(foto);
+        }
+    }
+
     private EspecieArvoreResponse toResponse(EspecieArvore especie) {
+        List<EspecieFotoResponse> fotos = especie.getFotos().stream()
+                .map(foto -> new EspecieFotoResponse(foto.getId(), foto.getUrl(), foto.getDescricao(), foto.getCriadoEm()))
+                .toList();
+
         return new EspecieArvoreResponse(
                 especie.getId(),
                 especie.getNomePopular(),
@@ -88,6 +117,9 @@ public class EspecieArvoreService {
                 especie.getFamilia(),
                 especie.getPortePadrao(),
                 especie.getObservacoes(),
+                especie.getIndicacaoPlantio(),
+                especie.getFotoUrl(),
+                fotos,
                 especie.getCriadoEm(),
                 especie.getAtualizadoEm()
         );

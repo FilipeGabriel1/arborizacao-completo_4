@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espécies de árvores • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="user-bar">
+      <span>Consulta pública</span>
+      <a href="./index.html" class="ghost-button">← Mapa</a>
+      <a href="./especies-publico.html" class="ghost-button">Espécies</a>
+      <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
+    </div>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
+        <h1>Espécies de árvores da cidade</h1>
+        <p class="hero-copy">
+          Conheça as espécies cadastradas para identificar e distinguir cada árvore pelas suas fotos e características.
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span id="totalEspecies">0</span>
+          <small>espécies cadastradas</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Buscar espécie</h2>
+        </div>
+        <form id="buscaForm" class="busca-form">
+          <input type="text" id="buscaTermo" placeholder="Nome popular ou científico..." />
+          <button type="submit" class="primary-button">Buscar</button>
+        </form>
+        <p class="area-description">Digite o nome popular ou científico da espécie para filtrar a lista. Clique em uma espécie para ver as fotos.</p>
+      </section>
+
+      <section class="panel fotos-carousel-painel">
+        <div class="panel-header">
+          <h2>Fotos da espécie</h2>
+        </div>
+        <div id="carousel" class="carousel">
+          <button type="button" id="carouselPrev" class="carousel-btn" aria-label="Foto anterior">←</button>
+          <div class="carousel-viewport">
+            <img id="carouselImg" src="" alt="Foto da espécie" />
+            <div id="carouselVazio" class="carousel-vazio">Selecione uma espécie para ver as fotos.</div>
+          </div>
+          <button type="button" id="carouselNext" class="carousel-btn" aria-label="Próxima foto">→</button>
+        </div>
+        <p id="carouselNome" class="carousel-nome"></p>
+        <div id="carouselInfo" class="carousel-info"></div>
+      </section>
+
+      <section class="panel especies-publico-painel">
+        <div class="panel-header">
+          <h2>Espécies cadastradas</h2>
+        </div>
+        <div id="especiesList" class="especies-grid"></div>
+        <p id="especiesVazio" class="historico-vazio hidden">Nenhuma espécie encontrada.</p>
+      </section>
+    </section>
+  </main>
+
+  <script src="./especies-publico.js"></script>
+</body>
+</html>

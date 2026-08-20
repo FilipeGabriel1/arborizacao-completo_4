@@ -14,11 +14,12 @@
 <body>
   <main class="app-shell">
     <div class="user-bar">
-      <span>Consulta pública</span>
+<span>Consulta pública</span>
+      <a href="./especies-publico.html" class="ghost-button">Espécies</a>
       <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
     </div>
 
-    <section class="hero">
+<section class="hero hero-largo">
       <div>
         <p class="eyebrow">Amasvisa • Arborização Urbana</p>
         <h1>Áreas e árvores cadastradas na cidade</h1>
@@ -37,6 +38,79 @@
         </div>
       </div>
     </section>
+
+<div class="placar-zona">
+      <section class="panel placar-ao-vivo">
+      <div class="panel-header">
+        <div>
+          <p class="panel-kicker">Arborização ao vivo</p>
+          <h2>Números da arborização em tempo real</h2>
+        </div>
+        <span class="placar-live"><span class="placar-dot"></span> Tempo real</span>
+      </div>
+
+      <div class="placar-grid">
+        <div class="placar-card placar-card-destaque">
+          <span class="placar-valor" id="placarPlantadas">0</span>
+          <small>Árvores plantadas</small>
+        </div>
+        <div class="placar-card placar-card-destaque">
+          <span class="placar-valor" id="placarDoadas">0</span>
+          <small>Árvores doadas</small>
+        </div>
+        <div class="placar-card">
+          <span class="placar-valor" id="placarDoacoes">0</span>
+          <small>Doações registradas</small>
+        </div>
+        <div class="placar-card">
+          <span class="placar-valor" id="placarAreas">0</span>
+          <small>Áreas arborizadas</small>
+        </div>
+        <div class="placar-card">
+          <span class="placar-valor" id="placarEspecies">0</span>
+          <small>Espécies cadastradas</small>
+        </div>
+      </div>
+
+      <div class="placar-detalhes">
+        <div class="placar-bloco">
+          <h3>Comparativo plantio × doação</h3>
+          <div class="placar-comparativo">
+            <div class="placar-barra">
+              <div class="placar-barra-fill" id="barraDoadas"></div>
+            </div>
+            <div class="placar-legend">
+              <span><i class="dot dot-doadas"></i>Doadas</span>
+              <span><i class="dot dot-plantadas"></i>Plantadas</span>
+              <span id="placarPorcentagem"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="placar-bloco">
+          <h3>Árvores por porte</h3>
+          <div id="placarPorte" class="placar-barras"></div>
+        </div>
+
+        <div class="placar-bloco">
+          <h3>Árvores por origem</h3>
+          <div id="placarOrigem" class="placar-barras"></div>
+        </div>
+      </div>
+
+      <p class="placar-atualizado">Atualizado automaticamente • <span id="placarAtualizadoEm">—</span></p>
+      </section>
+
+      <aside class="panel placar-feed placar-feed-topo">
+        <div class="placar-feed-header">
+          <h3>Doadores ao vivo</h3>
+          <span class="placar-live placar-live-pequeno"><span class="placar-dot"></span> ao vivo</span>
+        </div>
+        <div id="placarFeed" class="placar-feed-lista">
+          <p class="placar-bloco-nota">Aguardando atualização...</p>
+        </div>
+      </aside>
+    </div>
 
     <section class="workspace public-workspace">
       <div class="panel map-card">
@@ -58,7 +132,7 @@
         <p class="area-description">Você pode digitar o nome da área ou o ID.</p>
         <div id="buscaResultado"></div>
 
-        <div id="areasList" class="areas-list"></div>
+<div id="areasList" class="areas-list"></div>
       </aside>
     </section>
   </main>

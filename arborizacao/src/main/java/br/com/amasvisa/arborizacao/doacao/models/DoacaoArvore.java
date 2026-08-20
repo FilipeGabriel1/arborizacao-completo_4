@@ -38,6 +38,15 @@ public class DoacaoArvore {
     @Column(length = 150)
     private String destinacao;
 
+    @Column(name = "quantidade")
+    private Integer quantidade;
+
+    @Column(length = 14)
+    private String cpf;
+
+    @Column(length = 20)
+    private String rg;
+
     public DoacaoArvore() {
     }
 
@@ -83,5 +92,29 @@ public class DoacaoArvore {
 
     public void setDestinacao(String destinacao) {
         this.destinacao = destinacao;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(Integer quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getRg() {
+        return rg;
+    }
+
+    public void setRg(String rg) {
+        this.rg = rg;
     }
 }

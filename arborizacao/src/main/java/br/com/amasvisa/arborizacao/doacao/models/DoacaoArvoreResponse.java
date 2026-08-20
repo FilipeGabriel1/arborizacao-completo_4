@@ -6,9 +6,13 @@ public record DoacaoArvoreResponse(
         Long id,
         Long arvoreId,
         String arvoreNome,
+        String arvoreEspecie,
         String descricao,
         String solicitante,
         LocalDate dataDoacao,
-        String destinacao
+        String destinacao,
+        Integer quantidade,
+        String cpf,
+        String rg
 ) {
 }

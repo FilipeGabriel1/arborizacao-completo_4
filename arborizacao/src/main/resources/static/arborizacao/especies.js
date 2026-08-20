@@ -6,6 +6,10 @@ const nomeCientificoInput = document.getElementById('nomeCientifico');
 const familiaInput = document.getElementById('familia');
 const portePadraoInput = document.getElementById('portePadrao');
 const observacoesInput = document.getElementById('observacoes');
+const indicacaoPlantioInput = document.getElementById('indicacaoPlantio');
+const fotoUrlInput = document.getElementById('fotoUrl');
+const fotosContainer = document.getElementById('fotosContainer');
+const addFotoBtn = document.getElementById('addFotoBtn');
 const especiesList = document.getElementById('especiesList');
 const formTitle = document.getElementById('formTitle');
 const formMessage = document.getElementById('formMessage');
@@ -50,6 +54,65 @@ buscaForm.addEventListener('submit', async (event) => {
   renderizarCardsEncontrados(encontradas, buscaResultado);
 });
 
+function obterUrlImagem(url) {
+  const texto = (url || '').toString().trim();
+  if (!texto || !/drive\.google\.com/.test(texto)) {
+    return texto;
+  }
+
+  const matchFile = texto.match(/\/file\/d\/([^/?#]+)/);
+  const matchId = texto.match(/[?&]id=([^&#]+)/);
+  const id = (matchFile && matchFile[1]) || (matchId && matchId[1]);
+  if (!id) {
+    return texto;
+  }
+
+  return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id) + '=w800';
+}
+
+function montarFotosThumbs(especie) {
+  const fotos = [];
+  if (especie.fotoUrl) {
+    fotos.push(obterUrlImagem(especie.fotoUrl));
+  }
+  (especie.fotos || []).forEach((f) => {
+    if (f.url) fotos.push(obterUrlImagem(f.url));
+  });
+  if (!fotos.length) return '';
+
+  const thumbs = fotos
+    .map((url) => `<a href="${url}" target="_blank" rel="noreferrer"><img src="${url}" alt="Foto da espécie" loading="lazy" /></a>`)
+    .join('');
+  return `<div class="area-foto-grupo">${thumbs}</div>`;
+}
+
+function adicionarLinhaFoto(url, descricao) {
+  const linha = document.createElement('div');
+  linha.className = 'foto-linha';
+  linha.innerHTML = `
+    <input type="text" class="foto-url-input" placeholder="https://... (link da imagem)" value="${(url || '').replace(/"/g, '&quot;')}" />
+    <input type="text" class="foto-descricao-input" placeholder="Descrição (opcional)" value="${(descricao || '').replace(/"/g, '&quot;')}" />
+    <button type="button" class="ghost-button" title="Remover foto">✕</button>
+  `;
+  linha.querySelector('button').addEventListener('click', () => linha.remove());
+  fotosContainer.appendChild(linha);
+}
+
+function limparLinhasFoto() {
+  fotosContainer.innerHTML = '';
+}
+
+function coletarFotosExtras() {
+  const fotos = [];
+  fotosContainer.querySelectorAll('.foto-linha').forEach((linha) => {
+    const url = linha.querySelector('.foto-url-input').value.trim();
+    if (!url) return;
+    const descricao = linha.querySelector('.foto-descricao-input').value.trim();
+    fotos.push({ url, descricao: descricao || null });
+  });
+  return fotos;
+}
+
 function renderizarCardsEncontrados(lista, container) {
   if (!lista.length) {
     container.innerHTML = '<p class="area-description">Nenhuma espécie encontrada.</p>';
@@ -65,8 +128,10 @@ function renderizarCardsEncontrados(lista, container) {
         <h3>#${especie.id} — ${especie.nomePopular}</h3>
         <span>${especie.portePadrao || ''}</span>
       </header>
+      ${montarFotosThumbs(especie)}
       <p class="area-description">${especie.nomeCientifico || ''}${especie.familia ? ' • ' + especie.familia : ''}</p>
       <p class="area-description">${especie.observacoes || ''}</p>
+      <p class="area-description"><strong>Indicação para plantio:</strong> ${especie.indicacaoPlantio || 'Não informada'}</p>
       <div class="item-actions">
         <button type="button" data-action="editar">Editar esta espécie</button>
       </div>
@@ -111,8 +176,10 @@ function renderizar(especies) {
         <h3>${especie.nomePopular}</h3>
         <span>${especie.portePadrao || ''}</span>
       </header>
+      ${montarFotosThumbs(especie)}
       <p class="area-description">${especie.nomeCientifico || ''}${especie.familia ? ' • ' + especie.familia : ''}</p>
       <p class="area-description">${especie.observacoes || ''}</p>
+      <p class="area-description"><strong>Indicação para plantio:</strong> ${especie.indicacaoPlantio || 'Não informada'}</p>
       <div class="item-actions">
         <button type="button" data-action="editar">Editar</button>
         <button type="button" data-action="remover">Remover</button>
@@ -131,6 +198,10 @@ function iniciarEdicao(especie) {
   familiaInput.value = especie.familia || '';
   portePadraoInput.value = especie.portePadrao || '';
   observacoesInput.value = especie.observacoes || '';
+  indicacaoPlantioInput.value = especie.indicacaoPlantio || '';
+  fotoUrlInput.value = especie.fotoUrl || '';
+  limparLinhasFoto();
+  (especie.fotos || []).forEach((f) => adicionarLinhaFoto(f.url, f.descricao));
   formTitle.textContent = 'Editar espécie';
   cancelEditBtn.classList.remove('hidden');
 }
@@ -138,6 +209,7 @@ function iniciarEdicao(especie) {
 function cancelarEdicao() {
   editingId = null;
   form.reset();
+  limparLinhasFoto();
   formTitle.textContent = 'Nova espécie';
   cancelEditBtn.classList.add('hidden');
 }
@@ -162,7 +234,10 @@ form.addEventListener('submit', async (event) => {
     nomeCientifico: nomeCientificoInput.value || null,
     familia: familiaInput.value || null,
     portePadrao: portePadraoInput.value || null,
-    observacoes: observacoesInput.value || null
+    observacoes: observacoesInput.value || null,
+    indicacaoPlantio: indicacaoPlantioInput.value || null,
+    fotoUrl: fotoUrlInput.value || null,
+    fotos: coletarFotosExtras()
   };
 
   const url = editingId ? `${apiBase}/${editingId}` : apiBase;
@@ -185,5 +260,7 @@ form.addEventListener('submit', async (event) => {
 });
 
 cancelEditBtn.addEventListener('click', cancelarEdicao);
+
+addFotoBtn.addEventListener('click', () => adicionarLinhaFoto('', ''));
 
 carregar();

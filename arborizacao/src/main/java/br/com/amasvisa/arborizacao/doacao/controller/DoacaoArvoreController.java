@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreRequest;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreResponse;
+import br.com.amasvisa.arborizacao.doacao.models.ExtratoDoadorResponse;
 import br.com.amasvisa.arborizacao.doacao.service.DoacaoArvoreService;
 import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import br.com.amasvisa.arborizacao.comum.PaginaUtils;
@@ -43,6 +44,13 @@ public class DoacaoArvoreController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
         return service.listar(PaginaUtils.de(page, size));
+    }
+
+    @GetMapping("/extrato")
+    public ExtratoDoadorResponse extrato(
+            @RequestParam(required = false) String cpf,
+            @RequestParam(required = false) String nome) {
+        return service.extratoDoador(cpf, nome);
     }
 
     @GetMapping("/{id}")

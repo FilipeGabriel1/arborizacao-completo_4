@@ -1,5 +1,6 @@
 package br.com.amasvisa.arborizacao.doacao.service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import br.com.amasvisa.arborizacao.auditoria.service.AuditoriaService;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvore;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreRequest;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreResponse;
+import br.com.amasvisa.arborizacao.doacao.models.ExtratoDoadorResponse;
 import br.com.amasvisa.arborizacao.doacao.repository.DoacaoArvoreRepository;
 import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +40,9 @@ public class DoacaoArvoreService {
         doacao.setSolicitante(request.solicitante());
         doacao.setDataDoacao(request.dataDoacao());
         doacao.setDestinacao(request.destinacao());
+        doacao.setQuantidade(request.quantidade());
+        doacao.setCpf(request.cpf());
+        doacao.setRg(request.rg());
 
         DoacaoArvoreResponse response = toResponse(repository.save(doacao));
         auditoriaService.registrar(TipoEntidadeAuditoria.DOACAO, response.id(), AcaoAuditoria.CRIACAO,
@@ -60,6 +65,9 @@ public class DoacaoArvoreService {
         doacao.setSolicitante(request.solicitante());
         doacao.setDataDoacao(request.dataDoacao());
         doacao.setDestinacao(request.destinacao());
+        doacao.setQuantidade(request.quantidade());
+        doacao.setCpf(request.cpf());
+        doacao.setRg(request.rg());
 
         DoacaoArvoreResponse response = toResponse(repository.save(doacao));
         auditoriaService.registrar(TipoEntidadeAuditoria.DOACAO, response.id(), AcaoAuditoria.EDICAO,
@@ -72,6 +80,58 @@ public class DoacaoArvoreService {
         repository.delete(doacao);
         auditoriaService.registrar(TipoEntidadeAuditoria.DOACAO, id, AcaoAuditoria.EXCLUSAO,
                 "Doação excluída: " + detalheDoacao(doacao.getSolicitante()));
+    }
+
+    public ExtratoDoadorResponse extratoDoador(String cpf, String nome) {
+        List<DoacaoArvore> doacoes;
+        if (cpf != null && !cpf.isBlank()) {
+            String cpfNormalizado = cpf.replaceAll("\\D", "");
+            doacoes = repository.findAll().stream()
+                    .filter(d -> d.getCpf() != null && d.getCpf().replaceAll("\\D", "").equals(cpfNormalizado))
+                    .toList();
+        } else {
+            String termo = nome == null ? "" : nome.trim();
+            doacoes = termo.isBlank() ? repository.findAll()
+                    : repository.findBySolicitanteContainingIgnoreCase(termo);
+        }
+
+        if (doacoes.isEmpty()) {
+            return new ExtratoDoadorResponse(
+                    nome == null ? null : nome.trim(),
+                    cpf == null ? null : cpf.trim(),
+                    null,
+                    0, 0, null, null,
+                    List.of());
+        }
+
+        List<DoacaoArvore> ordenadas = doacoes.stream()
+                .sorted(Comparator.comparing(DoacaoArvore::getDataDoacao,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .toList();
+
+        DoacaoArvore primeira = doacoes.stream()
+                .filter(d -> d.getDataDoacao() != null)
+                .min(Comparator.comparing(DoacaoArvore::getDataDoacao))
+                .orElse(null);
+        DoacaoArvore ultima = doacoes.stream()
+                .filter(d -> d.getDataDoacao() != null)
+                .max(Comparator.comparing(DoacaoArvore::getDataDoacao))
+                .orElse(null);
+
+        long totalQuantidade = doacoes.stream()
+                .mapToLong(d -> d.getQuantidade() == null ? 0 : d.getQuantidade())
+                .sum();
+
+        DoacaoArvore amostra = ordenadas.get(0);
+        return new ExtratoDoadorResponse(
+                amostra.getSolicitante(),
+                amostra.getCpf(),
+                amostra.getRg(),
+                doacoes.size(),
+                totalQuantidade,
+                primeira != null ? primeira.getDataDoacao() : null,
+                ultima != null ? ultima.getDataDoacao() : null,
+                ordenadas.stream().map(this::toResponse).toList());
     }
 
     private String detalheDoacao(String solicitante) {
@@ -93,10 +153,16 @@ public class DoacaoArvoreService {
                 doacao.getId(),
                 doacao.getArvore() != null ? doacao.getArvore().getId() : null,
                 doacao.getArvore() != null ? doacao.getArvore().getNome() : null,
+                doacao.getArvore() != null && doacao.getArvore().getEspecie() != null
+                        ? doacao.getArvore().getEspecie().getNomePopular()
+                        : null,
                 doacao.getDescricao(),
                 doacao.getSolicitante(),
                 doacao.getDataDoacao(),
-                doacao.getDestinacao()
+                doacao.getDestinacao(),
+                doacao.getQuantidade(),
+                doacao.getCpf(),
+                doacao.getRg()
         );
     }
 }

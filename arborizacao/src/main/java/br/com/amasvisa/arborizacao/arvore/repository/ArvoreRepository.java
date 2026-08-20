@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.amasvisa.arborizacao.arvore.models.Arvore;
+import br.com.amasvisa.arborizacao.arvore.models.OrigemArvore;
+import br.com.amasvisa.arborizacao.arvore.models.PorteArvore;
+import br.com.amasvisa.arborizacao.arvore.models.StatusArvore;
 
 public interface ArvoreRepository extends JpaRepository<Arvore, Long> {
     List<Arvore> findByNomeContainingIgnoreCase(String nome);
@@ -15,4 +18,8 @@ public interface ArvoreRepository extends JpaRepository<Arvore, Long> {
     Page<Arvore> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
     Page<Arvore> findByArea_Id(Long areaId, Pageable pageable);
     Page<Arvore> findByEspecie_Id(Long especieId, Pageable pageable);
+
+    long countByPorte(PorteArvore porte);
+    long countByOrigem(OrigemArvore origem);
+    long countByStatus(StatusArvore status);
 }

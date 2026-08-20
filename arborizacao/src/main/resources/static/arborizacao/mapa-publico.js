@@ -18,9 +18,158 @@ const totalArvoresEl = document.getElementById('totalArvores');
 const buscaForm = document.getElementById('buscaForm');
 const buscaTermoInput = document.getElementById('buscaTermo');
 const buscaResultado = document.getElementById('buscaResultado');
+const placarPlantadasEl = document.getElementById('placarPlantadas');
+const placarDoadasEl = document.getElementById('placarDoadas');
+const placarDoacoesEl = document.getElementById('placarDoacoes');
+const placarAreasEl = document.getElementById('placarAreas');
+const placarEspeciesEl = document.getElementById('placarEspecies');
+const placarAtualizadoEmEl = document.getElementById('placarAtualizadoEm');
+const barraDoadasEl = document.getElementById('barraDoadas');
+const placarPorcentagemEl = document.getElementById('placarPorcentagem');
+const placarPorteEl = document.getElementById('placarPorte');
+const placarOrigemEl = document.getElementById('placarOrigem');
+const placarFeedEl = document.getElementById('placarFeed');
 
 let areas = [];
 let arvores = [];
+let placarAnterior = null;
+
+function formatarNumero(valor) {
+  return Number(valor || 0).toLocaleString('pt-BR');
+}
+
+function formatarData(data) {
+  if (!data) return 'data não informada';
+  const [ano, mes, dia] = String(data).slice(0, 10).split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
+function animarValor(el, alvo) {
+  const inicio = Number(el.dataset.valor || 0);
+  const fim = Number(alvo || 0);
+  if (inicio === fim) return;
+  el.dataset.valor = fim;
+  const duracao = 600;
+  const inicioMs = performance.now();
+  function passo(agora) {
+    const progresso = Math.min((agora - inicioMs) / duracao, 1);
+    const suavizado = 1 - Math.pow(1 - progresso, 3);
+    el.textContent = formatarNumero(Math.round(inicio + (fim - inicio) * suavizado));
+    if (progresso < 1) requestAnimationFrame(passo);
+  }
+  requestAnimationFrame(passo);
+}
+
+const rotulosPortePlacar = { PEQUENO: 'Pequeno', MEDIO: 'Médio', GRANDE: 'Grande' };
+const rotulosOrigemPlacar = {
+  DOACAO: 'Doação',
+  OBRIGACAO_LEGAL: 'Obrigação legal',
+  PLANTIO_PROPRIO: 'Plantio próprio',
+  OUTRA: 'Outra'
+};
+const rotulosStatusPlacar = {
+  ATIVA: 'Ativa',
+  INATIVA: 'Inativa',
+  REMOVIDA: 'Removida',
+  EM_MANUTENCAO: 'Em manutenção'
+};
+
+function renderizarBarras(container, dados, rotulos, cor) {
+  const itens = Object.entries(dados || {});
+  const total = itens.reduce((soma, [, v]) => soma + Number(v || 0), 0);
+  if (!total) {
+    container.innerHTML = '<p class="placar-bloco-nota">Sem registros ainda.</p>';
+    return;
+  }
+
+  container.innerHTML = '';
+  itens.forEach(([chave, valor], indice) => {
+    const qtd = Number(valor || 0);
+    const percentual = (qtd / total) * 100;
+    const linha = document.createElement('div');
+    linha.className = 'placar-barras-linha';
+    linha.style.animationDelay = `${indice * 90}ms`;
+    linha.innerHTML = `
+      <div class="placar-barras-topo">
+        <span>${rotulos[chave] || chave}</span>
+        <strong>${formatarNumero(qtd)}</strong>
+      </div>
+      <div class="placar-barra">
+        <div class="placar-barra-fill" style="width:0%; background:${cor};"></div>
+      </div>
+    `;
+    container.appendChild(linha);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        linha.querySelector('.placar-barra-fill').style.width = `${percentual}%`;
+      });
+    });
+  });
+}
+
+function renderizarFeed(doacoes) {
+  if (!doacoes || !doacoes.length) {
+    placarFeedEl.innerHTML = '<p class="placar-bloco-nota">Nenhuma doação registrada ainda.</p>';
+    return;
+  }
+
+  placarFeedEl.innerHTML = '';
+  doacoes.forEach((d, indice) => {
+    const item = document.createElement('article');
+    item.className = 'placar-feed-item';
+    item.style.animationDelay = `${indice * 90}ms`;
+    const quantidade = d.quantidade ? formatarNumero(d.quantidade) : '1';
+    item.innerHTML = `
+      <div class="placar-feed-icone">🌳</div>
+      <div class="placar-feed-texto">
+        <strong>${d.solicitante || 'Doador não informado'}</strong>
+        <span>${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}${d.descricao ? ' • ' + d.descricao : ''}</span>
+      </div>
+      <time>${formatarData(d.dataDoacao)}</time>
+    `;
+    placarFeedEl.appendChild(item);
+  });
+}
+
+function renderizarPlacar(placar) {
+  animarValor(placarPlantadasEl, placar.totalArvores);
+  animarValor(placarDoadasEl, placar.totalDoadas);
+  animarValor(placarDoacoesEl, placar.totalDoacoes);
+  animarValor(placarAreasEl, placar.totalAreas);
+  animarValor(placarEspeciesEl, placar.totalEspecies);
+  placarAtualizadoEmEl.textContent = new Date(placar.atualizadoEm).toLocaleTimeString('pt-BR');
+
+  const totalPlantadas = Number(placar.totalArvores || 0);
+  const totalDoadas = Number(placar.totalDoadas || 0);
+  const percentual = totalPlantadas > 0 ? Math.min((totalDoadas / totalPlantadas) * 100, 100) : 0;
+  barraDoadasEl.style.width = `${percentual}%`;
+  placarPorcentagemEl.innerHTML = `<strong>${percentual.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%</strong> das plantadas vieram de doações`;
+
+  renderizarBarras(placarPorteEl, placar.arvoresPorPorte, rotulosPortePlacar, '#49a970');
+  renderizarBarras(placarOrigemEl, placar.arvoresPorOrigem, rotulosOrigemPlacar, '#6aa7c1');
+  renderizarFeed(placar.doacoesRecentes);
+}
+
+function placarMudou(placar) {
+  const dados = { ...placar };
+  delete dados.atualizadoEm;
+  const chave = JSON.stringify(dados);
+  if (chave === placarAnterior) return false;
+  placarAnterior = chave;
+  return true;
+}
+
+async function carregarPlacar() {
+  try {
+    const res = await fetch('/api/placar');
+    if (!res.ok) return;
+    const placar = await res.json();
+    if (!placarMudou(placar)) return;
+    renderizarPlacar(placar);
+  } catch (err) {
+    // mantém os últimos valores em caso de falha na atualização
+  }
+}
 
 function normalizarTexto(texto) {
   return (texto || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -299,3 +448,6 @@ buscaForm.addEventListener('submit', async (event) => {
     }
   });
 });
+
+carregarPlacar();
+setInterval(carregarPlacar, 5000);

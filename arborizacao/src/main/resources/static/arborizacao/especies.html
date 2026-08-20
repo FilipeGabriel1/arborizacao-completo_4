@@ -60,10 +60,23 @@
               <option value="GRANDE">Grande</option>
             </select>
           </label>
-          <label>
+<label>
             Observações
             <textarea id="observacoes" rows="3"></textarea>
           </label>
+          <label>
+            Indicação para plantio
+            <textarea id="indicacaoPlantio" rows="3" placeholder="Ex.: Boa para calçadas largas, evite áreas com fiação elétrica"></textarea>
+          </label>
+<label>
+            Foto principal (URL)
+            <input type="text" id="fotoUrl" placeholder="https://... (link da imagem)" />
+          </label>
+          <div class="fotos-form">
+            <span class="label">Fotos extras (URL)</span>
+            <div id="fotosContainer"></div>
+            <button type="button" class="ghost-button" id="addFotoBtn">+ Adicionar foto</button>
+          </div>
           <button type="submit" class="primary-button" id="saveBtn">Salvar</button>
           <button type="button" class="ghost-button hidden" id="cancelEditBtn">Cancelar edição</button>
         </form>

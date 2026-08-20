@@ -1,12 +1,16 @@
 package br.com.amasvisa.arborizacao.arvore.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,6 +36,15 @@ public class EspecieArvore {
 
     @Column(columnDefinition = "TEXT")
     private String observacoes;
+
+    @Column(name = "indicacao_plantio", columnDefinition = "TEXT")
+    private String indicacaoPlantio;
+
+    @Column(name = "foto_url", length = 500)
+    private String fotoUrl;
+
+    @OneToMany(mappedBy = "especie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EspecieFoto> fotos = new ArrayList<>();
 
     @Column(name = "criado_em", nullable = false)
     private LocalDateTime criadoEm;
@@ -92,6 +105,30 @@ public class EspecieArvore {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
+    }
+
+    public String getIndicacaoPlantio() {
+        return indicacaoPlantio;
+    }
+
+    public void setIndicacaoPlantio(String indicacaoPlantio) {
+        this.indicacaoPlantio = indicacaoPlantio;
+    }
+
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
+    }
+
+    public List<EspecieFoto> getFotos() {
+        return fotos;
+    }
+
+    public void setFotos(List<EspecieFoto> fotos) {
+        this.fotos = fotos;
     }
 
     public LocalDateTime getCriadoEm() {

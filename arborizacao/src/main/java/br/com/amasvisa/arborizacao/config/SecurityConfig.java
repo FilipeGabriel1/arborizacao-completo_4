@@ -50,6 +50,8 @@ public class SecurityConfig {
                         "/arborizacao/entrar.html",
                         "/arborizacao/login.html",
                         "/arborizacao/index.html",
+                        "/arborizacao/especies-publico.html",
+                        "/arborizacao/especies-publico.js",
                         "/arborizacao/mapa-publico.js",
                         "/arborizacao/styles.css",
                         "/arborizacao/csrf.js",
@@ -62,6 +64,7 @@ public class SecurityConfig {
                         "/api/areas/**",
                         "/api/arvores/**",
                         "/api/especies/**",
+                        "/api/placar/**",
                         "/api/places/**"
                 ).permitAll()
                 .requestMatchers("/api/auth/me").authenticated()

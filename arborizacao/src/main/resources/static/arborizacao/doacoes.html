@@ -14,9 +14,10 @@
   <main class="app-shell">
     <div class="user-bar">
       <span id="userEmail">...</span>
-      <a href="./cadastro-areas.html" class="ghost-button">← Áreas</a>
+      <a href="./cadastro-areas.html" class="ghost-button">Áreas</a>
       <a href="./arvores.html" class="ghost-button">Árvores</a>
       <a href="./especies.html" class="ghost-button">Espécies</a>
+      <a href="./doacoes.html" class="ghost-button">Doações</a>
       <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
       <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
       <form action="/logout" method="post" class="logout-form">
@@ -28,11 +29,11 @@
       <div>
         <p class="eyebrow">Amasvisa • Arborização Urbana</p>
         <h1>Doações de árvores</h1>
-        <p class="hero-copy">Registre quem doou, para onde a muda foi destinada e a qual árvore ela corresponde.</p>
+        <p class="hero-copy">Registre quem doou, para onde a muda foi destinada e acompanhe o extrato completo de cada doador, com filtro por período e por espécie.</p>
       </div>
     </section>
 
-    <section class="workspace">
+    <section class="workspace doacoes-workspace">
       <aside class="panel">
         <div class="panel-header">
           <h2 id="formTitle">Nova doação</h2>
@@ -58,6 +59,18 @@
             <input type="text" id="destinacao" placeholder="Ex: Praça Central" />
           </label>
           <label>
+            Quantidade de mudas
+            <input type="number" id="quantidade" min="1" placeholder="Ex: 3" />
+          </label>
+          <label>
+            CPF
+            <input type="text" id="cpf" placeholder="000.000.000-00" />
+          </label>
+          <label>
+            RG
+            <input type="text" id="rg" placeholder="00.000.000-0" />
+          </label>
+          <label>
             Descrição
             <textarea id="descricao" rows="3"></textarea>
           </label>
@@ -66,23 +79,62 @@
         </form>
       </aside>
 
-      <section class="panel">
+      <aside class="panel">
         <div class="panel-header">
-          <h2>Buscar doação</h2>
+          <h2>Filtrar doações</h2>
         </div>
         <form id="buscaForm" class="busca-form">
-          <input type="text" id="buscaTermo" placeholder="Digite o nome do doador ou o ID..." />
-          <button type="submit" class="primary-button">Buscar</button>
+          <input type="text" id="buscaTermo" placeholder="Nome do doador, CPF ou ID..." />
+          <div class="two-columns">
+            <label>
+              De
+              <input type="date" id="dataDe" />
+            </label>
+            <label>
+              Até
+              <input type="date" id="dataAte" />
+            </label>
+          </div>
+          <label>
+            Espécie
+            <input type="text" id="filtroEspecie" list="especiesLista" placeholder="Nome da espécie..." />
+            <datalist id="especiesLista"></datalist>
+          </label>
+          <button type="submit" class="primary-button">Filtrar</button>
+          <button type="button" class="ghost-button" id="limparFiltrosBtn">Limpar filtros</button>
         </form>
-        <p class="area-description">Você pode digitar o nome do solicitante/doador ou o ID.</p>
+        <p class="area-description">Filtre pelo doador, por período de doação (ex.: 2024 a 2025) ou pela espécie da árvore.</p>
         <div id="buscaResultado"></div>
-      </section>
+      </aside>
 
-      <section class="panel">
+      <section class="panel extrato-painel">
         <div class="panel-header">
-          <h2>Doações registradas</h2>
+          <div>
+            <p class="panel-kicker">Extrato de doações</p>
+            <h2>Doações registradas</h2>
+          </div>
+          <button id="recarregarBtn" class="ghost-button" type="button">Atualizar</button>
         </div>
-        <div id="doacoesList" class="areas-list"></div>
+
+        <div id="extratoResumo" class="extrato-resumo hidden"></div>
+
+        <div class="extrato-tabela-wrap">
+          <table class="extrato-tabela">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Doador</th>
+                <th>Descrição</th>
+                <th>Espécie</th>
+                <th class="extrato-qtd">Qtd.</th>
+                <th class="extrato-saldo">Saldo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="doacoesList"></tbody>
+          </table>
+        </div>
+        <p id="doacoesVazio" class="historico-vazio hidden">Nenhuma doação encontrada.</p>
       </section>
     </section>
   </main>
@@ -92,4 +144,3 @@
   <script src="./doacoes.js"></script>
 </body>
 </html>
-

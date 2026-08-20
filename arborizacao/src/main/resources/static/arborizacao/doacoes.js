@@ -5,6 +5,9 @@ const arvoreIdInput = document.getElementById('arvoreId');
 const solicitanteInput = document.getElementById('solicitante');
 const dataDoacaoInput = document.getElementById('dataDoacao');
 const destinacaoInput = document.getElementById('destinacao');
+const quantidadeInput = document.getElementById('quantidade');
+const cpfInput = document.getElementById('cpf');
+const rgInput = document.getElementById('rg');
 const descricaoInput = document.getElementById('descricao');
 const doacoesList = document.getElementById('doacoesList');
 const formTitle = document.getElementById('formTitle');
@@ -12,72 +15,35 @@ const formMessage = document.getElementById('formMessage');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 const buscaForm = document.getElementById('buscaForm');
 const buscaTermoInput = document.getElementById('buscaTermo');
-const buscaResultado = document.getElementById('buscaResultado');
+const dataDeInput = document.getElementById('dataDe');
+const dataAteInput = document.getElementById('dataAte');
+const filtroEspecieInput = document.getElementById('filtroEspecie');
+const especiesLista = document.getElementById('especiesLista');
+const limparFiltrosBtn = document.getElementById('limparFiltrosBtn');
+const recarregarBtn = document.getElementById('recarregarBtn');
+const extratoResumo = document.getElementById('extratoResumo');
+const doacoesVazio = document.getElementById('doacoesVazio');
 
 let editingId = null;
 let doacoes = [];
+let especies = [];
 
 function normalizarTexto(texto) {
   return (texto || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-buscaForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const termo = buscaTermoInput.value.trim();
-  if (!termo) return;
+function formatarData(data) {
+  if (!data) return '—';
+  const [ano, mes, dia] = String(data).slice(0, 10).split('-');
+  return `${dia}/${mes}/${ano}`;
+}
 
-  buscaResultado.innerHTML = '<p class="area-description">Buscando...</p>';
-
-  if (/^\d+$/.test(termo)) {
-    const res = await fetch(`${apiBase}/${termo}`);
-    if (!res.ok) {
-      buscaResultado.innerHTML = `<div class="login-message erro">Nenhuma doação encontrada com o ID ${termo}.</div>`;
-      return;
-    }
-    const doacao = await res.json();
-    renderizarCardsEncontrados([doacao], buscaResultado);
-    return;
+function mascararCpf(cpf) {
+  const c = String(cpf).replace(/[^\d]/g, '');
+  if (c.length === 11) {
+    return `${c.slice(0, 3)}.${c.slice(3, 6)}.${c.slice(6, 9)}-${c.slice(9)}`;
   }
-
-  const termoNorm = normalizarTexto(termo);
-  const encontradas = doacoes.filter((doacao) => normalizarTexto(doacao.solicitante).includes(termoNorm));
-  if (!encontradas.length) {
-    buscaResultado.innerHTML = `<div class="login-message erro">Nenhuma doação encontrada com o nome "${termo}".</div>`;
-    return;
-  }
-  renderizarCardsEncontrados(encontradas, buscaResultado);
-});
-
-function renderizarCardsEncontrados(lista, container) {
-  container.innerHTML = '';
-
-  if (!lista.length) {
-    container.innerHTML = '<p class="area-description">Nenhuma doação encontrada.</p>';
-    return;
-  }
-
-  lista.forEach((doacao) => {
-    const item = document.createElement('article');
-    item.className = 'area-item';
-    item.innerHTML = `
-      <header>
-        <h3>#${doacao.id} — ${doacao.solicitante || 'Doador não informado'}</h3>
-        <span>${doacao.dataDoacao || ''}</span>
-      </header>
-      <p class="area-description">
-        Árvore: ${doacao.arvoreNome || '#' + doacao.arvoreId} • Destinação: ${doacao.destinacao || 'não informada'}
-      </p>
-      <p class="area-description">${doacao.descricao || ''}</p>
-      <div class="item-actions">
-        <button type="button" data-action="editar">Editar esta doação</button>
-      </div>
-    `;
-    item.querySelector('[data-action="editar"]').addEventListener('click', () => {
-      iniciarEdicao(doacao);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-    container.appendChild(item);
-  });
+  return cpf;
 }
 
 async function buscarTudo(url, pageSize = 200) {
@@ -104,38 +70,112 @@ async function carregarArvoresSelect() {
   });
 }
 
-async function carregarDoacoes() {
-  const itens = await buscarTudo(apiBase);
-  if (itens === null) return;
-  doacoes = itens;
-  renderizar(doacoes);
+async function carregarEspecies() {
+  const itens = await buscarTudo('/api/especies');
+  especies = itens ?? [];
+  especiesLista.innerHTML = '';
+  especies.forEach((especie) => {
+    const option = document.createElement('option');
+    option.value = especie.nomePopular || '';
+    especiesLista.appendChild(option);
+  });
 }
 
-function renderizar(doacoes) {
-  doacoesList.innerHTML = '';
+function aplicarFiltros() {
+  const termo = buscaTermoInput.value.trim();
+  const dataDe = dataDeInput.value;
+  const dataAte = dataAteInput.value;
+  const especie = normalizarTexto(filtroEspecieInput.value.trim());
+  const termoNorm = normalizarTexto(termo);
 
-  doacoes.forEach((doacao) => {
-    const item = document.createElement('article');
-    item.className = 'area-item';
-    item.innerHTML = `
-      <header>
-        <h3>${doacao.solicitante || 'Doador não informado'}</h3>
-        <span>${doacao.dataDoacao || ''}</span>
-      </header>
-      <p class="area-description">
-        Árvore: ${doacao.arvoreNome || '#' + doacao.arvoreId} •
-        Destinação: ${doacao.destinacao || 'não informada'}
-      </p>
-      <p class="area-description">${doacao.descricao || ''}</p>
-      <div class="item-actions">
-        <button type="button" data-action="editar">Editar</button>
-        <button type="button" data-action="remover">Remover</button>
-      </div>
-    `;
-    item.querySelector('[data-action="editar"]').addEventListener('click', () => iniciarEdicao(doacao));
-    item.querySelector('[data-action="remover"]').addEventListener('click', () => remover(doacao));
-    doacoesList.appendChild(item);
+  return doacoes.filter((doacao) => {
+    if (termo) {
+      const alvo = normalizarTexto(
+        `${doacao.solicitante || ''} ${doacao.cpf || ''} ${doacao.id || ''}`
+      );
+      if (!alvo.includes(termoNorm)) return false;
+    }
+
+    if (dataDe && (!doacao.dataDoacao || doacao.dataDoacao < dataDe)) return false;
+    if (dataAte && (!doacao.dataDoacao || doacao.dataDoacao > dataAte)) return false;
+
+    if (especie && !normalizarTexto(doacao.arvoreEspecie || '').includes(especie)) return false;
+
+    return true;
   });
+}
+
+function renderizarResumo(filtrados) {
+  const totalQuantidade = filtrados.reduce((acc, d) => acc + (d.quantidade || 0), 0);
+  const datadas = filtrados.filter((d) => d.dataDoacao);
+  const datas = datadas.map((d) => d.dataDoacao).sort();
+
+  extratoResumo.innerHTML = `
+    <div>
+      <span>${filtrados.length}</span>
+      <small>doações</small>
+    </div>
+    <div>
+      <span>${totalQuantidade}</span>
+      <small>mudas doadas</small>
+    </div>
+    <div>
+      <span>${datas.length ? formatarData(datas[0]) : '—'}</span>
+      <small>primeira doação</small>
+    </div>
+    <div>
+      <span>${datas.length ? formatarData(datas[datas.length - 1]) : '—'}</span>
+      <small>última doação</small>
+    </div>`;
+  extratoResumo.classList.remove('hidden');
+}
+
+function renderizar(filtrados) {
+  doacoesList.innerHTML = '';
+  doacoesVazio.classList.toggle('hidden', filtrados.length > 0);
+  renderizarResumo(filtrados);
+
+  let saldo = 0;
+  filtrados.forEach((doacao) => {
+    const quantidade = doacao.quantidade || 0;
+    saldo += quantidade;
+    const tr = document.createElement('tr');
+    const descricao = [
+      doacao.arvoreNome || `Árvore #${doacao.arvoreId}`,
+      doacao.destinacao,
+      doacao.descricao
+    ].filter(Boolean).join(' • ');
+    const identificacao = [doacao.solicitante, doacao.cpf ? mascararCpf(doacao.cpf) : '']
+      .filter(Boolean).join(' • ') || 'Doador não informado';
+
+    tr.innerHTML = `
+      <td class="extrato-data">${formatarData(doacao.dataDoacao)}</td>
+      <td>${identificacao}</td>
+      <td>${descricao}</td>
+      <td>${doacao.arvoreEspecie || '—'}</td>
+      <td class="extrato-qtd">${quantidade}</td>
+      <td class="extrato-saldo">${saldo}</td>
+      <td>
+        <div class="item-actions">
+          <button type="button" data-action="editar">Editar</button>
+          <button type="button" data-action="remover">Remover</button>
+        </div>
+      </td>
+    `;
+    tr.querySelector('[data-action="editar"]').addEventListener('click', () => iniciarEdicao(doacao));
+    tr.querySelector('[data-action="remover"]').addEventListener('click', () => remover(doacao));
+    doacoesList.appendChild(tr);
+  });
+}
+
+async function carregarDoacoes() {
+  const itens = await buscarTudo(apiBase);
+  if (itens === null) {
+    doacoesList.innerHTML = '<tr><td colspan="7">Não foi possível carregar as doações.</td></tr>';
+    return;
+  }
+  doacoes = itens;
+  renderizar(aplicarFiltros());
 }
 
 function iniciarEdicao(doacao) {
@@ -144,9 +184,13 @@ function iniciarEdicao(doacao) {
   solicitanteInput.value = doacao.solicitante || '';
   dataDoacaoInput.value = doacao.dataDoacao || '';
   destinacaoInput.value = doacao.destinacao || '';
+  quantidadeInput.value = doacao.quantidade ?? '';
+  cpfInput.value = doacao.cpf || '';
+  rgInput.value = doacao.rg || '';
   descricaoInput.value = doacao.descricao || '';
   formTitle.textContent = 'Editar doação';
   cancelEditBtn.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function cancelarEdicao() {
@@ -171,6 +215,9 @@ form.addEventListener('submit', async (event) => {
     solicitante: solicitanteInput.value || null,
     dataDoacao: dataDoacaoInput.value || null,
     destinacao: destinacaoInput.value || null,
+    quantidade: quantidadeInput.value ? Number(quantidadeInput.value) : null,
+    cpf: cpfInput.value || null,
+    rg: rgInput.value || null,
     descricao: descricaoInput.value || null
   };
 
@@ -193,6 +240,22 @@ form.addEventListener('submit', async (event) => {
   carregarDoacoes();
 });
 
-cancelEditBtn.addEventListener('click', cancelarEdicao);
+buscaForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  renderizar(aplicarFiltros());
+});
 
-carregarArvoresSelect().then(carregarDoacoes);
+limparFiltrosBtn.addEventListener('click', () => {
+  buscaForm.reset();
+  renderizar(aplicarFiltros());
+});
+
+buscaTermoInput.addEventListener('input', () => renderizar(aplicarFiltros()));
+dataDeInput.addEventListener('change', () => renderizar(aplicarFiltros()));
+dataAteInput.addEventListener('change', () => renderizar(aplicarFiltros()));
+filtroEspecieInput.addEventListener('input', () => renderizar(aplicarFiltros()));
+cancelEditBtn.addEventListener('click', cancelarEdicao);
+recarregarBtn.addEventListener('click', carregarDoacoes);
+
+carregarArvoresSelect();
+carregarEspecies().then(carregarDoacoes);

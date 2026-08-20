@@ -9,6 +9,9 @@ public record DoacaoArvoreRequest(
         String descricao,
         String solicitante,
         LocalDate dataDoacao,
-        String destinacao
+        String destinacao,
+        Integer quantidade,
+        String cpf,
+        String rg
 ) {
 }
