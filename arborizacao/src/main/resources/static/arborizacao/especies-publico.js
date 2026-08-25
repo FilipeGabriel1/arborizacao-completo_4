@@ -16,6 +16,7 @@ let especies = [];
 let selecionadaId = null;
 let carouselFotos = [];
 let carouselIndex = 0;
+let filtroPorte = null;
 
 function normalizarTexto(texto) {
   return (texto || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -73,6 +74,26 @@ function renderizarCarrossel(especie) {
   carouselNext.disabled = !temFotos || carouselIndex === carouselFotos.length - 1;
 
   carouselNome.textContent = especie ? especie.nomePopular : '';
+
+  const detalhesEl = document.getElementById('carouselDetalhes');
+  if (!especie) {
+    detalhesEl.innerHTML = '';
+  } else {
+    const itens = [
+      { rotulo: 'Nome científico', valor: especie.nomeCientifico ? `<em>${especie.nomeCientifico}</em>` : 'Não informado' },
+      { rotulo: 'Família', valor: especie.familia || 'Não informada' },
+      { rotulo: 'Porte', valor: rotulosPorte[especie.portePadrao] || especie.portePadrao || 'Não informado' },
+      { rotulo: 'Descrição', valor: especie.observacoes || 'Nenhuma descrição cadastrada.' },
+      { rotulo: 'Indicação para plantio', valor: especie.indicacaoPlantio || 'Não informada.' }
+    ];
+    detalhesEl.innerHTML = itens.map((i) => `
+      <div class="detalhe-item">
+        <small>${i.rotulo}</small>
+        <p>${i.valor}</p>
+      </div>
+    `).join('');
+  }
+
   if (!temFotos) {
     carouselInfo.textContent = 'Nenhuma foto cadastrada para esta espécie.';
     return;
@@ -124,6 +145,7 @@ async function carregar() {
   totalEspeciesEl.textContent = especies.length;
   renderizar(especies);
   manterSelecao(especies);
+  renderizarFiltrosPorte();
 }
 
 function renderizar(lista) {
@@ -163,33 +185,83 @@ function manterSelecao(lista) {
   }
 }
 
+function filtrarLista() {
+  const termoNorm = normalizarTexto(buscaTermoInput.value.trim());
+  return especies.filter((especie) => {
+    if (filtroPorte && (especie.portePadrao || '') !== filtroPorte) return false;
+    if (!termoNorm) return true;
+    return normalizarTexto(especie.nomePopular).includes(termoNorm)
+      || normalizarTexto(especie.nomeCientifico).includes(termoNorm);
+  });
+}
+
+function renderizarFiltrosPorte() {
+  const container = document.getElementById('filtrosPorte');
+  const ordem = ['PEQUENO', 'MEDIO', 'GRANDE'];
+  const contagens = {};
+  especies.forEach((especie) => {
+    const porte = especie.portePadrao || '';
+    contagens[porte] = (contagens[porte] || 0) + 1;
+  });
+
+  container.innerHTML = '';
+
+  const criarChip = (porte, rotulo, total) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip-porte' + (filtroPorte === porte ? ' ativo' : '');
+    chip.innerHTML = `${rotulo} <span>${total}</span>`;
+    chip.addEventListener('click', () => {
+      filtroPorte = filtroPorte === porte ? null : porte;
+      const lista = filtrarLista();
+      renderizar(lista);
+      manterSelecao(lista);
+      renderizarFiltrosPorte();
+    });
+    container.appendChild(chip);
+  };
+
+  criarChip(null, 'Todos', especies.length);
+  ordem.forEach((porte) => {
+    if (contagens[porte]) {
+      criarChip(porte, rotulosPorte[porte], contagens[porte]);
+    }
+  });
+}
+
+const curiosidades = [
+  'Uma árvore adulta pode liberar em um dia o oxigênio que até 10 pessoas precisam para respirar.',
+  'As árvores urbanas podem reduzir a temperatura das ruas em até 5 °C, criando ilhas de frescor na cidade.',
+  'A copa de uma árvore retém poeira e poluentes, funcionando como um filtro natural do ar.',
+  'Cada árvore plantada ajuda a reduzir o ruído das vias, absorvendo parte do som do tráfego.',
+  'As raízes das árvores ajudam a absorver a água da chuva, diminuindo o risco de enchentes.',
+  'Muitas espécies nativas da Mata Atlântica, bioma original da região de Vitória de Santo Antão, são excelentes para arborização urbana.',
+  'Um quilômetro de rua arborizada pode abrigar dezenas de espécies de pássaros e insetos benéficos.'
+];
+
+function mostrarCuriosidade() {
+  const textoEl = document.getElementById('curiosidadeTexto');
+  const atual = textoEl.dataset.indice ? Number(textoEl.dataset.indice) : -1;
+  let indice = Math.floor(Math.random() * curiosidades.length);
+  if (indice === atual) {
+    indice = (indice + 1) % curiosidades.length;
+  }
+  textoEl.dataset.indice = indice;
+  textoEl.textContent = curiosidades[indice];
+}
+
+document.getElementById('curiosidadeNova').addEventListener('click', mostrarCuriosidade);
+mostrarCuriosidade();
+
 buscaForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  const termo = buscaTermoInput.value.trim();
-  const termoNorm = normalizarTexto(termo);
-  if (!termoNorm) {
-    renderizar(especies);
-    manterSelecao(especies);
-    return;
-  }
-
-  const encontradas = especies.filter((especie) =>
-    normalizarTexto(especie.nomePopular).includes(termoNorm)
-    || normalizarTexto(especie.nomeCientifico).includes(termoNorm));
+  const encontradas = filtrarLista();
   renderizar(encontradas);
   manterSelecao(encontradas);
 });
 
 buscaTermoInput.addEventListener('input', () => {
-  const termoNorm = normalizarTexto(buscaTermoInput.value.trim());
-  if (!termoNorm) {
-    renderizar(especies);
-    manterSelecao(especies);
-    return;
-  }
-  const encontradas = especies.filter((especie) =>
-    normalizarTexto(especie.nomePopular).includes(termoNorm)
-    || normalizarTexto(especie.nomeCientifico).includes(termoNorm));
+  const encontradas = filtrarLista();
   renderizar(encontradas);
   manterSelecao(encontradas);
 });

@@ -3,26 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arborização Urbana</title>
+  <title>Arborização Urbana • Prefeitura de Vitória de Santo Antão</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20260825-3" />
 </head>
 <body>
   <main class="app-shell">
-    <div class="user-bar">
-<span>Consulta pública</span>
-      <a href="./especies-publico.html" class="ghost-button">Espécies</a>
-      <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
-    </div>
+<header class="prefeitura-bar">
+      <div class="prefeitura-marca">
+        <span class="prefeitura-brasao">
+          <img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura de Vitória de Santo Antão" />
+        </span>
+        <div>
+          <strong>Prefeitura de Vitória de Santo Antão</strong>
+          <small>Meio Ambiente • Arborização Urbana • AMASVISA</small>
+        </div>
+      </div>
+      <nav class="user-bar">
+        <span>Consulta pública</span>
+        <a href="./especies-publico.html" class="ghost-button">Espécies</a>
+        <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
+      </nav>
+    </header>
 
 <section class="hero hero-largo">
       <div>
-        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
-        <h1>Áreas e árvores cadastradas na cidade</h1>
+        <p class="eyebrow">Prefeitura de Vitória de Santo Antão • AMASVISA</p>
+        <h1>Áreas arborizadas na cidade de Vitória de Santo Antão</h1>
         <p class="hero-copy">
           Consulte no mapa as áreas arborizadas e as árvores cadastradas por espécie, porte e origem. Clique em um marcador para ver os detalhes.
         </p>
@@ -59,22 +70,18 @@
           <small>Árvores doadas</small>
         </div>
         <div class="placar-card">
-          <span class="placar-valor" id="placarDoacoes">0</span>
-          <small>Doações registradas</small>
-        </div>
-        <div class="placar-card">
           <span class="placar-valor" id="placarAreas">0</span>
           <small>Áreas arborizadas</small>
         </div>
         <div class="placar-card">
           <span class="placar-valor" id="placarEspecies">0</span>
-          <small>Espécies cadastradas</small>
+          <small>Espécies registradas</small>
         </div>
       </div>
 
       <div class="placar-detalhes">
         <div class="placar-bloco">
-          <h3>Comparativo plantio × doação</h3>
+          <h3>Quantidade de árvores doadas x plantadas</h3>
           <div class="placar-comparativo">
             <div class="placar-barra">
               <div class="placar-barra-fill" id="barraDoadas"></div>
@@ -103,7 +110,7 @@
 
       <aside class="panel placar-feed placar-feed-topo">
         <div class="placar-feed-header">
-          <h3>Doadores ao vivo</h3>
+          <h3>Árvores plantadas e doadas ao vivo</h3>
           <span class="placar-live placar-live-pequeno"><span class="placar-dot"></span> ao vivo</span>
         </div>
         <div id="placarFeed" class="placar-feed-lista">
@@ -135,7 +142,41 @@
 <div id="areasList" class="areas-list"></div>
       </aside>
     </section>
+
+    <footer class="rodape-institucional">
+      <div>
+        <strong>Prefeitura de Vitória de Santo Antão</strong>
+        <p>Secretaria de Meio Ambiente e Arborização Urbana</p>
+      </div>
+      <div>
+        <strong>AMASVISA</strong>
+        <p>Gestão participativa das áreas arborizadas da cidade, em parceria com a Prefeitura.</p>
+      </div>
+      <div>
+        <strong>Portal da Arborização Urbana</strong>
+        <p>Consulta pública de áreas, árvores e espécies — atualizado em tempo real.</p>
+      </div>
+      <p class="rodape-assinatura">© 2026 Prefeitura de Vitória de Santo Antão • AMASVISA — Todos os direitos reservados.</p>
+    </footer>
   </main>
+
+  <div id="galeriaFotos" class="galeria hidden" aria-hidden="true">
+    <div class="galeria-backdrop"></div>
+    <section class="galeria-shell" role="dialog" aria-modal="true" aria-labelledby="galeriaTitulo">
+      <header class="galeria-header">
+        <h2 id="galeriaTitulo">Fotos da área</h2>
+        <button id="galeriaFechar" class="ghost-button" type="button">Fechar</button>
+      </header>
+      <div class="galeria-palco">
+        <img id="galeriaImg" alt="Foto da área" />
+        <button id="galeriaAnterior" class="galeria-nav galeria-nav-anterior" type="button" aria-label="Foto anterior">&#8249;</button>
+        <button id="galeriaProxima" class="galeria-nav galeria-nav-proxima" type="button" aria-label="Próxima foto">&#8250;</button>
+      </div>
+      <footer class="galeria-footer">
+        <span id="galeriaContador"></span>
+      </footer>
+    </section>
+  </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
   <script src="./mapa-publico.js"></script>

@@ -8,29 +8,40 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20260825-8" />
 </head>
 <body>
   <main class="app-shell">
-    <div class="user-bar">
-      <span>Consulta pública</span>
-      <a href="./index.html" class="ghost-button">← Mapa</a>
-      <a href="./especies-publico.html" class="ghost-button">Espécies</a>
-      <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
-    </div>
+    <header class="prefeitura-bar">
+      <div class="prefeitura-marca">
+        <span class="prefeitura-brasao">
+          <img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura de Vitória de Santo Antão" />
+        </span>
+        <div>
+          <strong>Prefeitura de Vitória de Santo Antão</strong>
+          <small>Meio Ambiente • Arborização Urbana • AMASVISA</small>
+        </div>
+      </div>
+      <nav class="user-bar">
+        <span>Consulta pública</span>
+        <a href="./index.html" class="ghost-button">← Mapa</a>
+        <a href="./especies-publico.html" class="ghost-button">Espécies</a>
+        <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
+      </nav>
+    </header>
 
     <section class="hero">
       <div>
         <p class="eyebrow">Amasvisa • Arborização Urbana</p>
         <h1>Espécies de árvores da cidade</h1>
         <p class="hero-copy">
-          Conheça as espécies cadastradas para identificar e distinguir cada árvore pelas suas fotos e características.
+          Conheça as espécies registradas para identificar e distinguir cada árvore pelas suas fotos e características.
         </p>
       </div>
       <div class="hero-stats">
         <div>
           <span id="totalEspecies">0</span>
-          <small>espécies cadastradas</small>
+          <small>espécies registradas</small>
         </div>
       </div>
     </section>
@@ -45,6 +56,15 @@
           <button type="submit" class="primary-button">Buscar</button>
         </form>
         <p class="area-description">Digite o nome popular ou científico da espécie para filtrar a lista. Clique em uma espécie para ver as fotos.</p>
+        <div id="filtrosPorte" class="filtros-porte"></div>
+        <aside class="curiosidade-card">
+          <div class="curiosidade-topo">
+            <span class="curiosidade-icone">🌿</span>
+            <p class="curiosidade-titulo">Você sabia?</p>
+          </div>
+          <p id="curiosidadeTexto" class="curiosidade-texto"></p>
+          <button type="button" id="curiosidadeNova" class="ghost-button">Mostrar outra</button>
+        </aside>
       </section>
 
       <section class="panel fotos-carousel-painel">
@@ -61,11 +81,12 @@
         </div>
         <p id="carouselNome" class="carousel-nome"></p>
         <div id="carouselInfo" class="carousel-info"></div>
+        <div id="carouselDetalhes" class="carousel-detalhes"></div>
       </section>
 
       <section class="panel especies-publico-painel">
         <div class="panel-header">
-          <h2>Espécies cadastradas</h2>
+          <h2>Espécies registradas</h2>
         </div>
         <div id="especiesList" class="especies-grid"></div>
         <p id="especiesVazio" class="historico-vazio hidden">Nenhuma espécie encontrada.</p>

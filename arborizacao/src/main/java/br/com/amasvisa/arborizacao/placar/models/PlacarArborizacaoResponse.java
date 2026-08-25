@@ -14,6 +14,7 @@ public record PlacarArborizacaoResponse(
         Map<String, Long> arvoresPorOrigem,
         Map<String, Long> arvoresPorStatus,
         List<DoacaoRecenteResponse> doacoesRecentes,
+        List<ArvoreRecenteResponse> arvoresRecentes,
         LocalDateTime atualizadoEm
 ) {
 }

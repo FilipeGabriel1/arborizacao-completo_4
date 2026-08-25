@@ -55,6 +55,8 @@ public class SecurityConfig {
                         "/arborizacao/mapa-publico.js",
                         "/arborizacao/styles.css",
                         "/arborizacao/csrf.js",
+                        "/arborizacao/favicon.svg",
+                        "/arborizacao/img/**",
                         "/api/csrf",
                         "/login"
                 ).permitAll()

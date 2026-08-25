@@ -22,4 +22,6 @@ public interface ArvoreRepository extends JpaRepository<Arvore, Long> {
     long countByPorte(PorteArvore porte);
     long countByOrigem(OrigemArvore origem);
     long countByStatus(StatusArvore status);
+
+    List<Arvore> findTop12ByOrderByCriadoEmDesc();
 }

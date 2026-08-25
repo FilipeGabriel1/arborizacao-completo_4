@@ -20,7 +20,6 @@ const buscaTermoInput = document.getElementById('buscaTermo');
 const buscaResultado = document.getElementById('buscaResultado');
 const placarPlantadasEl = document.getElementById('placarPlantadas');
 const placarDoadasEl = document.getElementById('placarDoadas');
-const placarDoacoesEl = document.getElementById('placarDoacoes');
 const placarAreasEl = document.getElementById('placarAreas');
 const placarEspeciesEl = document.getElementById('placarEspecies');
 const placarAtualizadoEmEl = document.getElementById('placarAtualizadoEm');
@@ -74,6 +73,141 @@ const rotulosStatusPlacar = {
   EM_MANUTENCAO: 'Em manutenção'
 };
 
+const rotulosTipoArea = {
+  PRACA: 'Praça',
+  PARQUE: 'Parque',
+  BOSQUE: 'Bosque',
+  RUA: 'Rua',
+  AVENIDA: 'Avenida',
+  OUTRA: 'Outra'
+};
+
+const THUMB_PLACEHOLDER = `
+  <svg viewBox="0 0 96 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sem foto" preserveAspectRatio="xMidYMid slice">
+    <rect width="96" height="72" fill="#0e2117"/>
+    <circle cx="48" cy="30" r="16" fill="#2e7d4f"/>
+    <circle cx="37" cy="37" r="11" fill="#35915b"/>
+    <circle cx="59" cy="37" r="11" fill="#276b44"/>
+    <rect x="45" y="40" width="6" height="17" rx="2.5" fill="#8a5a33"/>
+    <path d="M18 62h60" stroke="#1c4a30" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="74" cy="16" r="2" fill="#49a970"/>
+    <circle cx="22" cy="20" r="1.5" fill="#49a970"/>
+  </svg>`;
+
+function thumbErro(img) {
+  if (img.dataset.fallback) return;
+  img.dataset.fallback = '1';
+  img.insertAdjacentHTML('afterend', THUMB_PLACEHOLDER);
+  img.remove();
+}
+
+function fotosDaArea(area) {
+  const urls = [];
+  if (area.fotoUrl) urls.push(obterUrlImagem(area.fotoUrl));
+  (area.fotos || []).forEach((foto) => {
+    const url = typeof foto === 'string' ? foto : foto.url;
+    if (url) urls.push(obterUrlImagem(url));
+  });
+  return [...new Set(urls)];
+}
+
+const galeriaEl = document.getElementById('galeriaFotos');
+const galeriaImg = document.getElementById('galeriaImg');
+const galeriaTitulo = document.getElementById('galeriaTitulo');
+const galeriaContador = document.getElementById('galeriaContador');
+let galeriaUrls = [];
+let galeriaIndice = 0;
+
+function mostrarFotoGaleria(passo = 0) {
+  if (!galeriaUrls.length) return;
+  galeriaIndice = (galeriaIndice + passo + galeriaUrls.length) % galeriaUrls.length;
+  galeriaImg.src = galeriaUrls[galeriaIndice];
+  galeriaContador.textContent = `${galeriaIndice + 1} de ${galeriaUrls.length}`;
+}
+
+function abrirGaleria(urls, titulo) {
+  if (!urls || !urls.length) return;
+  galeriaUrls = urls;
+  galeriaIndice = 0;
+  galeriaTitulo.textContent = titulo || 'Fotos da área';
+  galeriaEl.classList.remove('hidden');
+  galeriaEl.setAttribute('aria-hidden', 'false');
+  mostrarFotoGaleria();
+}
+
+function fecharGaleria() {
+  galeriaEl.classList.add('hidden');
+  galeriaEl.setAttribute('aria-hidden', 'true');
+  galeriaImg.src = '';
+}
+
+document.getElementById('galeriaFechar').addEventListener('click', fecharGaleria);
+document.querySelector('.galeria-backdrop').addEventListener('click', fecharGaleria);
+document.getElementById('galeriaAnterior').addEventListener('click', () => mostrarFotoGaleria(-1));
+document.getElementById('galeriaProxima').addEventListener('click', () => mostrarFotoGaleria(1));
+document.addEventListener('keydown', (event) => {
+  if (galeriaEl.classList.contains('hidden')) return;
+  if (event.key === 'Escape') fecharGaleria();
+  if (event.key === 'ArrowLeft') mostrarFotoGaleria(-1);
+  if (event.key === 'ArrowRight') mostrarFotoGaleria(1);
+});
+
+function verAreaNoMapa(area) {
+  const coords = area.latitude != null && area.longitude != null
+    ? [area.longitude, area.latitude]
+    : (area.pontos && area.pontos[0] ? [area.pontos[0].longitude, area.pontos[0].latitude] : null);
+  if (!coords) return;
+  map.flyTo({ center: coords, zoom: 17 });
+  document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function criarAcoesArea(area) {
+  const fotos = fotosDaArea(area);
+  return `
+    <div class="area-acoes">
+      <button type="button" class="ghost-button area-ver-mapa">Ver no mapa</button>
+      ${fotos.length ? `<button type="button" class="ghost-button area-ver-fotos">Ver fotos</button>` : ''}
+    </div>
+  `;
+}
+
+function ativarAcoesArea(item, area) {
+  const botaoMapa = item.querySelector('.area-ver-mapa');
+  const temCoords = (area.latitude != null && area.longitude != null) || (area.pontos && area.pontos[0]);
+  if (botaoMapa && temCoords) {
+    botaoMapa.addEventListener('click', () => verAreaNoMapa(area));
+  } else if (botaoMapa) {
+    botaoMapa.disabled = true;
+    botaoMapa.style.opacity = '0.45';
+  }
+
+  const botaoFotos = item.querySelector('.area-ver-fotos');
+  if (botaoFotos) {
+    botaoFotos.addEventListener('click', () => abrirGaleria(fotosDaArea(area), `Fotos • ${area.nome || 'Área #' + area.id}`));
+  }
+}
+
+function criarMediaArea(area, arvoresCount) {
+  const tipo = rotulosTipoArea[area.tipo] || area.tipo || '—';
+  const thumb = area.fotoUrl
+    ? `<div class="area-thumb"><img src="${obterUrlImagem(area.fotoUrl)}" alt="${area.nome || 'Foto da área'}" loading="lazy" onerror="thumbErro(this)" /></div>`
+    : `<div class="area-thumb">${THUMB_PLACEHOLDER}</div>`;
+
+  return `
+    <div class="area-media">
+      ${thumb}
+      <div class="area-lado">
+        <div class="area-fatos">
+          <p><strong>Tipo</strong>${tipo}</p>
+          <p><strong>Árvores</strong>${formatarNumero(arvoresCount || 0)}</p>
+          <p><strong>Status</strong>${rotulosStatusPlacar[area.status] || area.status || '—'}</p>
+        </div>
+        ${area.descricao ? `<p class="area-description area-descricao-curta">${area.descricao}</p>` : ''}
+      </div>
+    </div>
+  `;
+}
+
 function renderizarBarras(container, dados, rotulos, cor) {
   const itens = Object.entries(dados || {});
   const total = itens.reduce((soma, [, v]) => soma + Number(v || 0), 0);
@@ -107,34 +241,56 @@ function renderizarBarras(container, dados, rotulos, cor) {
   });
 }
 
-function renderizarFeed(doacoes) {
-  if (!doacoes || !doacoes.length) {
-    placarFeedEl.innerHTML = '<p class="placar-bloco-nota">Nenhuma doação registrada ainda.</p>';
+function renderizarFeed(placar) {
+  const itens = [];
+
+  (placar.arvoresRecentes || []).forEach((a) => {
+    itens.push({
+      tipo: 'plantio',
+      data: a.dataPlantio || a.criadoEm,
+      titulo: a.especieNomePopular || a.nome || 'Espécie não informada',
+      detalhe: `Árvore plantada${a.porte ? ' • porte ' + (rotulosPortePlacar[a.porte] || a.porte) : ''}${a.origem ? ' • ' + (rotulosOrigemPlacar[a.origem] || a.origem) : ''}`
+    });
+  });
+
+  (placar.doacoesRecentes || []).forEach((d) => {
+    const quantidade = d.quantidade ? formatarNumero(d.quantidade) : '1';
+    itens.push({
+      tipo: 'doacao',
+      data: d.dataDoacao,
+      titulo: d.solicitante || 'Doador não informado',
+      detalhe: `Doação • ${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}${d.descricao ? ' • ' + d.descricao : ''}`
+    });
+  });
+
+  if (!itens.length) {
+    placarFeedEl.innerHTML = '<p class="placar-bloco-nota">Nenhuma atividade registrada ainda.</p>';
     return;
   }
 
+  itens.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
   placarFeedEl.innerHTML = '';
-  doacoes.forEach((d, indice) => {
-    const item = document.createElement('article');
-    item.className = 'placar-feed-item';
-    item.style.animationDelay = `${indice * 90}ms`;
-    const quantidade = d.quantidade ? formatarNumero(d.quantidade) : '1';
-    item.innerHTML = `
-      <div class="placar-feed-icone">🌳</div>
+  itens.forEach((item, indice) => {
+    const elemento = document.createElement('article');
+    elemento.className = 'placar-feed-item';
+    elemento.style.animationDelay = `${indice * 90}ms`;
+
+    elemento.innerHTML = `
+      <div class="placar-feed-icone">${item.tipo === 'plantio' ? '🌱' : '🎁'}</div>
       <div class="placar-feed-texto">
-        <strong>${d.solicitante || 'Doador não informado'}</strong>
-        <span>${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}${d.descricao ? ' • ' + d.descricao : ''}</span>
+        <strong>${item.titulo}</strong>
+        <span>${item.detalhe}</span>
       </div>
-      <time>${formatarData(d.dataDoacao)}</time>
+      <time>${formatarData(item.data)}</time>
     `;
-    placarFeedEl.appendChild(item);
+    placarFeedEl.appendChild(elemento);
   });
 }
 
 function renderizarPlacar(placar) {
   animarValor(placarPlantadasEl, placar.totalArvores);
   animarValor(placarDoadasEl, placar.totalDoadas);
-  animarValor(placarDoacoesEl, placar.totalDoacoes);
   animarValor(placarAreasEl, placar.totalAreas);
   animarValor(placarEspeciesEl, placar.totalEspecies);
   placarAtualizadoEmEl.textContent = new Date(placar.atualizadoEm).toLocaleTimeString('pt-BR');
@@ -147,7 +303,7 @@ function renderizarPlacar(placar) {
 
   renderizarBarras(placarPorteEl, placar.arvoresPorPorte, rotulosPortePlacar, '#49a970');
   renderizarBarras(placarOrigemEl, placar.arvoresPorOrigem, rotulosOrigemPlacar, '#6aa7c1');
-  renderizarFeed(placar.doacoesRecentes);
+  renderizarFeed(placar);
 }
 
 function placarMudou(placar) {
@@ -364,29 +520,16 @@ function renderizarLista() {
     const arvoresDaArea = arvores.filter((a) => String(a.areaId) === String(area.id));
     const item = document.createElement('article');
     item.className = 'area-item';
-    const fotoHtml = area.fotoUrl
-      ? `<div class="area-foto"><img src="${obterUrlImagem(area.fotoUrl)}" alt="${area.nome || 'Foto da área'}" onerror="this.remove();" /></div>`
-      : '';
+    const fotoHtml = criarMediaArea(area, arvoresDaArea.length);
     item.innerHTML = `
       <header>
         <h3>${area.nome}</h3>
-        <span>${area.status}</span>
+        <span>${rotulosStatusPlacar[area.status] || area.status}</span>
       </header>
       ${fotoHtml}
-      <p class="area-description">Tipo: ${area.tipo} • ${arvoresDaArea.length} árvore(s) cadastrada(s)</p>
-      <p class="area-description">${area.descricao || ''}</p>
+      ${criarAcoesArea(area)}
     `;
-    item.addEventListener('click', () => {
-      const feature = area.pontos && area.pontos.length >= 3
-        ? { geometry: { type: 'Polygon', coordinates: [[[area.pontos[0].longitude, area.pontos[0].latitude]]] } }
-        : null;
-      const coords = area.latitude != null && area.longitude != null
-        ? [area.longitude, area.latitude]
-        : (area.pontos && area.pontos[0] ? [area.pontos[0].longitude, area.pontos[0].latitude] : null);
-      if (coords) {
-        map.flyTo({ center: coords, zoom: 17 });
-      }
-    });
+    ativarAcoesArea(item, area);
     areasList.appendChild(item);
   });
 }
@@ -425,20 +568,18 @@ buscaForm.addEventListener('submit', async (event) => {
 
     const item = document.createElement('article');
     item.className = 'area-item';
-    const fotoHtml = area.fotoUrl
-      ? `<div class="area-foto"><img src="${obterUrlImagem(area.fotoUrl)}" alt="${area.nome || 'Foto da área'}" onerror="this.remove();" /></div>`
-      : '';
+    const fotoHtml = criarMediaArea(area, arvoresDaArea.length);
     item.innerHTML = `
       <header>
         <h3>#${area.id} — ${area.nome}</h3>
-        <span>${area.status}</span>
+        <span>${rotulosStatusPlacar[area.status] || area.status}</span>
       </header>
       ${fotoHtml}
-      <p class="area-description">Tipo: ${area.tipo}</p>
-      <p class="area-description">${area.descricao || ''}</p>
+      ${criarAcoesArea(area)}
       <h4>Árvores nesta área</h4>
       ${arvoresHtml}
     `;
+    ativarAcoesArea(item, area);
     buscaResultado.appendChild(item);
 
     if (area.latitude != null && area.longitude != null) {

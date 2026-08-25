@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import br.com.amasvisa.arborizacao.area.repository.AreaArborizadaRepository;
+import br.com.amasvisa.arborizacao.arvore.models.Arvore;
 import br.com.amasvisa.arborizacao.arvore.models.OrigemArvore;
 import br.com.amasvisa.arborizacao.arvore.models.PorteArvore;
 import br.com.amasvisa.arborizacao.arvore.models.StatusArvore;
@@ -15,6 +16,7 @@ import br.com.amasvisa.arborizacao.arvore.repository.ArvoreRepository;
 import br.com.amasvisa.arborizacao.arvore.repository.EspecieArvoreRepository;
 import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvore;
 import br.com.amasvisa.arborizacao.doacao.repository.DoacaoArvoreRepository;
+import br.com.amasvisa.arborizacao.placar.models.ArvoreRecenteResponse;
 import br.com.amasvisa.arborizacao.placar.models.DoacaoRecenteResponse;
 import br.com.amasvisa.arborizacao.placar.models.PlacarArborizacaoResponse;
 
@@ -55,6 +57,11 @@ public class PlacarService {
                 .map(this::toDoacaoRecente)
                 .toList();
 
+        List<ArvoreRecenteResponse> arvoresRecentes = arvoreRepository.findTop12ByOrderByCriadoEmDesc()
+                .stream()
+                .map(this::toArvoreRecente)
+                .toList();
+
         return new PlacarArborizacaoResponse(
                 arvoreRepository.count(),
                 arvoreRepository.countByOrigem(OrigemArvore.DOACAO),
@@ -65,6 +72,7 @@ public class PlacarService {
                 porOrigem,
                 porStatus,
                 recentes,
+                arvoresRecentes,
                 LocalDateTime.now());
     }
 
@@ -78,5 +86,16 @@ public class PlacarService {
                 doacao.getArvore() != null && doacao.getArvore().getEspecie() != null
                         ? doacao.getArvore().getEspecie().getNomePopular()
                         : null);
+    }
+
+    private ArvoreRecenteResponse toArvoreRecente(Arvore arvore) {
+        return new ArvoreRecenteResponse(
+                arvore.getId(),
+                arvore.getNome(),
+                arvore.getEspecie() != null ? arvore.getEspecie().getNomePopular() : null,
+                arvore.getPorte() != null ? arvore.getPorte().name() : null,
+                arvore.getOrigem() != null ? arvore.getOrigem().name() : null,
+                arvore.getDataPlantio(),
+                arvore.getCriadoEm());
     }
 }
