@@ -1746,6 +1746,15 @@ button:hover {
     gap: 16px;
   }
 
+  .fotos-carousel-painel {
+    grid-column: 1;
+    order: -1;
+  }
+
+  .especies-publico-painel {
+    grid-column: 1;
+  }
+
   .panel {
     padding: 16px;
   }
@@ -1797,6 +1806,76 @@ button:hover {
   .area-actions .danger-button,
   .item-actions button {
     flex: 1 1 100%;
+  }
+
+  .especies-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .especie-card .area-foto img {
+    max-height: 160px;
+  }
+
+  .especie-card header {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .especie-card .pill {
+    align-self: flex-start;
+  }
+
+  .carousel {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .carousel-btn {
+    display: none;
+  }
+
+  .carousel-viewport {
+    min-height: 200px;
+    max-height: 300px;
+  }
+
+  .carousel-viewport img {
+    max-height: 280px;
+  }
+
+  .carousel-detalhes {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .detalhe-item {
+    padding: 8px 10px;
+  }
+
+  .detalhe-item p {
+    font-size: 0.82rem;
+  }
+
+  .busca-form {
+    flex-direction: column;
+  }
+
+  .busca-form input {
+    min-width: unset;
+  }
+
+  .filtros-porte {
+    flex-wrap: wrap;
+  }
+
+  .chip-porte {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .curiosidade-card {
+    padding: 12px 14px;
   }
 
   .photo-viewer {
