@@ -17,6 +17,7 @@ import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvoreResponse;
 import br.com.amasvisa.arborizacao.doacao.models.ExtratoDoadorResponse;
 import br.com.amasvisa.arborizacao.doacao.repository.DoacaoArvoreRepository;
 import br.com.amasvisa.arborizacao.comum.PaginaResponse;
+import br.com.amasvisa.arborizacao.config.EncryptService;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -25,12 +26,14 @@ public class DoacaoArvoreService {
     private final DoacaoArvoreRepository repository;
     private final ArvoreRepository arvoreRepository;
     private final AuditoriaService auditoriaService;
+    private final EncryptService encryptService;
 
     public DoacaoArvoreService(DoacaoArvoreRepository repository, ArvoreRepository arvoreRepository,
-            AuditoriaService auditoriaService) {
+            AuditoriaService auditoriaService, EncryptService encryptService) {
         this.repository = repository;
         this.arvoreRepository = arvoreRepository;
         this.auditoriaService = auditoriaService;
+        this.encryptService = encryptService;
     }
 
     public DoacaoArvoreResponse criar(DoacaoArvoreRequest request) {
@@ -41,8 +44,8 @@ public class DoacaoArvoreService {
         doacao.setDataDoacao(request.dataDoacao());
         doacao.setDestinacao(request.destinacao());
         doacao.setQuantidade(request.quantidade());
-        doacao.setCpf(request.cpf());
-        doacao.setRg(request.rg());
+        doacao.setCpf(encryptService.encrypt(request.cpf()));
+        doacao.setRg(encryptService.encrypt(request.rg()));
 
         DoacaoArvoreResponse response = toResponse(repository.save(doacao));
         auditoriaService.registrar(TipoEntidadeAuditoria.DOACAO, response.id(), AcaoAuditoria.CRIACAO,
@@ -66,8 +69,8 @@ public class DoacaoArvoreService {
         doacao.setDataDoacao(request.dataDoacao());
         doacao.setDestinacao(request.destinacao());
         doacao.setQuantidade(request.quantidade());
-        doacao.setCpf(request.cpf());
-        doacao.setRg(request.rg());
+        doacao.setCpf(encryptService.encrypt(request.cpf()));
+        doacao.setRg(encryptService.encrypt(request.rg()));
 
         DoacaoArvoreResponse response = toResponse(repository.save(doacao));
         auditoriaService.registrar(TipoEntidadeAuditoria.DOACAO, response.id(), AcaoAuditoria.EDICAO,
@@ -85,10 +88,8 @@ public class DoacaoArvoreService {
     public ExtratoDoadorResponse extratoDoador(String cpf, String nome) {
         List<DoacaoArvore> doacoes;
         if (cpf != null && !cpf.isBlank()) {
-            String cpfNormalizado = cpf.replaceAll("\\D", "");
-            doacoes = repository.findAll().stream()
-                    .filter(d -> d.getCpf() != null && d.getCpf().replaceAll("\\D", "").equals(cpfNormalizado))
-                    .toList();
+            String cpfCriptografado = encryptService.encrypt(cpf.replaceAll("\\D", ""));
+            doacoes = repository.findByCpf(cpfCriptografado);
         } else {
             String termo = nome == null ? "" : nome.trim();
             doacoes = termo.isBlank() ? repository.findAll()
@@ -125,8 +126,8 @@ public class DoacaoArvoreService {
         DoacaoArvore amostra = ordenadas.get(0);
         return new ExtratoDoadorResponse(
                 amostra.getSolicitante(),
-                amostra.getCpf(),
-                amostra.getRg(),
+                encryptService.decrypt(amostra.getCpf()),
+                encryptService.decrypt(amostra.getRg()),
                 doacoes.size(),
                 totalQuantidade,
                 primeira != null ? primeira.getDataDoacao() : null,
@@ -161,8 +162,8 @@ public class DoacaoArvoreService {
                 doacao.getDataDoacao(),
                 doacao.getDestinacao(),
                 doacao.getQuantidade(),
-                doacao.getCpf(),
-                doacao.getRg()
+                encryptService.decrypt(doacao.getCpf()),
+                encryptService.decrypt(doacao.getRg())
         );
     }
 }

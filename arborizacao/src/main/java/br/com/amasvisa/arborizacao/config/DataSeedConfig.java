@@ -42,8 +42,8 @@ public class DataSeedConfig {
             admin.prepararPersistencia();
             repository.save(admin);
 
-            log.warn("Usuário administrador padrão criado -> e-mail: {} | senha: {} (TROQUE após o primeiro login!)",
-                    EMAIL_PADRAO, SENHA_PADRAO);
+            log.warn("Usuário administrador padrão criado -> e-mail: {} (TROQUE a senha após o primeiro login!)",
+                    EMAIL_PADRAO);
         };
     }
 }
