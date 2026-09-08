@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indicadores • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --verde-escuro: #0d1f12;
+      --verde-medio: #1a3a1a;
+      --verde-claro: #4ade80;
+      --verde-destaque: #22c55e;
+      --branco: #ffffff;
+      --cinza-claro: #e5e7eb;
+      --texto-muted: #9ca3af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--verde-escuro);
+      color: var(--branco);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(13, 31, 18, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--branco);
+    }
+
+    .navbar-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .navbar-logo-text strong { font-size: 1.1rem; font-weight: 800; }
+
+    .navbar-logo-text small {
+      font-size: 0.65rem;
+      color: var(--texto-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .navbar-links a {
+      color: var(--cinza-claro);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .navbar-links a:hover { color: var(--verde-claro); }
+
+    .navbar-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(74, 222, 128, 0.5);
+      background: transparent;
+      color: var(--verde-claro);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar-btn:hover { background: rgba(74, 222, 128, 0.15); }
+
+    .page-content {
+      padding: 140px 48px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-header { margin-bottom: 48px; }
+
+    .page-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: var(--verde-claro);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .page-header h1 span { color: var(--verde-claro); }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--texto-muted);
+      max-width: 60ch;
+      line-height: 1.7;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(74, 222, 128, 0.15);
+      background: rgba(26, 58, 26, 0.4);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--verde-claro);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--texto-muted);
+      font-size: 0.9rem;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+    }
+
+    .chart-card {
+      padding: 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(74, 222, 128, 0.15);
+      background: rgba(26, 58, 26, 0.4);
+    }
+
+    .chart-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: var(--verde-claro);
+    }
+
+    .bar-chart {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 40px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .bar-label {
+      font-size: 0.85rem;
+      color: var(--texto-muted);
+    }
+
+    .bar-track {
+      height: 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 12px;
+      background: linear-gradient(90deg, var(--verde-destaque), var(--verde-claro));
+      transition: width 0.6s ease;
+    }
+
+    .bar-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--verde-claro);
+      text-align: right;
+    }
+
+    .footer {
+      padding: 24px 48px;
+      border-top: 1px solid rgba(74, 222, 128, 0.1);
+      text-align: center;
+      color: var(--texto-muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .navbar { padding: 14px 20px; }
+      .navbar-links { display: none; }
+      .page-content { padding: 120px 20px 60px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="./entrar.html" class="navbar-logo">
+      <span style="width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#ffffff,#e8e2d2);box-shadow:0 6px 16px rgba(0,0,0,0.35),inset 0 0 0 3px rgba(240,194,75,0.55);flex-shrink:0;">
+        <img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura" style="width:78%;height:78%;object-fit:contain;" />
+      </span>
+      <div class="navbar-logo-text">
+        <strong>Arborização Urbana</strong>
+        <small>Vitória de Santo Antão</small>
+      </div>
+    </a>
+    <ul class="navbar-links">
+      <li><a href="./index.html">Início</a></li>
+      <li><a href="./index.html">Mapa</a></li>
+      <li><a href="./index.html">Áreas Verdes</a></li>
+      <li><a href="./especies-publico.html">Espécies</a></li>
+      <li><a href="./sementeira.html">Sementeira</a></li>
+      <li><a href="./indicadores.html">Indicadores</a></li>
+      <li><a href="./sobre.html">Sobre</a></li>
+    </ul>
+    <a href="./login.html" class="navbar-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"/>
+        <line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+      Área técnica
+    </a>
+  </nav>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div class="page-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 3v18h18"/>
+          <path d="M18 9l-5 5-4-4-3 3"/>
+        </svg>
+        Dados em Tempo Real
+      </div>
+      <h1>Indicadores da <span>Arborização</span></h1>
+      <p>Acompanhe os números que movem nosso programa de arborização urbana. Dados atualizados automaticamente.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">523</div>
+        <div class="stat-label">Árvores Plantadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">147</div>
+        <div class="stat-label">Árvores Doadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">28</div>
+        <div class="stat-label">Áreas Arborizadas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">34</div>
+        <div class="stat-label">Espécies Registradas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">1.2k</div>
+        <div class="stat-label">Mudas Produzidas</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Árvores por Porte</h3>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span class="bar-label">Pequeno</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 45%;"></div></div>
+            <span class="bar-value">235</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Médio</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 35%;"></div></div>
+            <span class="bar-value">183</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Grande</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 20%;"></div></div>
+            <span class="bar-value">105</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Árvores por Origem</h3>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span class="bar-label">Plantada</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 78%;"></div></div>
+            <span class="bar-value">523</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Doadas</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 22%;"></div></div>
+            <span class="bar-value">147</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Espécies Mais Registradas</h3>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span class="bar-label">Ipê Amarelo</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 85%;"></div></div>
+            <span class="bar-value">89</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Pau-Brasil</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 62%;"></div></div>
+            <span class="bar-value">65</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Cajarana</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 48%;"></div></div>
+            <span class="bar-value">50</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Castanheira</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 35%;"></div></div>
+            <span class="bar-value">37</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Áreas por Tipo</h3>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span class="bar-label">Praça</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 55%;"></div></div>
+            <span class="bar-value">15</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Calçada</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 30%;"></div></div>
+            <span class="bar-value">8</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Escola</span>
+            <div class="bar-track"><div class="bar-fill" style="width: 15%;"></div></div>
+            <span class="bar-value">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Prefeitura Municipal de Vitória de Santo Antão - Amasvisa. Todos os direitos reservados.</p>
+  </footer>
+
+</body>
+</html>

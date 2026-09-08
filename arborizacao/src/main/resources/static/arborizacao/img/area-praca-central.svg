@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB"/>
+      <stop offset="100%" style="stop-color:#E0F6FF"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#228B22"/>
+      <stop offset="100%" style="stop-color:#32CD32"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <rect y="200" width="400" height="100" fill="url(#grass)"/>
+  <!-- Trees -->
+  <circle cx="80" cy="160" r="45" fill="#2E8B57"/>
+  <circle cx="70" cy="170" r="35" fill="#3CB371"/>
+  <circle cx="90" cy="170" r="35" fill="#228B22"/>
+  <rect x="75" y="190" width="10" height="30" fill="#8B4513"/>
+  <circle cx="200" cy="140" r="55" fill="#2E8B57"/>
+  <circle cx="185" cy="155" r="40" fill="#3CB371"/>
+  <circle cx="215" cy="155" r="40" fill="#228B22"/>
+  <rect x="195" y="185" width="12" height="35" fill="#8B4513"/>
+  <circle cx="320" cy="155" r="50" fill="#2E8B57"/>
+  <circle cx="305" cy="165" r="38" fill="#3CB371"/>
+  <circle cx="335" cy="165" r="38" fill="#228B22"/>
+  <rect x="315" y="190" width="10" height="30" fill="#8B4513"/>
+  <!-- Path -->
+  <path d="M0 250 Q200 230 400 250" stroke="#D2B48C" stroke-width="20" fill="none" opacity="0.6"/>
+  <!-- Flowers -->
+  <circle cx="50" cy="220" r="5" fill="#FF69B4"/>
+  <circle cx="150" cy="230" r="4" fill="#FFD700"/>
+  <circle cx="250" cy="225" r="5" fill="#FF6347"/>
+  <circle cx="350" cy="235" r="4" fill="#9370DB"/>
+  <text x="200" y="280" font-family="Arial" font-size="14" fill="#1a5c1a" text-anchor="middle" font-weight="bold">Praça Central</text>
+</svg>

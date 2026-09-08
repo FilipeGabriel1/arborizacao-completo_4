@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB"/>
+      <stop offset="100%" style="stop-color:#E0F6FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <rect y="225" width="400" height="75" fill="#228B22"/>
+  <!-- Sibipiruna - large tree with compound leaves -->
+  <rect x="180" y="150" width="40" height="85" fill="#8B4513"/>
+  <circle cx="200" cy="120" r="75" fill="#2E7D32"/>
+  <circle cx="150" cy="135" r="55" fill="#388E3C"/>
+  <circle cx="250" cy="135" r="55" fill="#1B5E20"/>
+  <circle cx="200" cy="85" r="60" fill="#2E7D32"/>
+  <circle cx="160" cy="110" r="40" fill="#43A047"/>
+  <circle cx="240" cy="110" r="40" fill="#388E3C"/>
+  <!-- Yellow flowers -->
+  <circle cx="170" cy="100" r="5" fill="#FDD835"/>
+  <circle cx="230" cy="105" r="5" fill="#FDD835"/>
+  <circle cx="200" cy="75" r="6" fill="#FDD835"/>
+  <text x="200" y="280" font-family="Arial" font-size="14" fill="#1a5c1a" text-anchor="middle" font-weight="bold">Sibipiruna</text>
+</svg>

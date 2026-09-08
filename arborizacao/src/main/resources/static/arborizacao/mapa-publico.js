@@ -82,6 +82,37 @@ const rotulosTipoArea = {
   OUTRA: 'Outra'
 };
 
+const PLACEHOLDERS_AREAS = {
+  'praca central': './img/area-praca-central.svg',
+  'bosque teste 2': './img/area-bosque.svg',
+  'praca da matriz': './img/area-praca-matriz.svg',
+  'praca do livramento': './img/area-praca-livramento.svg',
+  'praca duque de caxias': './img/area-praca-duque.svg',
+  'praca do leao coroado': './img/area-praca-central.svg',
+};
+
+const PLACEHOLDERS_ESPECIES = {
+  'ipe-amarelo': './img/especie-ipe-amarelo.svg',
+  'quaresmeira': './img/especie-quaresmeira.svg',
+  'sibipiruna': './img/especie-sibipiruna.svg',
+  'goiabeira': './img/especie-goiabeira.svg',
+  'oiti': './img/especie-oiti.svg',
+  'ficus': './img/especie-oiti.svg',
+  'mangueira': './img/especie-goiabeira.svg',
+  'reseda': './img/especie-quaresmeira.svg',
+};
+
+function obterPlaceholder(nome, tipo) {
+  const mapa = tipo === 'area' ? PLACEHOLDERS_AREAS : PLACEHOLDERS_ESPECIES;
+  const chave = (nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  const fallback = tipo === 'area' ? './img/area-praca-central.svg' : './img/especie-ipe-amarelo.svg';
+  return mapa[chave] || fallback;
+}
+
+function criarImgCarousel(src, alt, className, placeholder) {
+  return `<img class="${className}" src="${src}" alt="${alt}" style="width:100%;height:140px;object-fit:cover;display:block;background:rgba(26,58,26,0.4);" onerror="this.onerror=null;this.style.background='linear-gradient(135deg,#0e1f12,#1a3a1a)';this.src='${placeholder}'" />`;
+}
+
 const THUMB_PLACEHOLDER = `
   <svg viewBox="0 0 96 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sem foto" preserveAspectRatio="xMidYMid slice">
     <rect width="96" height="72" fill="#0e2117"/>
@@ -264,13 +295,13 @@ function renderizarFeed(placar) {
   });
 
   if (!itens.length) {
-    placarFeedEl.innerHTML = '<p class="placar-bloco-nota">Nenhuma atividade registrada ainda.</p>';
+    if (placarFeedEl) placarFeedEl.innerHTML = '<p class="placar-bloco-nota">Nenhuma atividade registrada ainda.</p>';
     return;
   }
 
   itens.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 
-  placarFeedEl.innerHTML = '';
+  if (placarFeedEl) placarFeedEl.innerHTML = '';
   itens.forEach((item, indice) => {
     const elemento = document.createElement('article');
     elemento.className = 'placar-feed-item';
@@ -284,7 +315,7 @@ function renderizarFeed(placar) {
       </div>
       <time>${formatarData(item.data)}</time>
     `;
-    placarFeedEl.appendChild(elemento);
+    if (placarFeedEl) placarFeedEl.appendChild(elemento);
   });
 }
 
@@ -293,17 +324,251 @@ function renderizarPlacar(placar) {
   animarValor(placarDoadasEl, placar.totalDoadas);
   animarValor(placarAreasEl, placar.totalAreas);
   animarValor(placarEspeciesEl, placar.totalEspecies);
-  placarAtualizadoEmEl.textContent = new Date(placar.atualizadoEm).toLocaleTimeString('pt-BR');
+  if (placarAtualizadoEmEl) placarAtualizadoEmEl.textContent = new Date(placar.atualizadoEm).toLocaleTimeString('pt-BR');
+
+  // Novos elementos da seção numeros
+  const placarDoacoesEl = document.getElementById('placarDoacoes');
+  const placarAtivoEl = document.getElementById('placarAtivo');
+  const totalPorteEl = document.getElementById('totalPorte');
+  const totalOrigemEl = document.getElementById('totalOrigem');
+  const totalStatusEl = document.getElementById('totalStatus');
+  const legendPorteEl = document.getElementById('legendPorte');
+  const legendOrigemEl = document.getElementById('legendOrigem');
+  const legendStatusEl = document.getElementById('legendStatus');
+  const listaAtividadesEl = document.getElementById('listaAtividades');
+
+  if (placarDoacoesEl) animarValor(placarDoacoesEl, placar.totalDoacoes);
+  if (placarAtivoEl) {
+    const arvoresPorStatus = placar.arvoresPorStatus || {};
+    const ativas = arvoresPorStatus['ATIVA'] || 0;
+    animarValor(placarAtivoEl, ativas);
+  }
+
+  // Gráfico de Porte
+  if (totalPorteEl && placar.arvoresPorPorte) {
+    const porte = placar.arvoresPorPorte;
+    const total = Object.values(porte).reduce((s, v) => s + Number(v || 0), 0);
+    animarValor(totalPorteEl, total);
+
+    const cores = { PEQUENO: '#22c55e', MEDIO: '#16a34a', GRANDE: '#4ade80' };
+    const rotulos = { PEQUENO: 'Pequeno', MEDIO: 'Médio', GRANDE: 'Grande' };
+    const circunferencia = 2 * Math.PI * 40;
+    let offset = 0;
+
+    const svg = document.getElementById('graficoPorte');
+    if (svg) {
+      svg.innerHTML = '';
+      const entradas = Object.entries(porte).filter(([, v]) => Number(v || 0) > 0);
+      
+      if (entradas.length === 0) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '50');
+        circle.setAttribute('cy', '50');
+        circle.setAttribute('r', '40');
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', '#374151');
+        circle.setAttribute('stroke-width', '15');
+        svg.appendChild(circle);
+      } else {
+        entradas.forEach(([chave, valor]) => {
+          const percentual = total > 0 ? (Number(valor || 0) / total) : 0;
+          const dash = percentual * circunferencia;
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', '50');
+          circle.setAttribute('cy', '50');
+          circle.setAttribute('r', '40');
+          circle.setAttribute('fill', 'none');
+          circle.setAttribute('stroke', cores[chave] || '#999');
+          circle.setAttribute('stroke-width', '15');
+          circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
+          circle.setAttribute('stroke-dashoffset', `${-offset}`);
+          svg.appendChild(circle);
+          offset += dash;
+        });
+      }
+    }
+
+    if (legendPorteEl) {
+      const entradas = Object.entries(porte).filter(([, v]) => Number(v || 0) > 0);
+      if (entradas.length === 0) {
+        legendPorteEl.innerHTML = '<span style="color: #6b7280;">Sem dados</span>';
+      } else {
+        legendPorteEl.innerHTML = entradas.map(([chave, valor]) => {
+          const percentual = total > 0 ? ((Number(valor || 0) / total) * 100).toFixed(0) : 0;
+          return `<span><i style="background:${cores[chave] || '#999'}"></i> ${rotulos[chave] || chave} ${percentual}%</span>`;
+        }).join('');
+      }
+    }
+  }
+
+  // Gráfico de Origem
+  if (totalOrigemEl && placar.arvoresPorOrigem) {
+    const origem = placar.arvoresPorOrigem;
+    const total = Object.values(origem).reduce((s, v) => s + Number(v || 0), 0);
+    animarValor(totalOrigemEl, total);
+
+    const cores = { DOACAO: '#1e40af', OBRIGACAO_LEGAL: '#3b82f6', PLANTIO_PROPRIO: '#60a5fa', OUTRA: '#93c5fd' };
+    const rotulos = { DOACAO: 'Doação', OBRIGACAO_LEGAL: 'Obrigação legal', PLANTIO_PROPRIO: 'Plantio próprio', OUTRA: 'Outra' };
+    const circunferencia = 2 * Math.PI * 40;
+    let offset = 0;
+
+    const svg = document.getElementById('graficoOrigem');
+    if (svg) {
+      svg.innerHTML = '';
+      const entradas = Object.entries(origem).filter(([, v]) => Number(v || 0) > 0);
+      
+      if (entradas.length === 0) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '50');
+        circle.setAttribute('cy', '50');
+        circle.setAttribute('r', '40');
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', '#374151');
+        circle.setAttribute('stroke-width', '15');
+        svg.appendChild(circle);
+      } else {
+        entradas.forEach(([chave, valor]) => {
+          const percentual = total > 0 ? (Number(valor || 0) / total) : 0;
+          const dash = percentual * circunferencia;
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', '50');
+          circle.setAttribute('cy', '50');
+          circle.setAttribute('r', '40');
+          circle.setAttribute('fill', 'none');
+          circle.setAttribute('stroke', cores[chave] || '#999');
+          circle.setAttribute('stroke-width', '15');
+          circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
+          circle.setAttribute('stroke-dashoffset', `${-offset}`);
+          svg.appendChild(circle);
+          offset += dash;
+        });
+      }
+    }
+
+    if (legendOrigemEl) {
+      const entradas = Object.entries(origem).filter(([, v]) => Number(v || 0) > 0);
+      if (entradas.length === 0) {
+        legendOrigemEl.innerHTML = '<span style="color: #6b7280;">Sem dados</span>';
+      } else {
+        legendOrigemEl.innerHTML = entradas.map(([chave, valor]) => {
+          const percentual = total > 0 ? ((Number(valor || 0) / total) * 100).toFixed(0) : 0;
+          return `<span><i style="background:${cores[chave] || '#999'}"></i> ${rotulos[chave] || chave} ${percentual}%</span>`;
+        }).join('');
+      }
+    }
+  }
+
+  // Gráfico de Status
+  if (totalStatusEl && placar.arvoresPorStatus) {
+    const status = placar.arvoresPorStatus;
+    const total = Object.values(status).reduce((s, v) => s + Number(v || 0), 0);
+    animarValor(totalStatusEl, total);
+
+    const cores = { ATIVA: '#22c55e', INATIVA: '#ef4444', REMOVIDA: '#f97316', EM_MANUTENCAO: '#eab308' };
+    const rotulos = { ATIVA: 'Ativa', INATIVA: 'Inativa', REMOVIDA: 'Removida', EM_MANUTENCAO: 'Em manutenção' };
+    const circunferencia = 2 * Math.PI * 40;
+    let offset = 0;
+
+    const svg = document.getElementById('graficoStatus');
+    if (svg) {
+      svg.innerHTML = '';
+      const entradas = Object.entries(status).filter(([, v]) => Number(v || 0) > 0);
+      
+      if (entradas.length === 0) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '50');
+        circle.setAttribute('cy', '50');
+        circle.setAttribute('r', '40');
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', '#374151');
+        circle.setAttribute('stroke-width', '15');
+        svg.appendChild(circle);
+      } else {
+        entradas.forEach(([chave, valor]) => {
+          const percentual = total > 0 ? (Number(valor || 0) / total) : 0;
+          const dash = percentual * circunferencia;
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', '50');
+          circle.setAttribute('cy', '50');
+          circle.setAttribute('r', '40');
+          circle.setAttribute('fill', 'none');
+          circle.setAttribute('stroke', cores[chave] || '#999');
+          circle.setAttribute('stroke-width', '15');
+          circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
+          circle.setAttribute('stroke-dashoffset', `${-offset}`);
+          svg.appendChild(circle);
+          offset += dash;
+        });
+      }
+    }
+
+    if (legendStatusEl) {
+      const entradas = Object.entries(status).filter(([, v]) => Number(v || 0) > 0);
+      if (entradas.length === 0) {
+        legendStatusEl.innerHTML = '<span style="color: #6b7280;">Sem dados</span>';
+      } else {
+        legendStatusEl.innerHTML = entradas.map(([chave, valor]) => {
+          const percentual = total > 0 ? ((Number(valor || 0) / total) * 100).toFixed(0) : 0;
+          return `<span><i style="background:${cores[chave] || '#999'}"></i> ${rotulos[chave] || chave} ${percentual}%</span>`;
+        }).join('');
+      }
+    }
+  }
+
+  // Lista de atividades
+  if (listaAtividadesEl) {
+    const itens = [];
+
+    if (placar.arvoresRecentes && placar.arvoresRecentes.length > 0) {
+      placar.arvoresRecentes.slice(0, 3).forEach((a) => {
+        itens.push({
+          tipo: 'plantio',
+          data: a.dataPlantio || a.criadoEm,
+          titulo: a.especieNomePopular || a.nome || 'Árvore registrada',
+          detalhe: `Árvore plantada${a.porte ? ' • porte ' + (rotulosPortePlacar[a.porte] || a.porte) : ''}`
+        });
+      });
+    }
+
+    if (placar.doacoesRecentes && placar.doacoesRecentes.length > 0) {
+      placar.doacoesRecentes.slice(0, 3).forEach((d) => {
+        const quantidade = d.quantidade ? formatarNumero(d.quantidade) : '1';
+        itens.push({
+          tipo: 'doacao',
+          data: d.dataDoacao,
+          titulo: d.solicitante || 'Doador não informado',
+          detalhe: `Doação • ${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}`
+        });
+      });
+    }
+
+    itens.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+    if (itens.length > 0) {
+      listaAtividadesEl.innerHTML = itens.slice(0, 5).map(item => `
+        <div class="atividade-item">
+          <span class="atividade-dot"></span>
+          <div>
+            <p>${item.titulo}</p>
+            <small>${formatarData(item.data)}</small>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      listaAtividadesEl.innerHTML = '<div class="atividade-item"><span class="atividade-dot"></span><div><p>Nenhuma atividade registrada ainda</p></div></div>';
+    }
+  }
 
   const totalPlantadas = Number(placar.totalArvores || 0);
   const totalDoadas = Number(placar.totalDoadas || 0);
   const percentual = totalPlantadas > 0 ? Math.min((totalDoadas / totalPlantadas) * 100, 100) : 0;
-  barraDoadasEl.style.width = `${percentual}%`;
-  placarPorcentagemEl.innerHTML = `<strong>${percentual.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%</strong> das plantadas vieram de doações`;
+  
+  if (barraDoadasEl) barraDoadasEl.style.width = `${percentual}%`;
+  if (placarPorcentagemEl) placarPorcentagemEl.innerHTML = `<strong>${percentual.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%</strong> das plantadas vieram de doações`;
 
-  renderizarBarras(placarPorteEl, placar.arvoresPorPorte, rotulosPortePlacar, '#49a970');
-  renderizarBarras(placarOrigemEl, placar.arvoresPorOrigem, rotulosOrigemPlacar, '#6aa7c1');
-  renderizarFeed(placar);
+  if (placarPorteEl) renderizarBarras(placarPorteEl, placar.arvoresPorPorte, rotulosPortePlacar, '#49a970');
+  if (placarOrigemEl) renderizarBarras(placarOrigemEl, placar.arvoresPorOrigem, rotulosOrigemPlacar, '#6aa7c1');
+  if (placarFeedEl) renderizarFeed(placar);
 }
 
 function placarMudou(placar) {
@@ -356,11 +621,56 @@ const map = new maplibregl.Map({
 
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
+let markers = [];
+
 map.on('load', async () => {
   ensureLayers();
   await carregarDados();
   refreshMap();
+  setupLayerToggles();
 });
+
+function setupLayerToggles() {
+  const camadaArvores = document.getElementById('camadaArvores');
+  const camadaAreas = document.getElementById('camadaAreas');
+  const camadaPontos = document.getElementById('camadaPontos');
+  const camadaPracas = document.getElementById('camadaPracas');
+
+  if (camadaArvores) {
+    camadaArvores.addEventListener('change', () => {
+      map.setLayoutProperty('arvores-cluster', 'visibility', camadaArvores.checked ? 'visible' : 'none');
+      map.setLayoutProperty('arvores-cluster-count', 'visibility', camadaArvores.checked ? 'visible' : 'none');
+      map.setLayoutProperty('arvores-circle', 'visibility', camadaArvores.checked ? 'visible' : 'none');
+    });
+  }
+
+  if (camadaAreas) {
+    camadaAreas.addEventListener('change', () => {
+      map.setLayoutProperty('areas-fill', 'visibility', camadaAreas.checked ? 'visible' : 'none');
+      map.setLayoutProperty('areas-line', 'visibility', camadaAreas.checked ? 'visible' : 'none');
+    });
+  }
+
+  if (camadaPontos) {
+    camadaPontos.addEventListener('change', () => {
+      map.setLayoutProperty('areas-circle', 'visibility', camadaPontos.checked ? 'visible' : 'none');
+    });
+  }
+
+  if (camadaPracas) {
+    camadaPracas.addEventListener('change', () => {
+      const features = areas.filter(a => a.tipo === 'PRACA' || a.tipo === 'PARQUE');
+      const pracaIds = features.map(f => f.id);
+      if (camadaPracas.checked) {
+        map.setFilter('areas-fill-pracas', null);
+        map.setFilter('areas-line-pracas', null);
+      } else {
+        map.setFilter('areas-fill-pracas', ['in', 'id', []]);
+        map.setFilter('areas-line-pracas', ['in', 'id', []]);
+      }
+    });
+  }
+}
 
 function ensureLayers() {
   map.addSource('areas', { type: 'geojson', data: emptyFeatureCollection() });
@@ -391,23 +701,63 @@ function ensureLayers() {
     filter: ['==', ['geometry-type'], 'Point']
   });
 
-  map.addSource('arvores', { type: 'geojson', data: emptyFeatureCollection() });
+  map.addSource('arvores', { type: 'geojson', data: emptyFeatureCollection(), cluster: true, clusterMaxZoom: 14, clusterRadius: 50 });
+  
+  map.addLayer({
+    id: 'arvores-clusters',
+    type: 'circle',
+    source: 'arvores',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 50, 40],
+      'circle-color': '#22c55e',
+      'circle-stroke-width': 3,
+      'circle-stroke-color': 'rgba(255,255,255,0.3)'
+    }
+  });
+
+  map.addLayer({
+    id: 'arvores-cluster-count',
+    type: 'symbol',
+    source: 'arvores',
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': '{point_count_abbreviated}',
+      'text-font': ['Open Sans Bold'],
+      'text-size': 14
+    },
+    paint: {
+      'text-color': '#ffffff'
+    }
+  });
+
   map.addLayer({
     id: 'arvores-circle',
     type: 'circle',
     source: 'arvores',
+    filter: ['!', ['has', 'point_count']],
     paint: {
-      'circle-radius': 5,
+      'circle-radius': 6,
       'circle-color': '#c1a969',
-      'circle-stroke-width': 1.5,
+      'circle-stroke-width': 2,
       'circle-stroke-color': '#fff6df'
     }
+  });
+
+  map.on('click', 'arvores-clusters', (e) => {
+    const features = map.queryRenderedFeatures(e.point, { layers: ['arvores-clusters'] });
+    const clusterId = features[0].properties.cluster_id;
+    const source = map.getSource('arvores');
+    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+      if (err) return;
+      map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+    });
   });
 
   map.on('click', 'areas-fill', (e) => mostrarPopupArea(e.features[0]));
   map.on('click', 'areas-circle', (e) => mostrarPopupArea(e.features[0]));
   map.on('click', 'arvores-circle', (e) => mostrarPopupArvore(e.features[0]));
-  ['areas-fill', 'areas-circle', 'arvores-circle'].forEach((layer) => {
+  ['areas-fill', 'areas-circle', 'arvores-circle', 'arvores-clusters'].forEach((layer) => {
     map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
   });
@@ -443,6 +793,7 @@ async function carregarDados() {
   totalArvoresEl.textContent = arvores.length;
 
   renderizarLista();
+  inicializarCarousels();
 }
 
 function refreshMap() {
@@ -592,3 +943,194 @@ buscaForm.addEventListener('submit', async (event) => {
 
 carregarPlacar();
 setInterval(carregarPlacar, 5000);
+
+/* CAROUSELS */
+const carouselState = {};
+
+function inicializarCarousel(id, items) {
+  const track = document.getElementById(id + '-track');
+  const dotsContainer = document.getElementById(id + '-dots');
+  if (!track || !items.length) {
+    console.warn(`[CAROUSEL] SKIP: track=${!!track} items=${items?.length} id=${id}`);
+    return;
+  }
+  console.log(`[CAROUSEL] OK: ${id} → ${items.length} itens`);
+
+  const visibleCount = window.innerWidth <= 600 ? 2 : window.innerWidth <= 900 ? 3 : 5;
+  const totalPages = Math.ceil(items.length / visibleCount);
+  let currentPage = 0;
+
+  function renderizar() {
+    track.innerHTML = items.map(item => {
+      if (id === 'areas-carousel') {
+        const arvoresCount = arvores.filter(a => String(a.areaId) === String(item.id)).length;
+        const placeholder = obterPlaceholder(item.nome, 'area');
+        const todasFotos = fotosDaArea(item);
+        const fotoCard = todasFotos.length ? todasFotos[0] : placeholder;
+        return `
+          <div class="carousel-card">
+            ${criarImgCarousel(fotoCard, item.nome, 'carousel-card-img', placeholder)}
+            <div class="carousel-card-body">
+              <p class="carousel-card-nome">${item.nome}</p>
+              <p class="carousel-card-meta">${rotulosTipoArea[item.tipo] || item.tipo || ''} • ${item.bairro || ''}</p>
+              <div class="carousel-card-count">${arvoresCount} árvores</div>
+            </div>
+            <div class="carousel-card-footer">
+              <a href="#map" class="carousel-card-btn">Ver no mapa</a>
+              ${todasFotos.length ? `<button class="carousel-card-btn" onclick="abrirGaleria(fotosDaArea(${JSON.stringify(item).replace(/"/g, '&quot;')}), 'Fotos • ${item.nome}')">Ver fotos</button>` : ''}
+            </div>
+          </div>
+        `;
+      } else {
+        const placeholder = obterPlaceholder(item.nomePopular, 'especie');
+        const todasFotos = [];
+        if (item.fotoUrl) todasFotos.push(obterUrlImagem(item.fotoUrl));
+        (item.fotos || []).forEach(f => { const u = typeof f === 'string' ? f : f.url; if (u) todasFotos.push(obterUrlImagem(u)); });
+        const fotoCard = todasFotos.length ? todasFotos[0] : placeholder;
+        const badgeClass = item.origem === 'NATIVA' ? 'badge-nativa' : 'badge-exotica';
+        return `
+          <div class="carousel-card">
+            ${criarImgCarousel(fotoCard, item.nomePopular, 'carousel-card-img', placeholder)}
+            <div class="carousel-card-body">
+              <p class="carousel-card-nome">${item.nomePopular}</p>
+              <p class="carousel-card-meta">${item.nomeCientifico || ''}</p>
+              <span class="carousel-card-badge ${badgeClass}">${item.origem || ''}</span>
+            </div>
+          </div>
+        `;
+      }
+    }).join('');
+
+    if (dotsContainer) {
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < totalPages; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'carousel-dot' + (i === 0 ? ' ativo' : '');
+        dot.addEventListener('click', () => {
+          currentPage = i;
+          atualizar();
+        });
+        dotsContainer.appendChild(dot);
+      }
+    }
+  }
+
+  function atualizar() {
+    const cardWidth = track.querySelector('.carousel-card')?.offsetWidth || 200;
+    const gap = 16;
+    const offset = currentPage * (cardWidth + gap) * visibleCount;
+    track.style.transform = `translateX(-${offset}px)`;
+
+    if (dotsContainer) {
+      dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+        dot.classList.toggle('ativo', i === currentPage);
+      });
+    }
+  }
+
+  renderizar();
+
+  const prevBtn = document.querySelector(`[data-carousel="${id}"].carousel-nav-prev`);
+  const nextBtn = document.querySelector(`[data-carousel="${id}"].carousel-nav-next`);
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      currentPage = Math.max(0, currentPage - 1);
+      atualizar();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      currentPage = Math.min(totalPages - 1, currentPage + 1);
+      atualizar();
+    });
+  }
+
+  carouselState[id] = { renderizar, atualizar };
+}
+
+async function carregarEspecies() {
+  try {
+    const res = await fetch('/api/especies?page=0&size=200');
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.value ?? []);
+  } catch {
+    return [];
+  }
+}
+
+async function inicializarCarousels() {
+  try {
+    const especies = await carregarEspecies();
+    inicializarCarousel('areas-carousel', areas);
+    inicializarCarousel('especies-carousel', especies);
+  } catch (err) {
+    console.error('[DEBUG] Erro ao inicializar carousels:', err);
+  }
+}
+
+function obterPlaceholderEspecie(nome) {
+  const n = (nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  if (n.includes('ipe') || n.includes('ipê')) return './img/especie-ipe-amarelo.svg';
+  if (n.includes('oiti')) return './img/especie-oiti.svg';
+  if (n.includes('quaresmeira')) return './img/especie-quaresmeira.svg';
+  if (n.includes('sibipiruna')) return './img/especie-sibipiruna.svg';
+  if (n.includes('goiabeira')) return './img/especie-goiabeira.svg';
+  return './img/especie-ipe-amarelo.svg';
+}
+
+async function abrirRelatorioSementeira() {
+  document.getElementById('relatorioModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  const container = document.getElementById('relatorioEspecies');
+  try {
+    const res = await fetch('/api/especies?page=0&size=200');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const especies = Array.isArray(data) ? data : (data.value ?? []);
+
+    if (!especies.length) {
+      container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Nenhuma espécie cadastrada.</p>';
+      return;
+    }
+
+    container.innerHTML = especies.map(esp => {
+      const fotoUrl = esp.fotoUrl ? obterUrlImagem(esp.fotoUrl) : null;
+      const fallback = obterPlaceholderEspecie(esp.nomePopular);
+      const imgTag = fotoUrl
+        ? `<img class="relatorio-especie-img" data-src="${fotoUrl}" data-fallback="${fallback}" alt="${esp.nomePopular}" />`
+        : `<img class="relatorio-especie-img" src="${fallback}" alt="${esp.nomePopular}" />`;
+      return `
+        <div class="relatorio-especie">
+          ${imgTag}
+          <div class="relatorio-especie-info">
+            <strong>${esp.nomePopular || 'Sem nome'}</strong>
+            <span>${esp.nomeCientifico || ''}${esp.familia ? ' • Família: ' + esp.familia : ''}</span>
+            <p>${esp.observacoes || esp.indicacaoPlantio || ''}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.relatorio-especie-img[data-src]').forEach(img => {
+      const src = img.dataset.src;
+      const fallback = img.dataset.fallback;
+      const loader = new Image();
+      let resolved = false;
+      loader.onload = () => { if (!resolved) { resolved = true; img.src = src; } };
+      loader.onerror = () => { if (!resolved) { resolved = true; img.src = fallback; } };
+      loader.src = src;
+      setTimeout(() => { if (!resolved) { resolved = true; img.src = fallback; } }, 5000);
+    });
+  } catch {
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Erro ao carregar espécies.</p>';
+  }
+}
+
+function fecharRelatorioSementeira() {
+  document.getElementById('relatorioModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}

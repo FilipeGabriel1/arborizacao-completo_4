@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sementeira • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --verde-escuro: #0d1f12;
+      --verde-medio: #1a3a1a;
+      --verde-claro: #4ade80;
+      --verde-destaque: #22c55e;
+      --branco: #ffffff;
+      --cinza-claro: #e5e7eb;
+      --texto-muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--verde-escuro);
+      color: var(--branco);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(13, 31, 18, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--branco);
+    }
+
+    .navbar-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .navbar-logo-text strong {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .navbar-logo-text small {
+      font-size: 0.65rem;
+      color: var(--texto-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .navbar-links a {
+      color: var(--cinza-claro);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .navbar-links a:hover {
+      color: var(--verde-claro);
+    }
+
+    .navbar-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(74, 222, 128, 0.5);
+      background: transparent;
+      color: var(--verde-claro);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar-btn:hover {
+      background: rgba(74, 222, 128, 0.15);
+    }
+
+    .page-content {
+      padding: 140px 48px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      margin-bottom: 48px;
+    }
+
+    .page-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: var(--verde-claro);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .page-header h1 span {
+      color: var(--verde-claro);
+    }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--texto-muted);
+      max-width: 60ch;
+      line-height: 1.7;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .content-card {
+      padding: 32px;
+      border-radius: 16px;
+      border: 1px solid rgba(74, 222, 128, 0.15);
+      background: rgba(26, 58, 26, 0.4);
+    }
+
+    .content-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      color: var(--verde-claro);
+    }
+
+    .content-card p {
+      color: var(--texto-muted);
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 24px 48px;
+      border-top: 1px solid rgba(74, 222, 128, 0.1);
+      text-align: center;
+      color: var(--texto-muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .navbar { padding: 14px 20px; }
+      .navbar-links { display: none; }
+      .page-content { padding: 120px 20px 60px; }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="./entrar.html" class="navbar-logo">
+      <span style="width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#ffffff,#e8e2d2);box-shadow:0 6px 16px rgba(0,0,0,0.35),inset 0 0 0 3px rgba(240,194,75,0.55);flex-shrink:0;">
+        <img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura" style="width:78%;height:78%;object-fit:contain;" />
+      </span>
+      <div class="navbar-logo-text">
+        <strong>Arborização Urbana</strong>
+        <small>Vitória de Santo Antão</small>
+      </div>
+    </a>
+    <ul class="navbar-links">
+      <li><a href="./index.html">Início</a></li>
+      <li><a href="./index.html">Mapa</a></li>
+      <li><a href="./index.html">Áreas Verdes</a></li>
+      <li><a href="./especies-publico.html">Espécies</a></li>
+      <li><a href="./sementeira.html">Sementeira</a></li>
+      <li><a href="./indicadores.html">Indicadores</a></li>
+      <li><a href="./sobre.html">Sobre</a></li>
+    </ul>
+    <a href="./login.html" class="navbar-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"/>
+        <line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+      Área técnica
+    </a>
+  </nav>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div class="page-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Programa Municipal
+      </div>
+      <h1>Sementeira <span>Municipal</span></h1>
+      <p>O programa de sementes da prefeitura visa multiplicar mudas nativas para reflorestamento urbano e distribuição comunitária.</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="content-card">
+        <h3>Mudas Disponíveis</h3>
+        <p>Produzimos mudas de espécies nativas como Pau-Brasil, Ipê, Cajarana e Castanheira, adaptadas ao clima local.</p>
+      </div>
+      <div class="content-card">
+        <h3>Como Solicitar</h3>
+        <p>Entidades comunitárias, escolas e condomínios podem solicitar mudas através da nossa plataforma ou presencialmente na AMASVISA.</p>
+      </div>
+      <div class="content-card">
+        <h3>Capacitação</h3>
+        <p>Oferecemos treinamentos sobre plantio, adubação e manejo sustentável para novos parceiros do programa.</p>
+      </div>
+      <div class="content-card">
+        <h3>Meta 2026</h3>
+        <p>Produzir e distribuir 5.000 mudas nativas até o final do ano, expandindo a cobertura verde em 15 novas áreas públicas.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Prefeitura Municipal de Vitória de Santo Antão - Amasvisa. Todos os direitos reservados.</p>
+  </footer>
+
+</body>
+</html>

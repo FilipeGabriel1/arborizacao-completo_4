@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB"/>
+      <stop offset="100%" style="stop-color:#E0F6FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <rect y="180" width="400" height="120" fill="#228B22"/>
+  <!-- Dense forest -->
+  <circle cx="50" cy="140" r="40" fill="#1a5c1a"/>
+  <circle cx="100" cy="130" r="50" fill="#228B22"/>
+  <circle cx="150" cy="145" r="45" fill="#2E8B57"/>
+  <circle cx="200" cy="125" r="55" fill="#1a5c1a"/>
+  <circle cx="250" cy="140" r="48" fill="#228B22"/>
+  <circle cx="300" cy="135" r="52" fill="#2E8B57"/>
+  <circle cx="350" cy="145" r="42" fill="#1a5c1a"/>
+  <circle cx="80" cy="155" r="35" fill="#3CB371"/>
+  <circle cx="130" cy="160" r="30" fill="#32CD32"/>
+  <circle cx="180" cy="150" r="38" fill="#3CB371"/>
+  <circle cx="230" cy="155" r="32" fill="#32CD32"/>
+  <circle cx="280" cy="150" r="36" fill="#3CB371"/>
+  <circle cx="330" cy="160" r="28" fill="#32CD32"/>
+  <!-- Tree trunks -->
+  <rect x="45" y="170" width="8" height="25" fill="#8B4513"/>
+  <rect x="95" y="165" width="10" height="30" fill="#8B4513"/>
+  <rect x="145" y="172" width="8" height="23" fill="#8B4513"/>
+  <rect x="195" y="160" width="12" height="35" fill="#8B4513"/>
+  <rect x="245" y="168" width="10" height="27" fill="#8B4513"/>
+  <rect x="295" y="165" width="10" height="30" fill="#8B4513"/>
+  <rect x="345" y="172" width="8" height="23" fill="#8B4513"/>
+  <!-- Ground details -->
+  <ellipse cx="100" cy="220" rx="30" ry="8" fill="#1a6b1a" opacity="0.5"/>
+  <ellipse cx="250" cy="230" rx="40" ry="10" fill="#1a6b1a" opacity="0.5"/>
+  <text x="200" y="270" font-family="Arial" font-size="14" fill="#0d3d0d" text-anchor="middle" font-weight="bold">Bosque</text>
+</svg>

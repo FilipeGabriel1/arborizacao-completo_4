@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB"/>
+      <stop offset="100%" style="stop-color:#B0E0E6"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B7355"/>
+      <stop offset="100%" style="stop-color:#6B4423"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#sky)"/>
+  <rect y="280" width="600" height="120" fill="url(#ground)"/>
+  <rect y="275" width="600" height="10" fill="#4a7c3f" rx="3"/>
+  
+  <!-- Greenhouse structure -->
+  <rect x="50" y="180" width="200" height="100" fill="rgba(255,255,255,0.3)" stroke="#ddd" stroke-width="2" rx="5"/>
+  <path d="M50 180 Q150 120 250 180" fill="rgba(255,255,255,0.2)" stroke="#ddd" stroke-width="2"/>
+  <line x1="100" y1="180" x2="100" y2="280" stroke="#ccc" stroke-width="1"/>
+  <line x1="150" y1="180" x2="150" y2="280" stroke="#ccc" stroke-width="1"/>
+  <line x1="200" y1="180" x2="200" y2="280" stroke="#ccc" stroke-width="1"/>
+  
+  <!-- Seedling trays -->
+  <rect x="60" y="230" width="80" height="45" fill="#5D4E37" rx="3"/>
+  <rect x="160" y="230" width="80" height="45" fill="#5D4E37" rx="3"/>
+  
+  <!-- Small seedlings -->
+  <g transform="translate(75,215)">
+    <rect x="0" y="10" width="3" height="12" fill="#8B4513"/>
+    <ellipse cx="1.5" cy="8" rx="8" ry="6" fill="#228B22"/>
+  </g>
+  <g transform="translate(95,218)">
+    <rect x="0" y="10" width="3" height="10" fill="#8B4513"/>
+    <ellipse cx="1.5" cy="8" rx="7" ry="5" fill="#32CD32"/>
+  </g>
+  <g transform="translate(115,216)">
+    <rect x="0" y="10" width="3" height="11" fill="#8B4513"/>
+    <ellipse cx="1.5" cy="8" rx="8" ry="6" fill="#228B22"/>
+  </g>
+  
+  <g transform="translate(175,217)">
+    <rect x="0" y="10" width="3" height="10" fill="#8B4513"/>
+    <ellipse cx="1.5" cy="8" rx="7" ry="5" fill="#32CD32"/>
+  </g>
+  <g transform="translate(195,214)">
+    <rect x="0" y="10" width="3" height="13" fill="#8B4513"/>
+    <ellipse cx="1.5" cy="8" rx="8" ry="6" fill="#228B22"/>
+  </g>
+  <g transform="translate(215,216)">
+    <rect x="0" y="10" width="3" height="11" fill="#8B4513"/>
+    <ellipse cx="1.5" cy="8" rx="7" ry="5" fill="#32CD32"/>
+  </g>
+  
+  <!-- Trees in background -->
+  <g transform="translate(320,200)">
+    <rect x="0" y="30" width="8" height="50" fill="#8B4513"/>
+    <ellipse cx="4" cy="20" rx="30" ry="25" fill="#2E8B57"/>
+  </g>
+  <g transform="translate(400,210)">
+    <rect x="0" y="25" width="6" height="40" fill="#8B4513"/>
+    <ellipse cx="3" cy="15" rx="22" ry="20" fill="#3CB371"/>
+  </g>
+  <g transform="translate(480,205)">
+    <rect x="0" y="28" width="7" height="45" fill="#8B4513"/>
+    <ellipse cx="3.5" cy="18" rx="25" ry="22" fill="#228B22"/>
+  </g>
+  
+  <!-- Sun -->
+  <circle cx="520" cy="60" r="35" fill="#FFD700"/>
+  
+  <!-- Text -->
+  <text x="300" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#fff">SEMENTEIRA MUNICIPAL</text>
+</svg>

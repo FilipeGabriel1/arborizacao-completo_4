@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="./styles.css?v=20260825-3" />
+  <link rel="stylesheet" href="./styles.css?v=20260908-2" />
 </head>
 <body>
   <main class="app-shell">
@@ -50,78 +50,222 @@
       </div>
     </section>
 
-<div class="placar-zona">
-      <section class="panel placar-ao-vivo">
-      <div class="panel-header">
-        <div>
-          <p class="panel-kicker">Arborização ao vivo</p>
-          <h2>Números da arborização em tempo real</h2>
-        </div>
-        <span class="placar-live"><span class="placar-dot"></span> Tempo real</span>
+<div class="numeros-section">
+      <div class="numeros-header">
+        <span class="numeros-icon">🌿</span>
+        <h2>ARBORIZAÇÃO EM NÚMEROS</h2>
+        <p>Dados atualizados em tempo real</p>
       </div>
 
-      <div class="placar-grid">
-        <div class="placar-card placar-card-destaque">
-          <span class="placar-valor" id="placarPlantadas">0</span>
-          <small>Árvores plantadas</small>
+      <div class="numeros-grid">
+        <div class="numeros-card">
+          <div class="numeros-card-icon numeros-icon-mudas">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="numeros-card-valor" id="placarPlantadas">0</div>
+          <div class="numeros-card-label">Árvores plantadas<br><span>no município</span></div>
         </div>
-        <div class="placar-card placar-card-destaque">
-          <span class="placar-valor" id="placarDoadas">0</span>
-          <small>Árvores doadas</small>
+
+        <div class="numeros-card">
+          <div class="numeros-card-icon numeros-icon-doadas">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <div class="numeros-card-valor" id="placarDoadas">0</div>
+          <div class="numeros-card-label">Árvores doadas<br><span>à comunidade</span></div>
         </div>
-        <div class="placar-card">
-          <span class="placar-valor" id="placarAreas">0</span>
-          <small>Áreas arborizadas</small>
+
+        <div class="numeros-card">
+          <div class="numeros-card-icon numeros-icon-doacoes">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <div class="numeros-card-valor" id="placarDoacoes">0</div>
+          <div class="numeros-card-label">Total de doações<br><span>realizadas</span></div>
         </div>
-        <div class="placar-card">
-          <span class="placar-valor" id="placarEspecies">0</span>
-          <small>Espécies registradas</small>
+
+        <div class="numeros-card">
+          <div class="numeros-card-icon numeros-icon-areas">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div class="numeros-card-valor" id="placarAreas">0</div>
+          <div class="numeros-card-label">Áreas verdes e<br><span>arborizadas</span></div>
+        </div>
+
+        <div class="numeros-card">
+          <div class="numeros-card-icon numeros-icon-especies">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="numeros-card-valor" id="placarEspecies">0</div>
+          <div class="numeros-card-label">Espécies<br><span>identificadas</span></div>
+        </div>
+
+        <div class="numeros-card">
+          <div class="numeros-card-icon numeros-icon-status">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 12l-3 9H2"/>
+            </svg>
+          </div>
+          <div class="numeros-card-valor" id="placarAtivo">0</div>
+          <div class="numeros-card-label">Árvores ativas<br><span>em manutenção</span></div>
         </div>
       </div>
 
-      <div class="placar-detalhes">
-        <div class="placar-bloco">
-          <h3>Quantidade de árvores doadas x plantadas</h3>
-          <div class="placar-comparativo">
-            <div class="placar-barra">
-              <div class="placar-barra-fill" id="barraDoadas"></div>
+      <div class="numeros-graficos">
+        <div class="numeros-grafico-card">
+          <h3>DOADAS X PLANTADAS</h3>
+          <div class="grafico-barras-container">
+            <div class="grafico-barras-eixo-y">
+              <span>600</span>
+              <span>450</span>
+              <span>300</span>
+              <span>150</span>
+              <span>0</span>
             </div>
-            <div class="placar-legend">
-              <span><i class="dot dot-doadas"></i>Doadas</span>
-              <span><i class="dot dot-plantadas"></i>Plantadas</span>
-              <span id="placarPorcentagem"></span>
+            <div class="grafico-barras-area" id="graficoBarras">
+              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:30%"></div><div class="barra-plantadas" style="height:20%"></div></div>
+              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:50%"></div><div class="barra-plantadas" style="height:35%"></div></div>
+              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:40%"></div><div class="barra-plantadas" style="height:45%"></div></div>
+              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:60%"></div><div class="barra-plantadas" style="height:50%"></div></div>
+              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:35%"></div><div class="barra-plantadas" style="height:55%"></div></div>
+              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:45%"></div><div class="barra-plantadas" style="height:65%"></div></div>
+            </div>
+            <div class="grafico-barras-eixo-x">
+              <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span>
+            </div>
+            <div class="grafico-legend">
+              <span><span class="dot-doadas"></span> Doadas</span>
+              <span><span class="dot-plantadas"></span> Plantadas</span>
             </div>
           </div>
         </div>
 
-        <div class="placar-bloco">
-          <h3>Árvores por porte</h3>
-          <div id="placarPorte" class="placar-barras"></div>
+        <div class="numeros-grafico-card">
+          <h3>ÁRVORES POR PORTE</h3>
+          <div class="grafico-donut-container">
+            <div class="grafico-donut">
+              <svg viewBox="0 0 100 100" id="graficoPorte">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" stroke-width="15" stroke-dasharray="87.96 162.84" stroke-dashoffset="0"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#16a34a" stroke-width="15" stroke-dasharray="100.53 150.27" stroke-dashoffset="-87.96"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#4ade80" stroke-width="15" stroke-dasharray="62.83 187.97" stroke-dashoffset="-188.49"/>
+              </svg>
+              <div class="donut-center">
+                <span class="donut-valor" id="totalPorte">0</span>
+                <span class="donut-label">Total</span>
+              </div>
+            </div>
+            <div class="grafico-donut-legend" id="legendPorte">
+              <span><i style="background:#22c55e"></i> Pequeno 0%</span>
+              <span><i style="background:#16a34a"></i> Médio 0%</span>
+              <span><i style="background:#4ade80"></i> Grande 0%</span>
+            </div>
+          </div>
         </div>
 
-        <div class="placar-bloco">
-          <h3>Árvores por origem</h3>
-          <div id="placarOrigem" class="placar-barras"></div>
+        <div class="numeros-grafico-card">
+          <h3>ÁRVORES POR ORIGEM</h3>
+          <div class="grafico-donut-container">
+            <div class="grafico-donut">
+              <svg viewBox="0 0 100 100" id="graficoOrigem">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#1e40af" stroke-width="15" stroke-dasharray="170.9 80" stroke-dashoffset="0"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#60a5fa" stroke-width="15" stroke-dasharray="80.42 170.48" stroke-dashoffset="-170.9"/>
+              </svg>
+              <div class="donut-center">
+                <span class="donut-valor" id="totalOrigem">0</span>
+                <span class="donut-label">Total</span>
+              </div>
+            </div>
+            <div class="grafico-donut-legend" id="legendOrigem">
+              <span><i style="background:#1e40af"></i> Nativas 0%</span>
+              <span><i style="background:#60a5fa"></i> Exóticas 0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="numeros-grafico-card">
+          <h3>ÁRVORES POR STATUS</h3>
+          <div class="grafico-donut-container">
+            <div class="grafico-donut">
+              <svg viewBox="0 0 100 100" id="graficoStatus">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" stroke-width="15" stroke-dasharray="200 50" stroke-dashoffset="0"/>
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="15" stroke-dasharray="30 220" stroke-dashoffset="-200"/>
+              </svg>
+              <div class="donut-center">
+                <span class="donut-valor" id="totalStatus">0</span>
+                <span class="donut-label">Total</span>
+              </div>
+            </div>
+            <div class="grafico-donut-legend" id="legendStatus">
+              <span><i style="background:#22c55e"></i> Ativa 0%</span>
+              <span><i style="background:#ef4444"></i> Inativa 0%</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <p class="placar-atualizado">Atualizado automaticamente • <span id="placarAtualizadoEm">—</span></p>
-      </section>
-
-      <aside class="panel placar-feed placar-feed-topo">
-        <div class="placar-feed-header">
-          <h3>Árvores plantadas e doadas ao vivo</h3>
-          <span class="placar-live placar-live-pequeno"><span class="placar-dot"></span> ao vivo</span>
+      <div class="numeros-atividades">
+        <div class="atividades-header">
+          <strong>Últimas atividades</strong>
         </div>
-        <div id="placarFeed" class="placar-feed-lista">
-          <p class="placar-bloco-nota">Aguardando atualização...</p>
+        <div class="atividades-lista" id="listaAtividades">
+          <p style="color: #9ca3af; font-size: 0.85rem;">Carregando atividades...</p>
         </div>
-      </aside>
+        <a href="./historico-publico.html" class="atividades-link">ver todas as atividades →</a>
+      </div>
     </div>
 
-    <section class="workspace public-workspace">
+    <section class="explore-mapa-section">
+      <div class="explore-mapa-texto">
+        <h2>EXPLORE O MAPA<br>DA ARBORIZAÇÃO</h2>
+        <p>Consulte no mapa as áreas verdes e as árvores cadastradas por espécie, porte e origem.</p>
+        <p>Clique em um marcador para ver os detalhes.</p>
+      </div>
+
+      <div class="explore-mapa-container">
+        <div class="explore-mapa-wrapper">
+          <div id="map" class="explore-map"></div>
+
+          <div class="mapa-camadas">
+            <h3>Camadas</h3>
+            <label class="camada-item">
+              <input type="checkbox" id="camadaArvores" checked>
+              <span class="camada-check"></span>
+              Árvores inventariadas
+            </label>
+            <label class="camada-item">
+              <input type="checkbox" id="camadaAreas" checked>
+              <span class="camada-check"></span>
+              Áreas verdes
+            </label>
+            <label class="camada-item">
+              <input type="checkbox" id="camadaPontos" checked>
+              <span class="camada-check"></span>
+              Pontos realizados
+            </label>
+            <label class="camada-item">
+              <input type="checkbox" id="camadaPracas" checked>
+              <span class="camada-check"></span>
+              Praças e parques
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace public-workspace" style="display:none;">
       <div class="panel map-card">
-        <div id="map"></div>
+        <div id="map-legacy"></div>
       </div>
 
       <aside class="panel list-panel">
@@ -143,6 +287,111 @@
       </aside>
     </section>
 
+    <section class="conheca-section" id="areas">
+      <div class="conheca-header">
+        <div class="conheca-titulo">
+          <span class="conheca-icon">🌿</span>
+          <h2>CONHEÇA NOSSAS ÁREAS VERDES E ARBORIZADAS</h2>
+        </div>
+        <a href="./areas-publico.html" class="conheca-link">Ver todas as áreas →</a>
+      </div>
+      <div class="carousel-container">
+        <button class="carousel-nav-btn carousel-nav-prev" data-carousel="areas-carousel">&#8249;</button>
+        <div class="carousel-viewport" id="areas-carousel-viewport">
+          <div class="carousel-track" id="areas-carousel-track">
+            <p class="carousel-vazio">Carregando áreas...</p>
+          </div>
+        </div>
+        <button class="carousel-nav-btn carousel-nav-next" data-carousel="areas-carousel">&#8250;</button>
+      </div>
+      <div class="carousel-dots" id="areas-carousel-dots"></div>
+    </section>
+
+    <section class="conheca-section">
+      <div class="conheca-header">
+        <div class="conheca-titulo">
+          <span class="conheca-icon">🌳</span>
+          <h2>CONHEÇA AS ESPÉCIES DA NOSSA CIDADE</h2>
+        </div>
+        <a href="./especies-publico.html" class="conheca-link">Ver todas as espécies →</a>
+      </div>
+      <div class="carousel-container">
+        <button class="carousel-nav-btn carousel-nav-prev" data-carousel="especies-carousel">&#8249;</button>
+        <div class="carousel-viewport" id="especies-carousel-viewport">
+          <div class="carousel-track" id="especies-carousel-track">
+            <p class="carousel-vazio">Carregando espécies...</p>
+          </div>
+        </div>
+        <button class="carousel-nav-btn carousel-nav-next" data-carousel="especies-carousel">&#8250;</button>
+      </div>
+      <div class="carousel-dots" id="especies-carousel-dots"></div>
+    </section>
+
+    <section class="conheca-section">
+      <div class="conheca-header">
+        <div class="conheca-titulo">
+          <span class="conheca-icon">🌱</span>
+          <h2>SEMENTEIRA MUNICIPAL</h2>
+        </div>
+      </div>
+      <div class="sementeira-grid">
+        <div class="sementeira-img">
+          <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop" alt="Sementeira Municipal">
+        </div>
+        <div class="sementeira-stats">
+          <div class="sementeira-stat">
+            <div class="sementeira-stat-icon stat-verde">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="sementeira-stat-valor" id="statProduzidas">8.420</div>
+            <div class="sementeira-stat-label">Mudas<br>produzidas (2025)</div>
+          </div>
+          <div class="sementeira-stat">
+            <div class="sementeira-stat-icon stat-azul">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            <div class="sementeira-stat-valor" id="statDisponiveis">2.180</div>
+            <div class="sementeira-stat-label">Mudas<br>disponíveis</div>
+          </div>
+          <div class="sementeira-stat">
+            <div class="sementeira-stat-icon stat-roxo">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </div>
+            <div class="sementeira-stat-valor" id="statDoadas">3.450</div>
+            <div class="sementeira-stat-label">Mudas<br>doadas (2025)</div>
+          </div>
+          <div class="sementeira-stat">
+            <div class="sementeira-stat-icon stat-laranja">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </div>
+            <div class="sementeira-stat-valor" id="statDestinadas">2.510</div>
+            <div class="sementeira-stat-label">Mudas<br>destinadas ao plantio</div>
+          </div>
+        </div>
+        <div class="sementeira-especies">
+          <h3>Espécies mais produzidas</h3>
+          <ul class="sementeira-especies-lista">
+            <li><span>Ipê-amarelo</span><strong>1.320</strong></li>
+            <li><span>Oiti</span><strong>980</strong></li>
+            <li><span>Arvoreira</span><strong>760</strong></li>
+            <li><span>Pau-ferro</span><strong>650</strong></li>
+            <li><span>Reseda</span><strong>540</strong></li>
+          </ul>
+          <a href="javascript:void(0)" class="sementeira-relatorio" onclick="abrirRelatorioSementeira()">Ver relatório completo →</a>
+        </div>
+      </div>
+    </section>
+
     <footer class="rodape-institucional">
       <div>
         <strong>Prefeitura de Vitória de Santo Antão</strong>
@@ -159,6 +408,38 @@
       <p class="rodape-assinatura">© 2026 Prefeitura de Vitória de Santo Antão • AMASVISA — Todos os direitos reservados.</p>
     </footer>
   </main>
+
+  <div id="relatorioModal" class="relatorio-modal hidden">
+    <div class="relatorio-conteudo">
+      <header class="relatorio-header">
+        <h2>Sementeira Municipal</h2>
+        <button class="relatorio-fechar" onclick="fecharRelatorioSementeira()">&times;</button>
+      </header>
+      <div class="relatorio-body">
+        <p class="relatorio-desc">O programa de sementes da prefeitura visa multiplicar mudas nativas para reflorestamento urbano e distribuição comunitária.</p>
+        
+        <h3 class="relatorio-subtitulo">Espécies Produzidas</h3>
+        <div id="relatorioEspecies" class="relatorio-especies">
+          <p style="color:var(--muted);font-size:0.85rem;">Carregando espécies...</p>
+        </div>
+
+        <div class="relatorio-grid">
+          <div class="relatorio-card">
+            <h3>Como Solicitar</h3>
+            <p>Entidades comunitárias, escolas e condomínios podem solicitar mudas através da nossa plataforma ou presencialmente na AMASVISA.</p>
+          </div>
+          <div class="relatorio-card">
+            <h3>Capacitação</h3>
+            <p>Oferecemos treinamentos sobre plantio, adubação e manejo sustentável para novos parceiros do programa.</p>
+          </div>
+          <div class="relatorio-card">
+            <h3>Meta 2026</h3>
+            <p>Produzir e distribuir 5.000 mudas nativas até o final do ano, expandindo a cobertura verde em 15 novas áreas públicas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="galeriaFotos" class="galeria hidden" aria-hidden="true">
     <div class="galeria-backdrop"></div>
@@ -179,7 +460,7 @@
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-  <script src="./mapa-publico.js"></script>
+  <script src="./mapa-publico.js?v=20260903-2"></script>
 </body>
 </html>
 

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Histórico Público • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --verde-escuro: #0d1f12;
+      --verde-medio: #1a3a1a;
+      --verde-claro: #4ade80;
+      --verde-destaque: #22c55e;
+      --branco: #ffffff;
+      --cinza-claro: #e5e7eb;
+      --texto-muted: #9ca3af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: var(--verde-escuro);
+      color: var(--branco);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(13, 31, 18, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+    }
+
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--branco);
+    }
+
+    .navbar-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .navbar-logo-text strong { font-size: 1.1rem; font-weight: 800; }
+
+    .navbar-logo-text small {
+      font-size: 0.65rem;
+      color: var(--texto-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .navbar-links a {
+      color: var(--cinza-claro);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .navbar-links a:hover { color: var(--verde-claro); }
+
+    .navbar-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(74, 222, 128, 0.5);
+      background: transparent;
+      color: var(--verde-claro);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .navbar-btn:hover { background: rgba(74, 222, 128, 0.15); }
+
+    .page-content {
+      padding: 140px 48px 80px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .page-header { margin-bottom: 40px; }
+
+    .page-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: var(--verde-claro);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .page-header h1 span { color: var(--verde-claro); }
+
+    .page-header p {
+      font-size: 1.1rem;
+      color: var(--texto-muted);
+      max-width: 60ch;
+      line-height: 1.7;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(74, 222, 128, 0.2);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(74, 222, 128, 0.15);
+      background: rgba(26, 58, 26, 0.4);
+      transition: border-color 0.2s;
+    }
+
+    .timeline-item:hover {
+      border-color: rgba(74, 222, 128, 0.35);
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -27px;
+      top: 26px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--verde-claro);
+      border: 2px solid var(--verde-escuro);
+    }
+
+    .timeline-item.doacao::before {
+      background: #a855f7;
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-tipo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tipo-plantio {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+
+    .tipo-doacao {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+    }
+
+    .timeline-titulo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--branco);
+    }
+
+    .timeline-data {
+      font-size: 0.8rem;
+      color: var(--texto-muted);
+      white-space: nowrap;
+    }
+
+    .timeline-detalhe {
+      color: var(--texto-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .timeline-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .footer {
+      padding: 24px 48px;
+      border-top: 1px solid rgba(74, 222, 128, 0.1);
+      text-align: center;
+      color: var(--texto-muted);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .navbar { padding: 14px 20px; }
+      .navbar-links { display: none; }
+      .page-content { padding: 120px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="./entrar.html" class="navbar-logo">
+      <span style="width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#ffffff,#e8e2d2);box-shadow:0 6px 16px rgba(0,0,0,0.35),inset 0 0 0 3px rgba(240,194,75,0.55);flex-shrink:0;">
+        <img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura" style="width:78%;height:78%;object-fit:contain;" />
+      </span>
+      <div class="navbar-logo-text">
+        <strong>Arborização Urbana</strong>
+        <small>Vitória de Santo Antão</small>
+      </div>
+    </a>
+    <ul class="navbar-links">
+      <li><a href="./index.html">Início</a></li>
+      <li><a href="./index.html">Mapa</a></li>
+      <li><a href="./index.html">Áreas Verdes</a></li>
+      <li><a href="./especies-publico.html">Espécies</a></li>
+      <li><a href="./sementeira.html">Sementeira</a></li>
+      <li><a href="./indicadores.html">Indicadores</a></li>
+      <li><a href="./sobre.html">Sobre</a></li>
+    </ul>
+    <a href="./login.html" class="navbar-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"/>
+        <line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+      Área técnica
+    </a>
+  </nav>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div class="page-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.48 2.54l2.6 1.53c.56-1.24.88-2.62.88-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.06.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.06-4.09l-2.6-1.53A6.95 6.95 0 0 1 12 19z"/>
+        </svg>
+        Atualizado em tempo real
+      </div>
+      <h1>Histórico de <span>Atividades</span></h1>
+      <p>Todas as árvores plantadas e doações realizadas em Vitória de Santo Antão.</p>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <p style="color: #9ca3af; text-align: center; padding: 40px 0;">Carregando atividades...</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Prefeitura Municipal de Vitória de Santo Antão - Amasvisa. Todos os direitos reservados.</p>
+  </footer>
+
+  <script>
+    const timelineEl = document.getElementById('timeline');
+    const rotulosPorte = { PEQUENO: 'Pequeno', MEDIO: 'Médio', GRANDE: 'Grande' };
+    const rotulosOrigem = { DOACAO: 'Doação', OBRIGACAO_LEGAL: 'Obrigação legal', PLANTIO_PROPRIO: 'Plantio próprio', OUTRA: 'Outra' };
+
+    function formatarData(data) {
+      if (!data) return '';
+      const [ano, mes, dia] = String(data).slice(0, 10).split('-');
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function formatarNumero(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR');
+    }
+
+    async function carregarAtividades() {
+      try {
+        const res = await fetch('/api/placar');
+        if (!res.ok) return;
+        const placar = await res.json();
+
+        const itens = [];
+
+        (placar.arvoresRecentes || []).forEach((a) => {
+          itens.push({
+            tipo: 'plantio',
+            data: a.dataPlantio || a.criadoEm,
+            titulo: a.especieNomePopular || a.nome || 'Árvore registrada',
+            detalhe: `Árvore plantada${a.porte ? ' • porte ' + (rotulosPorte[a.porte] || a.porte) : ''}${a.origem ? ' • origem: ' + (rotulosOrigem[a.origem] || a.origem) : ''}`
+          });
+        });
+
+        (placar.doacoesRecentes || []).forEach((d) => {
+          const quantidade = d.quantidade ? formatarNumero(d.quantidade) : '1';
+          itens.push({
+            tipo: 'doacao',
+            data: d.dataDoacao,
+            titulo: d.solicitante || 'Doador não informado',
+            detalhe: `Doação de ${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}${d.descricao ? ' • ' + d.descricao : ''}`
+          });
+        });
+
+        itens.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+        if (itens.length === 0) {
+          timelineEl.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 40px 0;">Nenhuma atividade registrada ainda.</p>';
+          return;
+        }
+
+        timelineEl.innerHTML = itens.map(item => `
+          <div class="timeline-item ${item.tipo}">
+            <div class="timeline-header">
+              <span class="timeline-tipo ${item.tipo === 'plantio' ? 'tipo-plantio' : 'tipo-doacao'}">
+                ${item.tipo === 'plantio' ? '🌱 Plantio' : '🎁 Doação'}
+              </span>
+              <span class="timeline-data">${formatarData(item.data)}</span>
+            </div>
+            <div class="timeline-titulo">${item.titulo}</div>
+            <div class="timeline-detalhe">${item.detalhe}</div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        timelineEl.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 40px 0;">Erro ao carregar atividades.</p>';
+      }
+    }
+
+    carregarAtividades();
+  </script>
+
+</body>
+</html>

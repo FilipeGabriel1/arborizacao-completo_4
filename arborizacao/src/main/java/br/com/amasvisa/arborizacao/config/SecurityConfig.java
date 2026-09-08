@@ -52,11 +52,17 @@ public class SecurityConfig {
                         "/arborizacao/index.html",
                         "/arborizacao/especies-publico.html",
                         "/arborizacao/especies-publico.js",
+                        "/arborizacao/areas-publico.html",
+                        "/arborizacao/areas-publico.js",
                         "/arborizacao/mapa-publico.js",
                         "/arborizacao/styles.css",
                         "/arborizacao/csrf.js",
                         "/arborizacao/favicon.svg",
                         "/arborizacao/img/**",
+                        "/arborizacao/sementeira.html",
+                        "/arborizacao/indicadores.html",
+                        "/arborizacao/sobre.html",
+                        "/arborizacao/historico-publico.html",
                         "/api/csrf",
                         "/login"
                 ).permitAll()
