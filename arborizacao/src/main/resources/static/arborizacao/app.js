@@ -370,7 +370,6 @@ function renderizarAreasEncontradas(lista, container) {
     item.innerHTML = `
       <header>
         <h3>#${area.id} — ${area.nome}</h3>
-        <span>${area.status}</span>
       </header>
       ${fotoHtml}
       <p class="area-description">Tipo: ${area.tipo} • ${area.pontos && area.pontos.length ? area.pontos.length + ' pontos de polígono' : 'ponto único'}</p>
@@ -615,7 +614,12 @@ function buildPayload() {
     fotoUrl: fotosValidas[0] || null,
     fotos: fotosValidas.map((url) => ({ url, descricao: null })),
     tipo: tipoInput.value,
-    status: statusInput.value
+    status: statusInput.value,
+    bairro: document.getElementById('bairro').value.trim() || null,
+    logradouro: document.getElementById('logradouro').value.trim() || null,
+    areaTotalM2: parseFloat(document.getElementById('areaTotalM2').value) || null,
+    responsavelManutencao: document.getElementById('responsavelManutencao').value || null,
+    situacaoInventario: document.getElementById('situacaoInventario').value || null
   };
 
   if (currentMode === 'polygon') {
@@ -694,7 +698,6 @@ const item = fragment.querySelector('.area-item');
       ? `Ponto: ${area.latitude.toFixed(6)}, ${area.longitude.toFixed(6)}`
       : `${area.pontos?.length ?? 0} vértices`;
     description.textContent = area.descricao || 'Sem descrição.';
-    pill.textContent = area.status;
 
     if (getFotosDaArea(area).length) {
       fotoBlock.innerHTML = getFotosDaArea(area)
@@ -990,6 +993,11 @@ function loadAreaInForm(area) {
   renderFotoInputs();
   tipoInput.value = area.tipo || 'OUTRA';
   statusInput.value = area.status || 'ATIVA';
+  document.getElementById('bairro').value = area.bairro || '';
+  document.getElementById('logradouro').value = area.logradouro || '';
+  document.getElementById('areaTotalM2').value = area.areaTotalM2 || '';
+  document.getElementById('responsavelManutencao').value = area.responsavelManutencao || '';
+  document.getElementById('situacaoInventario').value = area.situacaoInventario || 'NAO_INICIADO';
 
   if (area.latitude != null && area.longitude != null) {
     drawModeInput.value = 'point';
@@ -1028,6 +1036,11 @@ function resetForm() {
   polygonVertices = [];
   latitudeInput.value = '';
   longitudeInput.value = '';
+  document.getElementById('bairro').value = '';
+  document.getElementById('logradouro').value = '';
+  document.getElementById('areaTotalM2').value = '';
+  document.getElementById('responsavelManutencao').value = '';
+  document.getElementById('situacaoInventario').value = 'NAO_INICIADO';
   polygonManualEntry.classList.add('hidden');
   formTitle.textContent = 'Nova área';
   cancelEditBtn.classList.add('hidden');

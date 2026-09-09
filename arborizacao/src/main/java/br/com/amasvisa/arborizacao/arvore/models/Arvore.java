@@ -74,6 +74,71 @@ public class Arvore {
     @Column(name = "foto_url", length = 500)
     private String fotoUrl;
 
+    // Dados dendrométricos
+    @Column(name = "cap")
+    private Double cap;
+
+    @Column(name = "dap")
+    private Double dap;
+
+    @Column(name = "altura_total")
+    private Double alturaTotal;
+
+    @Column(name = "altura_primeira_bifurcacao")
+    private Double alturaPrimeiraBifurcacao;
+
+    @Column(name = "diametro_copa")
+    private Double diametroCopa;
+
+    // Condição fitossanitária
+    @Enumerated(EnumType.STRING)
+    @Column(name = "condicao_fitossanitaria", length = 30)
+    private CondicaoFitossanitaria condicaoFitossanitaria;
+
+    @Column(name = "pragas", length = 500)
+    private String pragas;
+
+    @Column(name = "doencas", length = 500)
+    private String doencas;
+
+    @Column(name = "cavidades", length = 500)
+    private String cavidades;
+
+    @Column(name = "fungos", length = 500)
+    private String fungos;
+
+    @Column(name = "galhos_secos", length = 500)
+    private String galhosSecos;
+
+    @Column(name = "inclinacao", length = 500)
+    private String inclinacao;
+
+    @Column(name = "danos_tronco", length = 500)
+    private String danosTronco;
+
+    @Column(name = "raizes_expostas", length = 500)
+    private String raizesExpostas;
+
+    @Column(name = "sinais_apodrecimento", length = 500)
+    private String sinaisApodrecimento;
+
+    // Conflitos com infraestrutura
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_conflito", length = 30)
+    private TipoConflito tipoConflito;
+
+    // Manejo
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_manejo", length = 40)
+    private TipoManejo tipoManejo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "prioridade_manejo", length = 20)
+    private PrioridadeManejo prioridadeManejo;
+
+    @Column(name = "responsavel_cadastro", length = 150)
+    private String responsavelCadastro;
+
     @OneToMany(mappedBy = "arvore", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ArvoreFoto> fotos = new ArrayList<>();
 
@@ -209,6 +274,67 @@ public class Arvore {
     public void setFotoUrl(String fotoUrl) {
         this.fotoUrl = fotoUrl;
     }
+
+    // Dados dendrométricos
+    public Double getCap() { return cap; }
+    public void setCap(Double cap) { this.cap = cap; }
+
+    public Double getDap() { return dap; }
+    public void setDap(Double dap) { this.dap = dap; }
+
+    public Double getAlturaTotal() { return alturaTotal; }
+    public void setAlturaTotal(Double alturaTotal) { this.alturaTotal = alturaTotal; }
+
+    public Double getAlturaPrimeiraBifurcacao() { return alturaPrimeiraBifurcacao; }
+    public void setAlturaPrimeiraBifurcacao(Double alturaPrimeiraBifurcacao) { this.alturaPrimeiraBifurcacao = alturaPrimeiraBifurcacao; }
+
+    public Double getDiametroCopa() { return diametroCopa; }
+    public void setDiametroCopa(Double diametroCopa) { this.diametroCopa = diametroCopa; }
+
+    // Condição fitossanitária
+    public CondicaoFitossanitaria getCondicaoFitossanitaria() { return condicaoFitossanitaria; }
+    public void setCondicaoFitossanitaria(CondicaoFitossanitaria condicaoFitossanitaria) { this.condicaoFitossanitaria = condicaoFitossanitaria; }
+
+    public String getPragas() { return pragas; }
+    public void setPragas(String pragas) { this.pragas = pragas; }
+
+    public String getDoencas() { return doencas; }
+    public void setDoencas(String doencas) { this.doencas = doencas; }
+
+    public String getCavidades() { return cavidades; }
+    public void setCavidades(String cavidades) { this.cavidades = cavidades; }
+
+    public String getFungos() { return fungos; }
+    public void setFungos(String fungos) { this.fungos = fungos; }
+
+    public String getGalhosSecos() { return galhosSecos; }
+    public void setGalhosSecos(String galhosSecos) { this.galhosSecos = galhosSecos; }
+
+    public String getInclinacao() { return inclinacao; }
+    public void setInclinacao(String inclinacao) { this.inclinacao = inclinacao; }
+
+    public String getDanosTronco() { return danosTronco; }
+    public void setDanosTronco(String danosTronco) { this.danosTronco = danosTronco; }
+
+    public String getRaizesExpostas() { return raizesExpostas; }
+    public void setRaizesExpostas(String raizesExpostas) { this.raizesExpostas = raizesExpostas; }
+
+    public String getSinaisApodrecimento() { return sinaisApodrecimento; }
+    public void setSinaisApodrecimento(String sinaisApodrecimento) { this.sinaisApodrecimento = sinaisApodrecimento; }
+
+    // Conflitos
+    public TipoConflito getTipoConflito() { return tipoConflito; }
+    public void setTipoConflito(TipoConflito tipoConflito) { this.tipoConflito = tipoConflito; }
+
+    // Manejo
+    public TipoManejo getTipoManejo() { return tipoManejo; }
+    public void setTipoManejo(TipoManejo tipoManejo) { this.tipoManejo = tipoManejo; }
+
+    public PrioridadeManejo getPrioridadeManejo() { return prioridadeManejo; }
+    public void setPrioridadeManejo(PrioridadeManejo prioridadeManejo) { this.prioridadeManejo = prioridadeManejo; }
+
+    public String getResponsavelCadastro() { return responsavelCadastro; }
+    public void setResponsavelCadastro(String responsavelCadastro) { this.responsavelCadastro = responsavelCadastro; }
 
     public List<ArvoreFoto> getFotos() {
         return fotos;

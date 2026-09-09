@@ -10,40 +10,54 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./dashboard.css" />
 </head>
 <body>
-  <main class="app-shell">
-    <div class="user-bar">
-      <span id="userEmail">...</span>
-      <a href="./index.html" class="ghost-button">Ver painel público</a>
-      <a href="./arvores.html" class="ghost-button">Árvores</a>
-      <a href="./especies.html" class="ghost-button">Espécies</a>
-      <a href="./doacoes.html" class="ghost-button">Doações</a>
-      <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
-      <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
-      <form action="/logout" method="post" class="logout-form">
-        <button type="submit" class="ghost-button">Sair</button>
-      </form>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-text">
+        <strong>ARBORIZAÇÃO</strong>
+        <small>Área Técnica</small>
+      </div>
     </div>
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
-        <h1>Cadastro e visualização de áreas arborizadas no mapa.</h1>
-        <p class="hero-copy">
-          Marque pontos ou desenhe polígonos, salve no MySQL e visualize tudo no OpenStreetMap com MapLibre.
-        </p>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a href="./painel.html" class="sidebar-link"><span class="icon">📊</span><span>Painel</span></a>
+        <a href="./arvores.html" class="sidebar-link"><span class="icon">🌲</span><span>Inventário Arbóreo</span></a>
+        <a href="./cadastro-areas.html" class="sidebar-link active"><span class="icon">🏞️</span><span>Áreas Verdes</span></a>
+        <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
+        <a href="./plantios.html" class="sidebar-link"><span class="icon">🌿</span><span>Plantios</span></a>
+        <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
+        <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
+        <a href="./relatorios.html" class="sidebar-link"><span class="icon">📋</span><span>Relatórios</span></a>
       </div>
-      <div class="hero-stats">
-        <div>
-          <span id="totalAreas">0</span>
-          <small>áreas cadastradas</small>
-        </div>
-        <div>
-          <span id="totalVertices">0</span>
-          <small>pontos de polígono</small>
-        </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Administração</div>
+        <a href="./usuarios.html" class="sidebar-link" data-admin hidden><span class="icon">👥</span><span>Usuários</span></a>
+        <a href="./historico.html" class="sidebar-link" data-admin hidden><span class="icon">📜</span><span>Histórico de Alterações</span></a>
       </div>
-    </section>
+    </nav>
+    <div class="sidebar-footer">
+      <p>Sistema de Gestão da Arborização Urbana</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-greeting">
+        <h1>Áreas Verdes</h1>
+        <p>Cadastro e visualização de áreas arborizadas no mapa.</p>
+      </div>
+      <div class="topbar-actions">
+        <span id="userEmail" style="font-size:0.82rem;color:var(--muted);"></span>
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
+        </form>
+      </div>
+    </header>
 
     <section class="workspace">
       <aside class="panel">
@@ -95,6 +109,44 @@
               </select>
             </label>
           </div>
+
+          <div class="two-columns">
+            <label>
+              Bairro
+              <input id="bairro" type="text" placeholder="Ex.: Matriz" />
+            </label>
+            <label>
+              Logradouro
+              <input id="logradouro" type="text" placeholder="Ex.: Rua da Praça, 123" />
+            </label>
+          </div>
+
+          <div class="two-columns">
+            <label>
+              Área total (m²)
+              <input id="areaTotalM2" type="number" step="any" placeholder="Calculada automaticamente" />
+            </label>
+            <label>
+              Responsável pela manutenção
+              <select id="responsavelManutencao">
+                <option value="">Selecione...</option>
+                <option value="PREFEITURA">Prefeitura</option>
+                <option value="TERCEIRO">Terceiro</option>
+                <option value="COMUNIDADE">Comunidade</option>
+                <option value="OUTRO">Outro</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Situação do inventário
+            <select id="situacaoInventario">
+              <option value="NAO_INICIADO">Não iniciado</option>
+              <option value="EM_ANDAMENTO">Em andamento</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="EM_ATUALIZACAO">Em atualização</option>
+            </select>
+          </label>
 
           <label>
             Modo de desenho
@@ -203,7 +255,6 @@
           <h3></h3>
           <p class="area-meta"></p>
         </div>
-        <span class="pill"></span>
       </header>
       <div class="area-foto"></div>
       <p class="area-description"></p>

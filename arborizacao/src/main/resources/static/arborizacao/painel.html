@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./dashboard.css" />
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-text">
+        <strong>ARBORIZAÇÃO</strong>
+        <small>Área Técnica</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a href="./painel.html" class="sidebar-link active">
+          <span class="icon">📊</span>
+          <span>Painel</span>
+        </a>
+        <a href="./arvores.html" class="sidebar-link">
+          <span class="icon">🌲</span>
+          <span>Inventário Arbóreo</span>
+        </a>
+        <a href="./cadastro-areas.html" class="sidebar-link">
+          <span class="icon">🏞️</span>
+          <span>Áreas Verdes</span>
+        </a>
+        <a href="./sementeira.html" class="sidebar-link">
+          <span class="icon">🌱</span>
+          <span>Sementeira Municipal</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="icon">🌿</span>
+          <span>Plantios</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="icon">🔧</span>
+          <span>Manejo / Ordens de Serviço</span>
+        </a>
+        <a href="./especies.html" class="sidebar-link">
+          <span class="icon">🍃</span>
+          <span>Espécies</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="icon">📋</span>
+          <span>Relatórios</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Administração</div>
+        <a href="./usuarios.html" class="sidebar-link" data-admin hidden>
+          <span class="icon">👥</span>
+          <span>Usuários</span>
+        </a>
+        <a href="./historico.html" class="sidebar-link" data-admin hidden>
+          <span class="icon">📜</span>
+          <span>Histórico de Alterações</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-brand">
+        <img src="./brasao-vitoria.svg" alt="Brasão" onerror="this.style.display='none'" />
+        <div class="sidebar-footer-brand-text">
+          <strong>Prefeitura de Vitória de Santo Antão</strong>
+          <small>AMASVISA • Meio Ambiente</small>
+        </div>
+      </div>
+      <p>Sistema de Gestão da Arborização Urbana</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-greeting">
+        <h1>Olá, <span id="userName">Técnico(a)</span>!</h1>
+        <p>Bem-vindo(a) à área técnica da Arborização Urbana.</p>
+      </div>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Buscar árvore, área, espécie..." />
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-notif" type="button">
+          🔔
+          <span class="notif-badge" id="notifCount">8</span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar" id="userAvatar">TS</div>
+          <div class="topbar-user-info">
+            <strong id="userFullName">Técnico(a) AMASVISA</strong>
+            <small id="userProfile">Perfil: Técnico</small>
+          </div>
+        </div>
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
+        </form>
+      </div>
+    </header>
+
+    <!-- KPI CARDS -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-card-icon green">🌲</div>
+        <div class="kpi-card-value" id="kpiIndividuos">0</div>
+        <div class="kpi-card-label">Árvores inventariadas</div>
+        <span class="kpi-card-change positive" id="kpiIndividuosChange">↑ 0 este mês</span>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-icon blue">🏞️</div>
+        <div class="kpi-card-value" id="kpiAreas">0</div>
+        <div class="kpi-card-label">Áreas verdes arborizadas</div>
+        <span class="kpi-card-change positive" id="kpiAreasChange">+ 0 este mês</span>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-icon teal">🍃</div>
+        <div class="kpi-card-value" id="kpiEspecies">0</div>
+        <div class="kpi-card-label">Espécies identificadas</div>
+        <span class="kpi-card-change positive" id="kpiEspeciesChange">+ 0 este mês</span>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-icon orange">🔍</div>
+        <div class="kpi-card-value" id="kpiInspecao">0</div>
+        <div class="kpi-card-label">Árvores para inspeção</div>
+        <a href="#" class="kpi-card-link">Ver lista</a>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-icon red">🔧</div>
+        <div class="kpi-card-value" id="kpiManejo">0</div>
+        <div class="kpi-card-label">Manejos pendentes</div>
+        <a href="#" class="kpi-card-link">Ver ordens</a>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-icon gold">🌱</div>
+        <div class="kpi-card-value" id="kpiMudas">0</div>
+        <div class="kpi-card-label">Mudas disponíveis</div>
+        <a href="./sementeira.html" class="kpi-card-link">Ver estoque</a>
+      </div>
+    </section>
+
+    <!-- DASHBOARD GRID -->
+    <div class="dashboard-grid">
+      <!-- CHARTS + MAP -->
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <h3>Árvores por porte</h3>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="chart-box">
+            <div class="donut-chart" id="chartPorte"></div>
+            <div class="chart-legend" id="legendPorte"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <h3>Árvores por origem</h3>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="chart-box">
+            <div class="donut-chart" id="chartOrigem"></div>
+            <div class="chart-legend" id="legendOrigem"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAP -->
+      <div class="dashboard-card" style="grid-column: 1 / -1;">
+        <div class="dashboard-card-header">
+          <h3>Mapa da arborização</h3>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);cursor:pointer;">
+              <input type="checkbox" id="camadaArvores" checked /> Árvores
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);cursor:pointer;">
+              <input type="checkbox" id="camadaAreas" checked /> Áreas verdes
+            </label>
+          </div>
+        </div>
+        <div id="map" class="dashboard-map"></div>
+      </div>
+    </div>
+
+    <!-- SECOND ROW -->
+    <div class="dashboard-grid">
+      <!-- RECENT TREES -->
+      <div class="dashboard-card" style="grid-column: 1 / 2;">
+        <div class="dashboard-card-header">
+          <h3>Últimos registros de árvores</h3>
+          <a href="./arvores.html" class="see-all">Ver todos</a>
+        </div>
+        <div class="dashboard-card-body" style="padding:0;">
+          <table class="recent-trees-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Espécie</th>
+                <th>Área</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="recentTreesBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ACTIVITY FEED -->
+      <div class="dashboard-card" style="grid-column: 2 / 3;">
+        <div class="dashboard-card-header">
+          <h3>Últimas atividades</h3>
+          <a href="./historico.html" class="see-all">Ver todas</a>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="activity-feed" id="activityFeed"></div>
+        </div>
+      </div>
+
+      <!-- TASKS + QUICK ACTIONS -->
+      <div class="dashboard-card" style="grid-column: 3 / 4;">
+        <div class="dashboard-card-header">
+          <h3>Tarefas e pendências</h3>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="tasks-list" id="tasksList">
+            <div class="task-item">
+              <div class="task-item-left">
+                <span class="task-item-icon">📅</span>
+                <span class="task-item-label">Inspeções agendadas</span>
+              </div>
+              <span class="task-item-count">18</span>
+            </div>
+            <div class="task-item">
+              <div class="task-item-left">
+                <span class="task-item-icon">🔧</span>
+                <span class="task-item-label">Manejos pendentes</span>
+              </div>
+              <span class="task-item-count">72</span>
+            </div>
+            <div class="task-item">
+              <div class="task-item-left">
+                <span class="task-item-icon">🔴</span>
+                <span class="task-item-label">Árvores críticas</span>
+              </div>
+              <span class="task-item-count danger">25</span>
+            </div>
+            <div class="task-item">
+              <div class="task-item-left">
+                <span class="task-item-icon">📋</span>
+                <span class="task-item-label">Inventário em andamento</span>
+              </div>
+              <span class="task-item-count">6</span>
+            </div>
+            <div class="task-item">
+              <div class="task-item-left">
+                <span class="task-item-icon">⏰</span>
+                <span class="task-item-label">Atualizações atrasadas</span>
+              </div>
+              <span class="task-item-count danger">14</span>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;">
+            <h4 style="margin:0 0 10px;font-size:0.82rem;color:var(--text);">Ações rápidas</h4>
+            <div class="quick-actions">
+              <a href="./arvores.html" class="quick-action-btn">
+                <span class="plus">+</span>
+                Cadastrar árvore
+              </a>
+              <a href="./cadastro-areas.html" class="quick-action-btn">
+                <span class="plus">+</span>
+                Cadastrar área verde
+              </a>
+              <a href="./plantios.html" class="quick-action-btn">
+                <span class="plus">+</span>
+                Registrar plantio
+              </a>
+              <a href="./doacoes.html" class="quick-action-btn">
+                <span class="plus">+</span>
+                Registrar doação de mudas
+              </a>
+              <a href="./relatorios.html" class="quick-action-btn">
+                <span class="plus">📄</span>
+                Gerar relatório
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEED NURSERY STATS -->
+    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <h3>Produção da sementeira (2026)</h3>
+          <a href="./sementeira.html" class="see-all">Ver detalhes</a>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="nursery-stats">
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Mudas produzidas</span>
+              <span class="nursery-stat-value" id="nurseryProduzidas">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Mudas disponíveis</span>
+              <span class="nursery-stat-value" id="nurseryDisponiveis">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Mudas doadas</span>
+              <span class="nursery-stat-value" id="nurseryDoadas">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Mudas destinadas a plantios</span>
+              <span class="nursery-stat-value" id="nurseryPlantadas">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Perdas</span>
+              <span class="nursery-stat-value" id="nurseryPerdas">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <h3>Resumo do sistema</h3>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="nursery-stats">
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Total de usuários ativos</span>
+              <span class="nursery-stat-value" id="summaryUsuarios">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Doações registradas</span>
+              <span class="nursery-stat-value" id="summaryDoacoes">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Total de mudas doadas</span>
+              <span class="nursery-stat-value" id="summaryMudasDoadas">0</span>
+            </div>
+            <div class="nursery-stat-row">
+              <span class="nursery-stat-label">Versão do sistema</span>
+              <span class="nursery-stat-value">1.0.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script src="./csrf.js"></script>
+  <script src="./auth.js"></script>
+  <script src="./dashboard.js"></script>
+</body>
+</html>

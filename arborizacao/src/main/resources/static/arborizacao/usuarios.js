@@ -35,16 +35,13 @@ function renderizarLista(usuarios) {
         <span>${usuario.perfil === 'ADMIN' ? 'Administrador' : 'Funcionário'}</span>
       </header>
       <p>${usuario.email}</p>
-      <p>${usuario.ativo ? 'Ativo' : 'Desativado'}</p>
       <div class="item-actions">
         <button type="button" data-action="editar">Editar</button>
-        <button type="button" data-action="status">${usuario.ativo ? 'Desativar' : 'Ativar'}</button>
         <button type="button" data-action="remover">Remover</button>
       </div>
     `;
 
     item.querySelector('[data-action="editar"]').addEventListener('click', () => iniciarEdicao(usuario));
-    item.querySelector('[data-action="status"]').addEventListener('click', () => alternarStatus(usuario));
     item.querySelector('[data-action="remover"]').addEventListener('click', () => remover(usuario));
 
     usuariosList.appendChild(item);
@@ -70,15 +67,6 @@ function cancelarEdicao() {
   senhaInput.required = true;
   formTitle.textContent = 'Novo usuário';
   cancelEditBtn.classList.add('hidden');
-}
-
-async function alternarStatus(usuario) {
-  await fetch(`${apiBase}/${usuario.id}/status`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ativo: !usuario.ativo })
-  });
-  carregarUsuarios();
 }
 
 async function remover(usuario) {

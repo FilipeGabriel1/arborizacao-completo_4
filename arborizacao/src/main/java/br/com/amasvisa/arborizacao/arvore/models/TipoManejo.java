@@ -1,0 +1,14 @@
+package br.com.amasvisa.arborizacao.arvore.models;
+
+public enum TipoManejo {
+    NENHUM,
+    MONITORAMENTO,
+    PODA_FORMACAO,
+    PODA_LIMPEZA,
+    PODA_ADEQUACAO,
+    TRATAMENTO_FITOSANITARIO,
+    AMPLIACAO_CANTEIRO,
+    TUTORAMENTO,
+    AVALIACAO_TRANSPLANTE,
+    AVALIACAO_SUPRESSAO
+}

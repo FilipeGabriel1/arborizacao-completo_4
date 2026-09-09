@@ -41,6 +41,11 @@ public class AreaArborizadaService {
         area.setFotoUrl(request.fotoUrl());
         area.setTipo(request.tipo());
         area.setStatus(request.status());
+        area.setBairro(request.bairro());
+        area.setLogradouro(request.logradouro());
+        area.setAreaTotalM2(request.areaTotalM2());
+        area.setResponsavelManutencao(request.responsavelManutencao());
+        area.setSituacaoInventario(request.situacaoInventario());
         area.setLatitude(request.latitude());
         area.setLongitude(request.longitude());
         area.setPontos(convertirPontos(request.pontos()));
@@ -73,6 +78,11 @@ public class AreaArborizadaService {
         area.setFotoUrl(request.fotoUrl());
         area.setTipo(request.tipo());
         area.setStatus(request.status());
+        area.setBairro(request.bairro());
+        area.setLogradouro(request.logradouro());
+        area.setAreaTotalM2(request.areaTotalM2());
+        area.setResponsavelManutencao(request.responsavelManutencao());
+        area.setSituacaoInventario(request.situacaoInventario());
         area.setLatitude(request.latitude());
         area.setLongitude(request.longitude());
         area.setPontos(convertirPontos(request.pontos()));
@@ -92,7 +102,7 @@ public class AreaArborizadaService {
                 "Área excluída: " + area.getNome());
     }
 
-    private AreaArborizada obterEntidade(Long id) {
+    public AreaArborizada obterEntidade(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Área arborizada não encontrada: " + id));
     }
@@ -153,6 +163,13 @@ public class AreaArborizadaService {
                 area.getFotoUrl(),
                 area.getTipo(),
                 area.getStatus(),
+                area.getBairro(),
+                area.getLogradouro(),
+                area.getAreaTotalM2(),
+                area.getResponsavelManutencao(),
+                area.getSituacaoInventario(),
+                area.getIndividuosCadastrados(),
+                area.getUltimaAtualizacaoInventario(),
                 area.getLatitude(),
                 area.getLongitude(),
                 pontos,

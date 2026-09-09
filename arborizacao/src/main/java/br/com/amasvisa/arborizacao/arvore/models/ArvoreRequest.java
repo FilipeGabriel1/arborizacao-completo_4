@@ -20,6 +20,29 @@ public record ArvoreRequest(
         String numeroProcesso,
         String descricao,
         String fotoUrl,
+        // Dados dendrométricos
+        Double cap,
+        Double dap,
+        Double alturaTotal,
+        Double alturaPrimeiraBifurcacao,
+        Double diametroCopa,
+        // Condição fitossanitária
+        CondicaoFitossanitaria condicaoFitossanitaria,
+        String pragas,
+        String doencas,
+        String cavidades,
+        String fungos,
+        String galhosSecos,
+        String inclinacao,
+        String danosTronco,
+        String raizesExpostas,
+        String sinaisApodrecimento,
+        // Conflitos
+        TipoConflito tipoConflito,
+        // Manejo
+        TipoManejo tipoManejo,
+        PrioridadeManejo prioridadeManejo,
+        String responsavelCadastro,
         List<ArvoreFotoRequest> fotos
 ) {
 }

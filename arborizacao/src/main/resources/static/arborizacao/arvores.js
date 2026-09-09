@@ -23,6 +23,66 @@ const buscaForm = document.getElementById('buscaForm');
 const buscaTermoInput = document.getElementById('buscaTermo');
 const buscaResultado = document.getElementById('buscaResultado');
 
+// Tab navigation
+const tabsNav = document.getElementById('tabsNav');
+if (tabsNav) {
+  tabsNav.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    const tabId = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+  });
+}
+
+// Manejo radio buttons sync with hidden inputs
+document.querySelectorAll('input[name="tipoManejoRadio"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.getElementById('tipoManejo').value = radio.value;
+  });
+});
+document.querySelectorAll('input[name="prioridadeRadio"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.getElementById('prioridadeManejo').value = radio.value;
+  });
+});
+
+// Auto-calculate DAP from CAP
+const capInput = document.getElementById('cap');
+const dapInput = document.getElementById('dap');
+if (capInput && dapInput) {
+  capInput.addEventListener('input', () => {
+    const cap = parseFloat(capInput.value);
+    if (cap && cap > 0) {
+      dapInput.value = (cap / Math.PI).toFixed(2);
+    } else {
+      dapInput.value = '';
+    }
+  });
+}
+
+// Geolocation button
+const geoBtn = document.querySelector('#tab-localizacao .hint-box');
+if (geoBtn) {
+  geoBtn.style.cursor = 'pointer';
+  geoBtn.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      alert('Geolocalização não suportada pelo navegador.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        latitudeInput.value = pos.coords.latitude.toFixed(6);
+        longitudeInput.value = pos.coords.longitude.toFixed(6);
+        georreferenciadaInput.checked = true;
+      },
+      () => alert('Não foi possível obter a localização.')
+    );
+  });
+}
+
 let editingId = null;
 let doacoesCache = [];
 let arvores = [];
@@ -181,22 +241,30 @@ async function carregarArvores() {
 function renderizar(arvores) {
   arvoresList.innerHTML = '';
 
+  if (arvores.length === 0) {
+    arvoresList.innerHTML = '<p style="text-align:center;color:var(--muted);padding:20px;">Nenhuma árvore encontrada.</p>';
+    return;
+  }
+
   arvores.forEach((arvore) => {
-const item = document.createElement('article');
-    item.className = 'area-item';
+    const item = document.createElement('article');
+    item.className = 'tree-card';
+    const idLabel = 'ARB-' + String(arvore.id).padStart(6, '0');
+    const especie = arvore.especieNomePopular || 'Não informada';
+    const area = arvore.areaNome || 'Sem área';
     item.innerHTML = `
-      <header>
-        <h3>${arvore.nome || '(sem nome)'}</h3>
-        <span>${arvore.status}</span>
-      </header>
-      <p class="area-description">
-        ${arvore.areaNome ? 'Área: ' + arvore.areaNome : 'Sem área'} •
-        ${arvore.especieNomePopular ? 'Espécie: ' + arvore.especieNomePopular : 'Espécie não informada'}
-      </p>
-      <p class="area-description">${arvore.descricao || ''}</p>
-      <div class="item-actions">
-        <button type="button" data-action="editar">Editar</button>
-        <button type="button" data-action="remover">Remover</button>
+      <div class="tree-card-header">
+        <span class="tree-id">${idLabel}</span>
+        <span class="tree-name" title="${arvore.nome || '(sem nome)'}">${arvore.nome || '(sem nome)'}</span>
+      </div>
+      <div class="tree-card-info">
+        <span class="tree-card-tag" title="${especie}">🍃 ${especie}</span>
+        <span class="tree-card-tag" title="${area}">🏞️ ${area}</span>
+        <span class="tree-card-tag">${arvore.tipoArvore || ''} • ${arvore.porte || ''}</span>
+      </div>
+      <div class="tree-card-actions">
+        <button type="button" data-action="editar" class="tree-card-btn">Editar</button>
+        <button type="button" data-action="remover" class="tree-card-btn danger">Remover</button>
       </div>
     `;
     item.querySelector('[data-action="editar"]').addEventListener('click', () => iniciarEdicao(arvore));
@@ -221,13 +289,50 @@ function iniciarEdicao(arvore) {
   numeroProcessoInput.value = arvore.numeroProcesso || '';
   fotoUrlInput.value = arvore.fotoUrl || '';
   descricaoInput.value = arvore.descricao || '';
+  // Novos campos
+  document.getElementById('responsavelCadastro').value = arvore.responsavelCadastro || '';
+  document.getElementById('cap').value = arvore.cap ?? '';
+  document.getElementById('dap').value = arvore.dap ?? '';
+  document.getElementById('alturaTotal').value = arvore.alturaTotal ?? '';
+  document.getElementById('alturaPrimeiraBifurcacao').value = arvore.alturaPrimeiraBifurcacao ?? '';
+  document.getElementById('diametroCopa').value = arvore.diametroCopa ?? '';
+  document.getElementById('condicaoFitossanitaria').value = arvore.condicaoFitossanitaria || '';
+  document.getElementById('pragas').value = arvore.pragas || '';
+  document.getElementById('doencas').value = arvore.doencas || '';
+  document.getElementById('cavidades').value = arvore.cavidades || '';
+  document.getElementById('fungos').value = arvore.fungos || '';
+  document.getElementById('galhosSecos').value = arvore.galhosSecos || '';
+  document.getElementById('inclinacao').value = arvore.inclinacao || '';
+  document.getElementById('danosTronco').value = arvore.danosTronco || '';
+  document.getElementById('raizesExpostas').value = arvore.raizesExpostas || '';
+  document.getElementById('sinaisApodrecimento').value = arvore.sinaisApodrecimento || '';
+  document.getElementById('tipoConflito').value = arvore.tipoConflito || 'SEM_CONFLITO';
+  document.getElementById('tipoManejo').value = arvore.tipoManejo || 'NENHUM';
+  document.getElementById('prioridadeManejo').value = arvore.prioridadeManejo || '';
+  // Sync radio buttons
+  const tipoManejoVal = arvore.tipoManejo || 'NENHUM';
+  const tipoRadio = document.querySelector(`input[name="tipoManejoRadio"][value="${tipoManejoVal}"]`);
+  if (tipoRadio) tipoRadio.checked = true;
+  const prioVal = arvore.prioridadeManejo || '';
+  const prioRadio = document.querySelector(`input[name="prioridadeRadio"][value="${prioVal}"]`);
+  if (prioRadio) prioRadio.checked = true;
   formTitle.textContent = 'Editar árvore';
   cancelEditBtn.classList.remove('hidden');
+  // Ativar aba de identificação
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab-btn[data-tab="identificacao"]').classList.add('active');
+  document.getElementById('tab-identificacao').classList.add('active');
 }
 
 function cancelarEdicao() {
   editingId = null;
   form.reset();
+  document.getElementById('tipoManejo').value = 'NENHUM';
+  document.getElementById('prioridadeManejo').value = '';
+  document.querySelectorAll('input[name="tipoManejoRadio"]').forEach(r => r.checked = false);
+  document.querySelector('input[name="tipoManejoRadio"][value="NENHUM"]').checked = true;
+  document.querySelectorAll('input[name="prioridadeRadio"]').forEach(r => r.checked = false);
   formTitle.textContent = 'Nova árvore';
   cancelEditBtn.classList.add('hidden');
 }
@@ -257,6 +362,29 @@ form.addEventListener('submit', async (event) => {
     numeroProcesso: numeroProcessoInput.value || null,
     fotoUrl: obterUrlImagem(fotoUrlInput.value) || null,
     descricao: descricaoInput.value || null,
+    // Dados dendrométricos
+    cap: parseFloat(document.getElementById('cap')?.value) || null,
+    dap: parseFloat(document.getElementById('dap')?.value) || null,
+    alturaTotal: parseFloat(document.getElementById('alturaTotal')?.value) || null,
+    alturaPrimeiraBifurcacao: parseFloat(document.getElementById('alturaPrimeiraBifurcacao')?.value) || null,
+    diametroCopa: parseFloat(document.getElementById('diametroCopa')?.value) || null,
+    // Condição fitossanitária
+    condicaoFitossanitaria: document.getElementById('condicaoFitossanitaria')?.value || null,
+    pragas: document.getElementById('pragas')?.value || null,
+    doencas: document.getElementById('doencas')?.value || null,
+    cavidades: document.getElementById('cavidades')?.value || null,
+    fungos: document.getElementById('fungos')?.value || null,
+    galhosSecos: document.getElementById('galhosSecos')?.value || null,
+    inclinacao: document.getElementById('inclinacao')?.value || null,
+    danosTronco: document.getElementById('danosTronco')?.value || null,
+    raizesExpostas: document.getElementById('raizesExpostas')?.value || null,
+    sinaisApodrecimento: document.getElementById('sinaisApodrecimento')?.value || null,
+    // Conflitos
+    tipoConflito: document.getElementById('tipoConflito')?.value || null,
+    // Manejo
+    tipoManejo: document.getElementById('tipoManejo')?.value || null,
+    prioridadeManejo: document.getElementById('prioridadeManejo')?.value || null,
+    responsavelCadastro: document.getElementById('responsavelCadastro')?.value || null,
     fotos: []
   };
 

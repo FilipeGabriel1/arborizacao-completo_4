@@ -105,6 +105,29 @@ public class ArvoreService {
         arvore.setNumeroProcesso(request.numeroProcesso());
         arvore.setDescricao(request.descricao());
         arvore.setFotoUrl(request.fotoUrl());
+        // Dados dendrométricos
+        arvore.setCap(request.cap());
+        arvore.setDap(request.dap());
+        arvore.setAlturaTotal(request.alturaTotal());
+        arvore.setAlturaPrimeiraBifurcacao(request.alturaPrimeiraBifurcacao());
+        arvore.setDiametroCopa(request.diametroCopa());
+        // Condição fitossanitária
+        arvore.setCondicaoFitossanitaria(request.condicaoFitossanitaria());
+        arvore.setPragas(request.pragas());
+        arvore.setDoencas(request.doencas());
+        arvore.setCavidades(request.cavidades());
+        arvore.setFungos(request.fungos());
+        arvore.setGalhosSecos(request.galhosSecos());
+        arvore.setInclinacao(request.inclinacao());
+        arvore.setDanosTronco(request.danosTronco());
+        arvore.setRaizesExpostas(request.raizesExpostas());
+        arvore.setSinaisApodrecimento(request.sinaisApodrecimento());
+        // Conflitos
+        arvore.setTipoConflito(request.tipoConflito());
+        // Manejo
+        arvore.setTipoManejo(request.tipoManejo());
+        arvore.setPrioridadeManejo(request.prioridadeManejo());
+        arvore.setResponsavelCadastro(request.responsavelCadastro());
         atualizarFotos(arvore, request.fotos());
         arvore.prepararPersistencia();
     }
@@ -154,6 +177,25 @@ public class ArvoreService {
                 arvore.getDescricao(),
                 arvore.getFotoUrl(),
                 fotos,
+                arvore.getCap(),
+                arvore.getDap(),
+                arvore.getAlturaTotal(),
+                arvore.getAlturaPrimeiraBifurcacao(),
+                arvore.getDiametroCopa(),
+                arvore.getCondicaoFitossanitaria(),
+                arvore.getPragas(),
+                arvore.getDoencas(),
+                arvore.getCavidades(),
+                arvore.getFungos(),
+                arvore.getGalhosSecos(),
+                arvore.getInclinacao(),
+                arvore.getDanosTronco(),
+                arvore.getRaizesExpostas(),
+                arvore.getSinaisApodrecimento(),
+                arvore.getTipoConflito(),
+                arvore.getTipoManejo(),
+                arvore.getPrioridadeManejo(),
+                arvore.getResponsavelCadastro(),
                 arvore.getCriadoEm(),
                 arvore.getAtualizadoEm()
         );

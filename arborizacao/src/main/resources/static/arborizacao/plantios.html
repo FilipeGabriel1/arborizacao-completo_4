@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plantios — Arborização</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./dashboard.css" />
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-text">
+        <strong>ARBORIZAÇÃO</strong>
+        <small>Área Técnica</small>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a href="./painel.html" class="sidebar-link"><span class="icon">📊</span><span>Painel</span></a>
+        <a href="./arvores.html" class="sidebar-link"><span class="icon">🌲</span><span>Inventário Arbóreo</span></a>
+        <a href="./cadastro-areas.html" class="sidebar-link"><span class="icon">🏞️</span><span>Áreas Verdes</span></a>
+        <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
+        <a href="./plantios.html" class="sidebar-link active"><span class="icon">🌿</span><span>Plantios</span></a>
+        <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
+        <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
+        <a href="./relatorios.html" class="sidebar-link"><span class="icon">📋</span><span>Relatórios</span></a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Administração</div>
+        <a href="./usuarios.html" class="sidebar-link" data-admin hidden><span class="icon">👥</span><span>Usuários</span></a>
+        <a href="./historico.html" class="sidebar-link" data-admin hidden><span class="icon">📜</span><span>Histórico de Alterações</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <p>Sistema de Gestão da Arborização Urbana</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-greeting">
+        <h1>Plantios</h1>
+        <p>Registro e acompanhamento de plantios de árvores em áreas verdes.</p>
+      </div>
+      <div class="topbar-actions">
+        <span id="userEmail" style="font-size:0.82rem;color:var(--muted);"></span>
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
+        </form>
+      </div>
+    </header>
+
+    <!-- KPIs -->
+    <section class="section-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+      <article class="card card-metric" data-metric="total">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">📋</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiTotal">0</span>
+            <span class="card-metric-label">Total de Plantios</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric" data-metric="mudas">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🌱</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiMudas">0</span>
+            <span class="card-metric-label">Total de Mudas</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric" data-metric="planejados">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">📅</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiPlanejados">0</span>
+            <span class="card-metric-label">Planejados</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric" data-metric="execucao">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">⚡</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiExecucao">0</span>
+            <span class="card-metric-label">Em Execução</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric" data-metric="concluidos">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">✅</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiConcluidos">0</span>
+            <span class="card-metric-label">Concluídos</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+
+      <!-- FORMULÁRIO -->
+      <section class="card">
+        <header class="card-header">
+          <h2 id="formTitle">Novo Plantio</h2>
+        </header>
+        <div class="card-content" style="padding-top:12px;">
+          <div id="formMessage"></div>
+          <form id="plantioForm" class="form-card">
+            <label for="areaId">Área Verde</label>
+            <select id="areaId" name="areaId">
+              <option value="">Selecione...</option>
+            </select>
+
+            <label for="especieId">Espécie</label>
+            <select id="especieId" name="especieId">
+              <option value="">Selecione...</option>
+            </select>
+
+            <label for="quantidadeMudas">Qtd. de Mudas *</label>
+            <input id="quantidadeMudas" name="quantidadeMudas" type="number" min="1" required placeholder="Quantidade de mudas a plantar" />
+
+            <label for="dataPlantio">Data do Plantio</label>
+            <input id="dataPlantio" name="dataPlantio" type="date" />
+
+            <label for="responsavel">Responsável</label>
+            <input id="responsavel" name="responsavel" type="text" placeholder="Nome do responsável pelo plantio" />
+
+            <label for="descricao">Descrição / Observações</label>
+            <textarea id="descricao" name="descricao" rows="3" placeholder="Detalhes do plantio..."></textarea>
+
+            <label for="status">Status *</label>
+            <select id="status" name="status" required>
+              <option value="PLANEJADO">Planejado</option>
+              <option value="EM_EXECUCAO">Em Execução</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button type="submit" class="primary-button">Salvar</button>
+              <button type="button" id="cancelEditBtn" class="ghost-button hidden" style="flex-shrink:0;">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- LISTA -->
+      <section class="card">
+        <header class="card-header">
+          <h2>Plantios Registrados</h2>
+          <input id="buscaTermo" type="search" class="search-input" placeholder="Buscar plantio..." style="max-width:220px;" />
+        </header>
+        <div class="card-content">
+          <div id="plantiosList" class="area-list">
+            <p class="empty-state">Nenhum plantio encontrado.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="./scripts.js"></script>
+  <script src="./plantios.js"></script>
+</body>
+</html>

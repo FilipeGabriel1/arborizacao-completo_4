@@ -47,6 +47,28 @@ public class AreaArborizada {
     @Column(nullable = false, length = 30)
     private AreaStatus status;
 
+    @Column(length = 120)
+    private String bairro;
+
+    @Column(length = 200)
+    private String logradouro;
+
+    @Column(name = "area_total_m2")
+    private Double areaTotalM2;
+
+    @Column(name = "responsavel_manutencao", length = 200)
+    private String responsavelManutencao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "situacao_inventario", length = 30)
+    private SituacaoInventario situacaoInventario;
+
+    @Column(name = "individuos_cadastrados")
+    private Integer individuosCadastrados;
+
+    @Column(name = "ultima_atualizacao_inventario")
+    private LocalDateTime ultimaAtualizacaoInventario;
+
     private Double latitude;
     private Double longitude;
 
@@ -121,6 +143,62 @@ public class AreaArborizada {
 
     public void setStatus(AreaStatus status) {
         this.status = status;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getLogradouro() {
+        return logradouro;
+    }
+
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
+
+    public Double getAreaTotalM2() {
+        return areaTotalM2;
+    }
+
+    public void setAreaTotalM2(Double areaTotalM2) {
+        this.areaTotalM2 = areaTotalM2;
+    }
+
+    public String getResponsavelManutencao() {
+        return responsavelManutencao;
+    }
+
+    public void setResponsavelManutencao(String responsavelManutencao) {
+        this.responsavelManutencao = responsavelManutencao;
+    }
+
+    public SituacaoInventario getSituacaoInventario() {
+        return situacaoInventario;
+    }
+
+    public void setSituacaoInventario(SituacaoInventario situacaoInventario) {
+        this.situacaoInventario = situacaoInventario;
+    }
+
+    public Integer getIndividuosCadastrados() {
+        return individuosCadastrados;
+    }
+
+    public void setIndividuosCadastrados(Integer individuosCadastrados) {
+        this.individuosCadastrados = individuosCadastrados;
+    }
+
+    public LocalDateTime getUltimaAtualizacaoInventario() {
+        return ultimaAtualizacaoInventario;
+    }
+
+    public void setUltimaAtualizacaoInventario(LocalDateTime ultimaAtualizacaoInventario) {
+        this.ultimaAtualizacaoInventario = ultimaAtualizacaoInventario;
     }
 
     public Double getLatitude() {

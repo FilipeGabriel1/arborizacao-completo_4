@@ -83,7 +83,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")
                 .usernameParameter("email")
                 .passwordParameter("senha")
-                .defaultSuccessUrl("/arborizacao/cadastro-areas.html", true)
+                .defaultSuccessUrl("/arborizacao/painel.html", true)
                 .failureUrl("/arborizacao/login.html?erro=1")
                 .permitAll()
             )

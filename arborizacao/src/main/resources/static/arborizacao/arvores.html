@@ -3,124 +3,452 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Árvores • Arborização</title>
+  <title>Inventário Arbóreo • Arborização</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./dashboard.css" />
 </head>
 <body>
-  <main class="app-shell">
-    <div class="user-bar">
-      <span id="userEmail">...</span>
-      <a href="./cadastro-areas.html" class="ghost-button">← Áreas</a>
-      <a href="./especies.html" class="ghost-button">Espécies</a>
-      <a href="./doacoes.html" class="ghost-button">Doações</a>
-      <a id="adminLink" href="./usuarios.html" class="ghost-button" data-admin hidden>Usuários</a>
-      <a href="./historico.html" class="ghost-button" data-admin hidden>Histórico</a>
-      <form action="/logout" method="post" class="logout-form">
-        <button type="submit" class="ghost-button">Sair</button>
-      </form>
-    </div>
-
-    <section class="hero">
-      <div>
-        <p class="eyebrow">Amasvisa • Arborização Urbana</p>
-        <h1>Árvores cadastradas</h1>
-        <p class="hero-copy">Vincule cada árvore a uma área e, se souber, a uma espécie.</p>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-text">
+        <strong>ARBORIZAÇÃO</strong>
+        <small>Área Técnica</small>
       </div>
-    </section>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a href="./painel.html" class="sidebar-link">
+          <span class="icon">📊</span><span>Painel</span>
+        </a>
+        <a href="./arvores.html" class="sidebar-link active">
+          <span class="icon">🌲</span><span>Inventário Arbóreo</span>
+        </a>
+        <a href="./cadastro-areas.html" class="sidebar-link">
+          <span class="icon">🏞️</span><span>Áreas Verdes</span>
+        </a>
+        <a href="./sementeira.html" class="sidebar-link">
+          <span class="icon">🌱</span><span>Sementeira Municipal</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="icon">🌿</span><span>Plantios</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span>
+        </a>
+        <a href="./especies.html" class="sidebar-link">
+          <span class="icon">🍃</span><span>Espécies</span>
+        </a>
+        <a href="#" class="sidebar-link">
+          <span class="icon">📋</span><span>Relatórios</span>
+        </a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Administração</div>
+        <a href="./usuarios.html" class="sidebar-link" data-admin hidden>
+          <span class="icon">👥</span><span>Usuários</span>
+        </a>
+        <a href="./historico.html" class="sidebar-link" data-admin hidden>
+          <span class="icon">📜</span><span>Histórico de Alterações</span>
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-brand">
+        <img src="./brasao-vitoria.svg" alt="Brasão" onerror="this.style.display='none'" />
+        <div class="sidebar-footer-brand-text">
+          <strong>Prefeitura de Vitória de Santo Antão</strong>
+          <small>AMASVISA • Meio Ambiente</small>
+        </div>
+      </div>
+      <p>Sistema de Gestão da Arborização Urbana</p>
+    </div>
+  </aside>
 
-    <section class="workspace">
-      <aside class="panel">
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-greeting">
+        <h1>Inventário Arbóreo</h1>
+        <p>Cadastro e acompanhamento das árvores do município.</p>
+      </div>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Buscar por ID, nome, espécie..." />
+      </div>
+      <div class="topbar-actions">
+        <div class="topbar-user">
+          <div class="topbar-user-avatar" id="userAvatar">TS</div>
+          <div class="topbar-user-info">
+            <strong id="userFullName">Técnico(a)</strong>
+            <small id="userProfile">Perfil: Técnico</small>
+          </div>
+        </div>
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
+        </form>
+      </div>
+    </header>
+
+    <section class="workspace" style="grid-template-columns: 420px 1fr 360px;">
+      <aside class="panel" style="max-height: calc(100vh - 100px); overflow-y: auto;">
         <div class="panel-header">
-          <h2 id="formTitle">Nova árvore</h2>
+          <h2 id="formTitle">Novo cadastro de árvore</h2>
         </div>
         <div id="formMessage"></div>
         <form id="arvoreForm" class="form-grid">
-          <label>
-            Nome / apelido
-            <input type="text" id="nome" placeholder="Ex: Ipê da entrada" />
-          </label>
-          <label>
-            Área
-            <select id="areaId">
-              <option value="">Selecione...</option>
-            </select>
-          </label>
-          <label>
-            Espécie
-            <select id="especieId">
-              <option value="">Não informada</option>
-            </select>
-          </label>
-          <label>
-            Tipo
-            <select id="tipoArvore" required>
-              <option value="NATIVA">Nativa</option>
-              <option value="EXOTICA">Exótica</option>
-              <option value="FRUTIFERA">Frutífera</option>
-              <option value="ORNAMENTAL">Ornamental</option>
-              <option value="OUTRA">Outra</option>
-            </select>
-          </label>
-          <label>
-            Porte
-            <select id="porte" required>
-              <option value="PEQUENO">Pequeno</option>
-              <option value="MEDIO">Médio</option>
-              <option value="GRANDE">Grande</option>
-            </select>
-          </label>
-          <label>
-            Origem
-            <select id="origem" required>
-              <option value="PLANTIO_PROPRIO">Plantio próprio</option>
-              <option value="DOACAO">Doação</option>
-              <option value="OBRIGACAO_LEGAL">Obrigação legal</option>
-              <option value="OUTRA">Outra</option>
-            </select>
-          </label>
-          <label>
-            Status
-            <select id="status" required>
-              <option value="ATIVA">Ativa</option>
-              <option value="EM_MANUTENCAO">Em manutenção</option>
-              <option value="INATIVA">Inativa</option>
-              <option value="REMOVIDA">Removida</option>
-            </select>
-          </label>
-          <label class="checkbox-field">
-            <input type="checkbox" id="georreferenciada" />
-            Georreferenciada (tem latitude/longitude)
-          </label>
-          <label>
-            Latitude
-            <input type="number" step="any" id="latitude" />
-          </label>
-          <label>
-            Longitude
-            <input type="number" step="any" id="longitude" />
-          </label>
-          <label>
-            Data do plantio
-            <input type="date" id="dataPlantio" />
-          </label>
-          <label>
-            Número do processo
-            <input type="text" id="numeroProcesso" />
-          </label>
-          <label>
-            Foto (URL)
-            <input type="text" id="fotoUrl" placeholder="https://drive.google.com/... ou https://..." />
-          </label>
-          <label>
-            Descrição
-            <textarea id="descricao" rows="3"></textarea>
-          </label>
-          <button type="submit" class="primary-button" id="saveBtn">Salvar</button>
-          <button type="button" class="ghost-button hidden" id="cancelEditBtn">Cancelar edição</button>
+          <!-- TABS -->
+          <div class="tabs-nav" id="tabsNav">
+            <button type="button" class="tab-btn active" data-tab="identificacao" title="Identificação">Identificação</button>
+            <button type="button" class="tab-btn" data-tab="localizacao" title="Localização">Localização</button>
+            <button type="button" class="tab-btn" data-tab="dendrometricos" title="Dendrométricos">Dendrométricos</button>
+            <button type="button" class="tab-btn" data-tab="fitossanitaria" title="Condição Fitossanitária">Fitossanitária</button>
+            <button type="button" class="tab-btn" data-tab="conflitos" title="Conflitos">Conflitos</button>
+            <button type="button" class="tab-btn" data-tab="manejo" title="Manejo">Manejo</button>
+          </div>
+
+          <!-- TAB: Identificação -->
+          <div class="tab-content active" id="tab-identificacao">
+            <label>
+              Nome / apelido
+              <input type="text" id="nome" placeholder="Ex: Ipê da entrada" />
+            </label>
+            <label>
+              Área vinculada
+              <select id="areaId">
+                <option value="">Selecione...</option>
+              </select>
+            </label>
+            <label>
+              Espécie
+              <select id="especieId">
+                <option value="">Não informada</option>
+              </select>
+            </label>
+            <div class="two-columns">
+              <label>
+                Tipo
+                <select id="tipoArvore" required>
+                  <option value="NATIVA">Nativa</option>
+                  <option value="EXOTICA">Exótica</option>
+                  <option value="FRUTIFERA">Frutífera</option>
+                  <option value="ORNAMENTAL">Ornamental</option>
+                  <option value="OUTRA">Outra</option>
+                </select>
+              </label>
+              <label>
+                Origem
+                <select id="origem" required>
+                  <option value="PLANTIO_PROPRIO">Plantio próprio</option>
+                  <option value="DOACAO">Doação</option>
+                  <option value="OBRIGACAO_LEGAL">Obrigação legal</option>
+                  <option value="OUTRA">Outra</option>
+                </select>
+              </label>
+            </div>
+            <div class="two-columns">
+              <label>
+                Porte
+                <select id="porte" required>
+                  <option value="PEQUENO">Pequeno</option>
+                  <option value="MEDIO">Médio</option>
+                  <option value="GRANDE">Grande</option>
+                </select>
+              </label>
+              <label>
+                Status
+                <select id="status" required>
+                  <option value="ATIVA">Ativa</option>
+                  <option value="EM_MANUTENCAO">Em manutenção</option>
+                  <option value="INATIVA">Inativa</option>
+                  <option value="REMOVIDA">Removida</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Data do plantio
+              <input type="date" id="dataPlantio" />
+            </label>
+            <label>
+              Número do processo
+              <input type="text" id="numeroProcesso" />
+            </label>
+            <label>
+              Responsável pelo cadastro
+              <input type="text" id="responsavelCadastro" placeholder="Nome do técnico" />
+            </label>
+            <label>
+              Foto (URL)
+              <input type="text" id="fotoUrl" placeholder="https://drive.google.com/... ou https://..." />
+            </label>
+            <label>
+              Descrição
+              <textarea id="descricao" rows="3"></textarea>
+            </label>
+          </div>
+
+          <!-- TAB: Localização -->
+          <div class="tab-content" id="tab-localizacao">
+            <label class="checkbox-field">
+              <input type="checkbox" id="georreferenciada" />
+              Georreferenciada (tem latitude/longitude)
+            </label>
+            <div class="two-columns">
+              <label>
+                Latitude
+                <input type="number" step="any" id="latitude" />
+              </label>
+              <label>
+                Longitude
+                <input type="number" step="any" id="longitude" />
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>📍 Usar minha localização</strong>
+              <p>Use o GPS do dispositivo para preencher automaticamente as coordenadas durante o inventário em campo.</p>
+            </div>
+          </div>
+
+          <!-- TAB: Dados Dendrométricos -->
+          <div class="tab-content" id="tab-dendrometricos">
+            <div class="two-columns">
+              <label>
+                CAP (cm)
+                <input type="number" step="any" id="cap" placeholder="Circunferência à altura do peito" />
+              </label>
+              <label>
+                DAP (cm)
+                <input type="number" step="any" id="dap" placeholder="Calculado automaticamente" readonly />
+              </label>
+            </div>
+            <div class="hint-box" style="margin-bottom:12px;">
+              <strong>ℹ️ Cálculo automático</strong>
+              <p>DAP = CAP ÷ π (3,14159). O DAP é calculado automaticamente a partir do CAP informado.</p>
+            </div>
+            <div class="two-columns">
+              <label>
+                Altura total estimada (m)
+                <input type="number" step="any" id="alturaTotal" />
+              </label>
+              <label>
+                Altura 1ª bifurcação (m)
+                <input type="number" step="any" id="alturaPrimeiraBifurcacao" />
+              </label>
+            </div>
+            <label>
+              Diâmetro/projeção da copa (m)
+              <input type="number" step="any" id="diametroCopa" />
+            </label>
+          </div>
+
+          <!-- TAB: Condição Fitossanitária -->
+          <div class="tab-content" id="tab-fitossanitaria">
+            <label>
+              Estado geral
+              <select id="condicaoFitossanitaria">
+                <option value="">Selecione...</option>
+                <option value="BOM">🟢 Bom</option>
+                <option value="REGULAR">🟡 Regular</option>
+                <option value="RUIM">🟠 Ruim</option>
+                <option value="CRITICO">🔴 Crítico</option>
+              </select>
+            </label>
+            <label>
+              Pragas
+              <input type="text" id="pragas" placeholder="Ex: Broca, pulgão..." />
+            </label>
+            <label>
+              Doenças
+              <input type="text" id="doencas" placeholder="Ex: Ferrugem, oídio..." />
+            </label>
+            <label>
+              Cavidades
+              <input type="text" id="cavidades" placeholder="Ex: Cavidade no tronco de 15cm" />
+            </label>
+            <label>
+              Fungos
+              <input type="text" id="fungos" placeholder="Ex: Cogumelos na base" />
+            </label>
+            <label>
+              Galhos secos
+              <input type="text" id="galhosSecos" placeholder="Ex: 3 galhos secos no terço superior" />
+            </label>
+            <label>
+              Inclinação
+              <input type="text" id="inclinacao" placeholder="Ex: Inclinação de 15° para leste" />
+            </label>
+            <label>
+              Danos no tronco
+              <input type="text" id="danosTronco" placeholder="Ex: Ferimentos, cortes" />
+            </label>
+            <label>
+              Raízes expostas
+              <input type="text" id="raizesExpostas" placeholder="Ex: Raízes expostas na calçada" />
+            </label>
+            <label>
+              Sinais de apodrecimento
+              <input type="text" id="sinaisApodrecimento" placeholder="Ex: Base do tronco mole" />
+            </label>
+          </div>
+
+          <!-- TAB: Conflitos com Infraestrutura -->
+          <div class="tab-content" id="tab-conflitos">
+            <label>
+              Tipo de conflito
+              <select id="tipoConflito">
+                <option value="SEM_CONFLITO">Sem conflito</option>
+                <option value="REDE_ELETRICA">Rede elétrica</option>
+                <option value="ILUMINACAO">Iluminação pública</option>
+                <option value="EDIFICACAO">Edificação</option>
+                <option value="CALCADA">Calçada</option>
+                <option value="SINALIZACAO">Sinalização</option>
+                <option value="REDE_SUBTERRANEA">Rede subterrânea</option>
+                <option value="ACESSIBILIDADE">Acessibilidade</option>
+                <option value="TRANSITO">Trânsito</option>
+              </select>
+            </label>
+            <div class="hint-box">
+              <strong>ℹ️ Conflitos com infraestrutura</strong>
+              <p>Marque o principal conflito identificado. Essa informação permite gerar mapas de árvores em conflito com rede elétrica, calçada, etc.</p>
+            </div>
+          </div>
+
+          <!-- TAB: Manejo -->
+          <div class="tab-content" id="tab-manejo">
+            <div class="manejo-section">
+              <div class="manejo-section-title">Tipo de Intervenção</div>
+              <div class="manejo-grid">
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="NENHUM" checked />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🚫</span>
+                    <span class="manejo-option-label">Nenhuma</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="MONITORAMENTO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">👁️</span>
+                    <span class="manejo-option-label">Monitoramento</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="PODA_LIMPEZA" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">✂️</span>
+                    <span class="manejo-option-label">Poda Limpeza</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="PODA_FORMACAO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🌳</span>
+                    <span class="manejo-option-label">Poda Formação</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="PODA_ADEQUACAO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🔧</span>
+                    <span class="manejo-option-label">Poda Adequação</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="TRATAMENTO_FITOSANITARIO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">💊</span>
+                    <span class="manejo-option-label">Tratamento</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="AMPLIACAO_CANTEIRO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🌱</span>
+                    <span class="manejo-option-label">Ampliar Canteiro</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="TUTORAMENTO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🪵</span>
+                    <span class="manejo-option-label">Tutoramento</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="AVALIACAO_TRANSPLANTE" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🔄</span>
+                    <span class="manejo-option-label">Transplante</span>
+                  </div>
+                </label>
+                <label class="manejo-option">
+                  <input type="radio" name="tipoManejoRadio" value="AVALIACAO_SUPRESSAO" />
+                  <div class="manejo-option-card">
+                    <span class="manejo-option-icon">🪓</span>
+                    <span class="manejo-option-label">Supressão</span>
+                  </div>
+                </label>
+              </div>
+              <input type="hidden" id="tipoManejo" />
+            </div>
+
+            <div class="manejo-section">
+              <div class="manejo-section-title">Prioridade</div>
+              <div class="manejo-prioridade-grid">
+                <label class="manejo-prioridade-option">
+                  <input type="radio" name="prioridadeRadio" value="BAIXA" />
+                  <div class="manejo-prioridade-card baixa">
+                    <span class="manejo-prioridade-dot"></span>
+                    <span>Baixa</span>
+                  </div>
+                </label>
+                <label class="manejo-prioridade-option">
+                  <input type="radio" name="prioridadeRadio" value="MEDIA" />
+                  <div class="manejo-prioridade-card media">
+                    <span class="manejo-prioridade-dot"></span>
+                    <span>Média</span>
+                  </div>
+                </label>
+                <label class="manejo-prioridade-option">
+                  <input type="radio" name="prioridadeRadio" value="ALTA" />
+                  <div class="manejo-prioridade-card alta">
+                    <span class="manejo-prioridade-dot"></span>
+                    <span>Alta</span>
+                  </div>
+                </label>
+                <label class="manejo-prioridade-option">
+                  <input type="radio" name="prioridadeRadio" value="URGENTE" />
+                  <div class="manejo-prioridade-card urgente">
+                    <span class="manejo-prioridade-dot"></span>
+                    <span>Urgente</span>
+                  </div>
+                </label>
+              </div>
+              <input type="hidden" id="prioridadeManejo" />
+            </div>
+
+            <div class="manejo-section">
+              <div class="manejo-section-title">Responsável</div>
+              <label>
+                <input type="text" id="responsavelCadastro" placeholder="Nome do responsável pelo cadastro" />
+              </label>
+            </div>
+
+            <div class="hint-box" style="margin-top:8px;">
+              <strong>ℹ️ Sobre o manejo</strong>
+              <p>Defina o tipo de intervenção e a prioridade. Essas informações alimentam a lista de Ordens de Serviço para a equipe de campo.</p>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <button type="submit" class="primary-button" id="saveBtn" style="width:100%;">Salvar árvore</button>
+            <button type="button" class="ghost-button hidden" id="cancelEditBtn" style="width:100%;margin-top:8px;">Cancelar edição</button>
+          </div>
         </form>
       </aside>
 
@@ -129,16 +457,16 @@
           <h2>Buscar árvore</h2>
         </div>
         <form id="buscaForm" class="busca-form">
-          <input type="text" id="buscaTermo" placeholder="Digite o nome ou o ID da árvore..." />
+          <input type="text" id="buscaTermo" placeholder="Digite o nome, espécie ou ID da árvore..." />
           <button type="submit" class="primary-button">Buscar</button>
         </form>
-        <p class="area-description">Você pode digitar o nome da árvore ou o ID.</p>
+        <p class="area-description">Você pode digitar o nome, a espécie ou o ID (ex.: ARB-000001).</p>
         <div id="buscaResultado"></div>
       </section>
 
       <section class="panel">
         <div class="panel-header">
-          <h2>Árvores</h2>
+          <h2>Árvores cadastradas</h2>
         </div>
         <div id="arvoresList" class="areas-list"></div>
       </section>
@@ -150,4 +478,3 @@
   <script src="./arvores.js"></script>
 </body>
 </html>
-

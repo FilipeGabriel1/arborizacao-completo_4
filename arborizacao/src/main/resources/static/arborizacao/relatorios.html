@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatórios — Arborização</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./dashboard.css" />
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-text">
+        <strong>ARBORIZAÇÃO</strong>
+        <small>Área Técnica</small>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a href="./painel.html" class="sidebar-link"><span class="icon">📊</span><span>Painel</span></a>
+        <a href="./arvores.html" class="sidebar-link"><span class="icon">🌲</span><span>Inventário Arbóreo</span></a>
+        <a href="./cadastro-areas.html" class="sidebar-link"><span class="icon">🏞️</span><span>Áreas Verdes</span></a>
+        <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
+        <a href="./plantios.html" class="sidebar-link"><span class="icon">🌿</span><span>Plantios</span></a>
+        <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
+        <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
+        <a href="./relatorios.html" class="sidebar-link active"><span class="icon">📋</span><span>Relatórios</span></a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Administração</div>
+        <a href="./usuarios.html" class="sidebar-link" data-admin hidden><span class="icon">👥</span><span>Usuários</span></a>
+        <a href="./historico.html" class="sidebar-link" data-admin hidden><span class="icon">📜</span><span>Histórico de Alterações</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <p>Sistema de Gestão da Arborização Urbana</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-greeting">
+        <h1>Relatórios</h1>
+        <p>Indicadores consolidados do sistema de arborização urbana.</p>
+      </div>
+      <div class="topbar-actions">
+        <span id="userEmail" style="font-size:0.82rem;color:var(--muted);"></span>
+        <form action="/logout" method="post" class="logout-form">
+          <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
+        </form>
+      </div>
+    </header>
+
+    <!-- KPIs GERAIS -->
+    <section class="section-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+      <article class="card card-metric">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🌲</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiArvores">0</span>
+            <span class="card-metric-label">Árvores Cadastradas</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🏞️</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiAreas">0</span>
+            <span class="card-metric-label">Áreas Verdes</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🍃</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiEspecies">0</span>
+            <span class="card-metric-label">Espécies Registradas</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🌱</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiMudas">0</span>
+            <span class="card-metric-label">Mudas (Sementeira)</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🌿</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiPlantios">0</span>
+            <span class="card-metric-label">Plantios</span>
+          </div>
+        </div>
+      </article>
+      <article class="card card-metric">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;">🔧</span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiManutencoes">0</span>
+            <span class="card-metric-label">Ordens de Serviço</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+
+      <!-- Distribuição por Porte -->
+      <section class="card">
+        <header class="card-header"><h2>Distribuição por Porte</h2></header>
+        <div class="card-content">
+          <div class="chart-container">
+            <svg id="chartPorte" class="chart-svg" viewBox="0 0 200 200"></svg>
+            <div id="chartPorteLegend" class="chart-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Distribuição por Origem -->
+      <section class="card">
+        <header class="card-header"><h2>Distribuição por Origem</h2></header>
+        <div class="card-content">
+          <div class="chart-container">
+            <svg id="chartOrigem" class="chart-svg" viewBox="0 0 200 200"></svg>
+            <div id="chartOrigemLegend" class="chart-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Condicao Fitossanitaria -->
+      <section class="card">
+        <header class="card-header"><h2>Condição Fitossanitária</h2></header>
+        <div class="card-content">
+          <div class="chart-container">
+            <svg id="chartCondicao" class="chart-svg" viewBox="0 0 200 200"></svg>
+            <div id="chartCondicaoLegend" class="chart-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status dos Plantios -->
+      <section class="card">
+        <header class="card-header"><h2>Status dos Plantios</h2></header>
+        <div class="card-content">
+          <div class="chart-container">
+            <svg id="chartPlantios" class="chart-svg" viewBox="0 0 200 200"></svg>
+            <div id="chartPlantiosLegend" class="chart-legend"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Top Espécies -->
+      <section class="card" style="grid-column: span 2;">
+        <header class="card-header"><h2>Top Espécies por Quantidade de Árvores</h2></header>
+        <div class="card-content">
+          <div id="topEspecies" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="./scripts.js"></script>
+  <script src="./relatorios.js"></script>
+</body>
+</html>
