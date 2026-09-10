@@ -5,11 +5,13 @@ cd "$(dirname "$0")"
 # ============================================================
 #  Arborizacao - subida local / rede interna
 # ============================================================
-#  Para personalizar o banco sem editar este arquivo, crie
-#  config/run-local.sh (gitignored) com algo como:
-#     export DB_URL='jdbc:mysql://192.168.0.10:3306/arborizacao?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true'
+#  Banco padrão: SQLite (arquivo arborizacao.db na raiz do projeto)
+#  Para usar MySQL, defina as variáveis em config/run-local.sh:
+#     export DB_URL='jdbc:mysql://localhost:3306/arborizacao?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true'
 #     export DB_USERNAME='root'
 #     export DB_PASSWORD='SUA_SENHA'
+#     export DB_DRIVER='com.mysql.cj.jdbc.Driver'
+#     export DB_PLATFORM='org.hibernate.dialect.MySQLDialect'
 # ============================================================
 
 if [ -f "config/run-local.sh" ]; then
@@ -17,8 +19,10 @@ if [ -f "config/run-local.sh" ]; then
   . "config/run-local.sh"
 fi
 
-export DB_URL="${DB_URL:-jdbc:mysql://localhost:3306/arborizacao?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}"
-export DB_USERNAME="${DB_USERNAME:-root}"
+export DB_URL="${DB_URL:-jdbc:sqlite:arborizacao.db}"
+export DB_DRIVER="${DB_DRIVER:-org.sqlite.JDBC}"
+export DB_PLATFORM="${DB_PLATFORM:-org.hibernate.community.dialect.SQLiteDialect}"
+export DB_USERNAME="${DB_USERNAME:-}"
 export DB_PASSWORD="${DB_PASSWORD:-}"
 export SERVER_PORT="${SERVER_PORT:-8080}"
 
