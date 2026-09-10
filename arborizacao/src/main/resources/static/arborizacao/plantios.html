@@ -29,6 +29,7 @@
         <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
         <a href="./plantios.html" class="sidebar-link active"><span class="icon">🌿</span><span>Plantios</span></a>
         <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
+
         <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
         <a href="./relatorios.html" class="sidebar-link"><span class="icon">📋</span><span>Relatórios</span></a>
       </div>
@@ -118,12 +119,12 @@
           <div id="formMessage"></div>
           <form id="plantioForm" class="form-card">
             <label for="areaId">Área Verde</label>
-            <select id="areaId" name="areaId">
+            <select id="areaId" name="areaId" required>
               <option value="">Selecione...</option>
             </select>
 
             <label for="especieId">Espécie</label>
-            <select id="especieId" name="especieId">
+            <select id="especieId" name="especieId" required>
               <option value="">Selecione...</option>
             </select>
 
@@ -170,7 +171,9 @@
     </div>
   </main>
 
-  <script src="./scripts.js"></script>
+  <script src="./csrf.js"></script>
+  <script src="./auth.js"></script>
+  <script src="./toasts.js"></script>
   <script src="./plantios.js"></script>
 </body>
 </html>

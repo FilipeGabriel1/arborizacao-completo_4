@@ -176,6 +176,7 @@ async function carregarDoacoes() {
   }
   doacoes = itens;
   renderizar(aplicarFiltros());
+  animarEntrada(doacoesList);
 }
 
 function iniciarEdicao(doacao) {
@@ -203,12 +204,15 @@ function cancelarEdicao() {
 async function remover(doacao) {
   if (!confirm('Remover este registro de doação?')) return;
   await fetch(`${apiBase}/${doacao.id}`, { method: 'DELETE' });
+  showToast('Doação removida com sucesso!', 'sucesso');
   carregarDoacoes();
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
+
+  if (!form.reportValidity()) return;
 
   const payload = {
     arvoreId: arvoreIdInput.value,
@@ -237,6 +241,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   cancelarEdicao();
+  showToast(editingId ? 'Doação atualizada com sucesso!' : 'Doação criada com sucesso!', 'sucesso');
   carregarDoacoes();
 });
 

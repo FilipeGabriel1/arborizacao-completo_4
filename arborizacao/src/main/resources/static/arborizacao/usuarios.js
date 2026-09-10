@@ -21,6 +21,7 @@ async function carregarUsuarios() {
   }
   const usuarios = await res.json();
   renderizarLista(usuarios);
+  animarEntrada(usuariosList);
 }
 
 function renderizarLista(usuarios) {
@@ -74,12 +75,15 @@ async function remover(usuario) {
     return;
   }
   await fetch(`${apiBase}/${usuario.id}`, { method: 'DELETE' });
+  showToast('Usuário removido com sucesso!', 'sucesso');
   carregarUsuarios();
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
+
+  if (!form.reportValidity()) return;
 
   if (editingId) {
     // Edição: só troca a senha se o campo foi preenchido.
@@ -91,6 +95,7 @@ form.addEventListener('submit', async (event) => {
       });
     }
     cancelarEdicao();
+    showToast('Usuário atualizado com sucesso!', 'sucesso');
     carregarUsuarios();
     return;
   }
@@ -115,6 +120,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   form.reset();
+  showToast('Usuário criado com sucesso!', 'sucesso');
   carregarUsuarios();
 });
 

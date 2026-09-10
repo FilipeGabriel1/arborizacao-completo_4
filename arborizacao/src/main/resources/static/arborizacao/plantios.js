@@ -53,6 +53,7 @@ async function carregarPlantios() {
   plantios = itens;
   renderizar(plantios);
   atualizarKPIs(plantios);
+  animarEntrada(plantiosList);
 }
 
 function renderizar(plantios) {
@@ -109,12 +110,15 @@ async function remover(p) {
   const label = p.areaNome || p.id;
   if (!confirm(`Remover o plantio de "${label}"?`)) return;
   await fetch(`${apiBase}/${p.id}`, { method: 'DELETE' });
+  showToast('Plantio removido com sucesso!', 'sucesso');
   carregarPlantios();
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
+
+  if (!form.reportValidity()) return;
 
   const payload = {
     areaId: inputs.areaId.value ? Number(inputs.areaId.value) : null,
@@ -142,6 +146,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   cancelarEdicao();
+  showToast(editingId ? 'Plantio atualizado com sucesso!' : 'Plantio criado com sucesso!', 'sucesso');
   carregarPlantios();
 });
 

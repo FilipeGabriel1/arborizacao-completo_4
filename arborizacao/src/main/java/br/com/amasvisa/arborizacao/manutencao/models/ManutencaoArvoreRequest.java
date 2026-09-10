@@ -7,7 +7,7 @@ import br.com.amasvisa.arborizacao.arvore.models.TipoManejo;
 import jakarta.validation.constraints.NotNull;
 
 public record ManutencaoArvoreRequest(
-        @NotNull Long arvoreId,
+        String endereco,
         @NotNull TipoManejo tipo,
         @NotNull PrioridadeManejo prioridade,
         LocalDate dataAgendada,

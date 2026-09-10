@@ -236,6 +236,7 @@ async function carregarArvores() {
   if (itens === null) return;
   arvores = itens;
   renderizar(arvores);
+  animarEntrada(arvoresList);
 }
 
 function renderizar(arvores) {
@@ -340,12 +341,15 @@ function cancelarEdicao() {
 async function remover(arvore) {
   if (!confirm(`Remover a árvore "${arvore.nome || arvore.id}"?`)) return;
   await fetch(`${apiBase}/${arvore.id}`, { method: 'DELETE' });
+  showToast('Árvore removida com sucesso!', 'sucesso');
   carregarArvores();
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
+
+  if (!form.reportValidity()) return;
 
   const payload = {
     nome: nomeInput.value || null,
@@ -403,7 +407,9 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
+  const wasEditing = editingId !== null;
   cancelarEdicao();
+  showToast(wasEditing ? 'Árvore atualizada com sucesso!' : 'Árvore criada com sucesso!', 'sucesso');
   carregarArvores();
 });
 

@@ -389,6 +389,8 @@ function renderizarAreasEncontradas(lista, container) {
 areaForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
+  if (!areaForm.reportValidity()) return;
+
   const payload = buildPayload();
   const method = editingId ? 'PUT' : 'POST';
   const url = editingId ? `${apiBase}/${editingId}` : apiBase;
@@ -410,9 +412,10 @@ areaForm.addEventListener('submit', async (event) => {
 
     resetForm();
     await loadAreas();
+    showToast(editingId ? 'Área atualizada com sucesso!' : 'Área criada com sucesso!', 'sucesso');
   } catch (error) {
     console.error(error);
-    alert(error.message || 'Não foi possível salvar a área. Veja o console para detalhes.');
+    showToast(error.message || 'Não foi possível salvar a área.', 'erro');
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = 'Salvar área';
@@ -667,6 +670,7 @@ async function loadAreas() {
     renderAreaList();
     updateCounters();
     refreshMap();
+    animarEntrada(areasList);
   } catch (error) {
     console.error(error);
     areasList.innerHTML = '<p class="selection-text">Não foi possível carregar as áreas.</p>';
@@ -713,6 +717,7 @@ const item = fragment.querySelector('.area-item');
       }
 
       await fetch(`${apiBase}/${area.id}`, { method: 'DELETE' });
+      showToast('Área removida com sucesso!', 'sucesso');
       await loadAreas();
     });
 

@@ -41,19 +41,20 @@
           <span class="icon">🌱</span>
           <span>Sementeira Municipal</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="./plantios.html" class="sidebar-link">
           <span class="icon">🌿</span>
           <span>Plantios</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="./manejo.html" class="sidebar-link">
           <span class="icon">🔧</span>
           <span>Manejo / Ordens de Serviço</span>
         </a>
+
         <a href="./especies.html" class="sidebar-link">
           <span class="icon">🍃</span>
           <span>Espécies</span>
         </a>
-        <a href="#" class="sidebar-link">
+        <a href="./relatorios.html" class="sidebar-link">
           <span class="icon">📋</span>
           <span>Relatórios</span>
         </a>
@@ -162,8 +163,11 @@
           <h3>Árvores por porte</h3>
         </div>
         <div class="dashboard-card-body">
-          <div class="chart-box">
-            <div class="donut-chart" id="chartPorte"></div>
+          <div class="chart-container">
+            <div class="donut-wrap">
+              <div id="chartPorte"></div>
+              <div class="donut-center"><span class="donut-valor" id="chartPorteTotal">0</span><span class="donut-label">Total</span></div>
+            </div>
             <div class="chart-legend" id="legendPorte"></div>
           </div>
         </div>
@@ -174,8 +178,11 @@
           <h3>Árvores por origem</h3>
         </div>
         <div class="dashboard-card-body">
-          <div class="chart-box">
-            <div class="donut-chart" id="chartOrigem"></div>
+          <div class="chart-container">
+            <div class="donut-wrap">
+              <div id="chartOrigem"></div>
+              <div class="donut-center"><span class="donut-valor" id="chartOrigemTotal">0</span><span class="donut-label">Total</span></div>
+            </div>
             <div class="chart-legend" id="legendOrigem"></div>
           </div>
         </div>
@@ -201,12 +208,12 @@
     <!-- SECOND ROW -->
     <div class="dashboard-grid">
       <!-- RECENT TREES -->
-      <div class="dashboard-card" style="grid-column: 1 / 2;">
+      <div class="dashboard-card" style="grid-column: 1 / 2; display:flex; flex-direction:column;">
         <div class="dashboard-card-header">
           <h3>Últimos registros de árvores</h3>
           <a href="./arvores.html" class="see-all">Ver todos</a>
         </div>
-        <div class="dashboard-card-body" style="padding:0;">
+        <div style="overflow-x:auto; flex:1;">
           <table class="recent-trees-table">
             <thead>
               <tr>
@@ -369,6 +376,7 @@
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
   <script src="./csrf.js"></script>
   <script src="./auth.js"></script>
+  <script src="./toasts.js"></script>
   <script src="./dashboard.js"></script>
 </body>
 </html>

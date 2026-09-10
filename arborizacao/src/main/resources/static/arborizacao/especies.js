@@ -163,6 +163,7 @@ async function carregar() {
   if (itens === null) return;
   especies = itens;
   renderizar(especies);
+  animarEntrada(especiesList);
 }
 
 function renderizar(especies) {
@@ -219,15 +220,18 @@ async function remover(especie) {
   const res = await fetch(`${apiBase}/${especie.id}`, { method: 'DELETE' });
   if (!res.ok) {
     const erro = await res.json().catch(() => ({}));
-    alert(erro.message || 'Não foi possível remover. Verifique se não há árvores usando essa espécie.');
+    showToast(erro.message || 'Não foi possível remover. Verifique se não há árvores usando essa espécie.', 'erro');
     return;
   }
+  showToast('Espécie removida com sucesso!', 'sucesso');
   carregar();
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
+
+  if (!form.reportValidity()) return;
 
   const payload = {
     nomePopular: nomePopularInput.value,
@@ -256,6 +260,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   cancelarEdicao();
+  showToast(editingId ? 'Espécie atualizada com sucesso!' : 'Espécie criada com sucesso!', 'sucesso');
   carregar();
 });
 

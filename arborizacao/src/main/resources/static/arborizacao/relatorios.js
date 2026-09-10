@@ -12,7 +12,14 @@ async function buscarTudo(url, pageSize = 200) {
   }
 }
 
-const COLORS = ['#22c55e','#facc15','#ef4444','#3b82f6','#a855f7','#f97316','#06b6d4','#ec4899','#84cc16','#64748b'];
+const CORES_PORTE = { PEQUENO: '#22c55e', MEDIO: '#16a34a', GRANDE: '#4ade80' };
+const ROTULOS_PORTE = { PEQUENO: 'Pequeno', MEDIO: 'Médio', GRANDE: 'Grande' };
+const CORES_ORIGEM = { DOACAO: '#1e40af', OBRIGACAO_LEGAL: '#3b82f6', PLANTIO_PROPRIO: '#60a5fa', OUTRA: '#93c5fd' };
+const ROTULOS_ORIGEM = { DOACAO: 'Doação', OBRIGACAO_LEGAL: 'Obrigação legal', PLANTIO_PROPRIO: 'Plantio próprio', OUTRA: 'Outra' };
+const CORES_CONDICAO = { BOM: '#22c55e', REGULAR: '#eab308', RUIM: '#f97316', CRITICO: '#ef4444' };
+const ROTULOS_CONDICAO = { BOM: 'Bom', REGULAR: 'Regular', RUIM: 'Ruim', CRITICO: 'Crítico' };
+const CORES_PLANTIO = { PLANEJADO: '#3b82f6', EM_EXECUCAO: '#eab308', CONCLUIDO: '#22c55e', CANCELADO: '#ef4444' };
+const ROTULOS_PLANTIO = { PLANEJADO: 'Planejado', EM_EXECUCAO: 'Em execução', CONCLUIDO: 'Concluído', CANCELADO: 'Cancelado' };
 
 async function carregarDados() {
   const [arvores, areas, especies, lotes, plantios, manutencoes] = await Promise.all([
@@ -31,7 +38,6 @@ async function carregarDados() {
   const p = plantios ?? [];
   const m = manutencoes ?? [];
 
-  // KPIs
   document.getElementById('kpiArvores').textContent = a.length;
   document.getElementById('kpiAreas').textContent = ar.length;
   document.getElementById('kpiEspecies').textContent = e.length;
@@ -40,13 +46,13 @@ async function carregarDados() {
   document.getElementById('kpiPlantios').textContent = p.length;
   document.getElementById('kpiManutencoes').textContent = m.length;
 
-  // Charts
-  renderDonut('chartPorte', 'chartPorteLegend', agrupar(a, 'porte'));
-  renderDonut('chartOrigem', 'chartOrigemLegend', agrupar(a, 'origem'));
-  renderDonut('chartCondicao', 'chartCondicaoLegend', agrupar(a, 'condicaoFitossanitaria'));
-  renderDonut('chartPlantios', 'chartPlantiosLegend', agrupar(p, 'status'));
+  animarEntrada(document.querySelector('.dashboard-grid'));
 
-  // Top Espécies
+  renderDonut('chartPorte', 'chartPorteLegend', 'chartPorteTotal', agrupar(a, 'porte'), CORES_PORTE, ROTULOS_PORTE);
+  renderDonut('chartOrigem', 'chartOrigemLegend', 'chartOrigemTotal', agrupar(a, 'origem'), CORES_ORIGEM, ROTULOS_ORIGEM);
+  renderDonut('chartCondicao', 'chartCondicaoLegend', 'chartCondicaoTotal', agrupar(a, 'condicaoFitossanitaria'), CORES_CONDICAO, ROTULOS_CONDICAO);
+  renderDonut('chartPlantios', 'chartPlantiosLegend', 'chartPlantiosTotal', agrupar(p, 'status'), CORES_PLANTIO, ROTULOS_PLANTIO);
+
   renderTopEspecies(a, e);
 }
 
@@ -59,60 +65,57 @@ function agrupar(items, campo) {
   return Object.entries(contagem).sort((a, b) => b[1] - a[1]);
 }
 
-function renderDonut(svgId, legendId, dados) {
+function renderDonut(svgId, legendId, totalId, dados, cores, rotulos) {
   const svg = document.getElementById(svgId);
   const legend = document.getElementById(legendId);
+  const totalEl = document.getElementById(totalId);
   svg.innerHTML = '';
   legend.innerHTML = '';
 
+  const total = dados.reduce((s, d) => s + d[1], 0);
+  if (totalEl) totalEl.textContent = total;
+
   if (dados.length === 0) {
-    svg.innerHTML = '<text x="100" y="105" text-anchor="middle" fill="var(--muted)" font-size="11">Sem dados</text>';
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', '50');
+    circle.setAttribute('cy', '50');
+    circle.setAttribute('r', '40');
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', '#374151');
+    circle.setAttribute('stroke-width', '15');
+    svg.appendChild(circle);
+    legend.innerHTML = '<span style="color:#6b7280;">Sem dados</span>';
     return;
   }
 
-  const total = dados.reduce((s, d) => s + d[1], 0);
-  const cx = 100, cy = 100, r = 70;
-  let angle = -Math.PI / 2;
+  const circunferencia = 2 * Math.PI * 40;
+  let offset = 0;
 
-  dados.forEach((d, i) => {
-    const fatia = d[1] / total;
-    const fim = angle + fatia * 2 * Math.PI;
-    const x1 = cx + r * Math.cos(angle);
-    const y1 = cy + r * Math.sin(angle);
-    const x2 = cx + r * Math.cos(fim);
-    const y2 = cy + r * Math.sin(fim);
-    const large = fatia > 0.5 ? 1 : 0;
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z`);
-    path.setAttribute('fill', COLORS[i % COLORS.length]);
-    path.setAttribute('stroke', '#1e293b');
-    path.setAttribute('stroke-width', '1');
-    svg.appendChild(path);
-    angle = fim;
-
-    legend.innerHTML += `<div class="chart-legend-item"><span class="chart-legend-color" style="background:${COLORS[i % COLORS.length]};"></span>${d[0]}: ${d[1]}</div>`;
+  dados.forEach(([chave, valor]) => {
+    const percentual = valor / total;
+    const dash = percentual * circunferencia;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', '50');
+    circle.setAttribute('cy', '50');
+    circle.setAttribute('r', '40');
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', cores[chave] || '#999');
+    circle.setAttribute('stroke-width', '15');
+    circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
+    circle.setAttribute('stroke-dashoffset', `${-offset}`);
+    svg.appendChild(circle);
+    offset += dash;
   });
 
-  // Centro
-  const center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-  center.setAttribute('cx', cx);
-  center.setAttribute('cy', cy);
-  center.setAttribute('r', 40);
-  center.setAttribute('fill', '#1e293b');
-  svg.appendChild(center);
-
-  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  text.setAttribute('x', cx);
-  text.setAttribute('y', cy + 4);
-  text.setAttribute('text-anchor', 'middle');
-  text.setAttribute('fill', '#f8fafc');
-  text.setAttribute('font-size', '14');
-  text.setAttribute('font-weight', '700');
-  text.textContent = total;
-  svg.appendChild(text);
+  const pctFmt = (v) => ((v / total) * 100).toFixed(0);
+  legend.innerHTML = dados.map(([chave, valor]) => {
+    const cor = cores[chave] || '#999';
+    const label = rotulos[chave] || chave;
+    return `<span><i style="background:${cor}"></i> ${label} ${pctFmt(valor)}%</span>`;
+  }).join('');
 }
 
-function renderTopEspecies(arvores, especies) {
+function renderTopEspecies(arvores) {
   const container = document.getElementById('topEspecies');
   container.innerHTML = '';
 
@@ -131,19 +134,26 @@ function renderTopEspecies(arvores, especies) {
     return;
   }
 
-  ordenado.forEach((d, i) => {
-    const pct = (d[1] / max * 100).toFixed(0);
+  ordenado.forEach(([nome, qtd], i) => {
+    const pct = (qtd / max * 100).toFixed(0);
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;';
+    row.className = 'placar-barras-linha';
+    row.style.animationDelay = `${i * 90}ms`;
     row.innerHTML = `
-      <span style="min-width:24px;text-align:right;font-size:0.78rem;color:var(--muted);">${i + 1}º</span>
-      <span style="min-width:150px;font-size:0.85rem;">${d[0]}</span>
-      <div style="flex:1;height:20px;background:rgba(34,197,94,0.1);border-radius:10px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:var(--green);border-radius:10px;"></div>
+      <div class="placar-barras-topo">
+        <span>${nome}</span>
+        <strong>${qtd}</strong>
       </div>
-      <span style="min-width:30px;text-align:right;font-size:0.82rem;font-weight:600;">${d[1]}</span>
+      <div class="placar-barra">
+        <div class="placar-barra-fill" style="width:0%;"></div>
+      </div>
     `;
     container.appendChild(row);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        row.querySelector('.placar-barra-fill').style.width = `${pct}%`;
+      });
+    });
   });
 }
 

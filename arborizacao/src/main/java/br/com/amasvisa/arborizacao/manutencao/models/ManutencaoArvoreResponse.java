@@ -8,8 +8,7 @@ import br.com.amasvisa.arborizacao.arvore.models.TipoManejo;
 
 public record ManutencaoArvoreResponse(
         Long id,
-        Long arvoreId,
-        String arvoreNome,
+        String endereco,
         TipoManejo tipo,
         PrioridadeManejo prioridade,
         LocalDate dataAgendada,

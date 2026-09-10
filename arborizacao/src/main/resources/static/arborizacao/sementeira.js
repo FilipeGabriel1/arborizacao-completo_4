@@ -49,6 +49,7 @@ async function carregarLotes() {
   lotes = itens;
   renderizar(lotes);
   atualizarKPIs(lotes);
+  animarEntrada(lotesList);
 }
 
 function renderizar(lotes) {
@@ -115,12 +116,15 @@ function cancelarEdicao() {
 async function remover(lote) {
   if (!confirm(`Remover o lote "${lote.numeroLote}"?`)) return;
   await fetch(`${apiBase}/${lote.id}`, { method: 'DELETE' });
+  showToast('Lote removido com sucesso!', 'sucesso');
   carregarLotes();
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
+
+  if (!form.reportValidity()) return;
 
   const payload = {
     numeroLote: inputs.numeroLote.value,
@@ -152,6 +156,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   cancelarEdicao();
+  showToast(editingId ? 'Lote atualizado com sucesso!' : 'Lote criado com sucesso!', 'sucesso');
   carregarLotes();
 });
 

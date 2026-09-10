@@ -51,6 +51,7 @@ async function carregarHistorico() {
   }
   registros = itens;
   renderizarLista(registros);
+  animarEntrada(historicoList);
 }
 
 function renderizarLista(lista) {

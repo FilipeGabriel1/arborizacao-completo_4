@@ -3,8 +3,6 @@ package br.com.amasvisa.arborizacao.manutencao.service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import br.com.amasvisa.arborizacao.arvore.models.Arvore;
-import br.com.amasvisa.arborizacao.arvore.repository.ArvoreRepository;
 import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import br.com.amasvisa.arborizacao.manutencao.models.ManutencaoArvore;
 import br.com.amasvisa.arborizacao.manutencao.models.ManutencaoArvoreRequest;
@@ -16,11 +14,9 @@ import jakarta.persistence.EntityNotFoundException;
 public class ManutencaoArvoreService {
 
     private final ManutencaoArvoreRepository repository;
-    private final ArvoreRepository arvoreRepository;
 
-    public ManutencaoArvoreService(ManutencaoArvoreRepository repository, ArvoreRepository arvoreRepository) {
+    public ManutencaoArvoreService(ManutencaoArvoreRepository repository) {
         this.repository = repository;
-        this.arvoreRepository = arvoreRepository;
     }
 
     public ManutencaoArvoreResponse criar(ManutencaoArvoreRequest request) {
@@ -49,9 +45,7 @@ public class ManutencaoArvoreService {
     }
 
     private void aplicarRequest(ManutencaoArvore manutencao, ManutencaoArvoreRequest request) {
-        Arvore arvore = arvoreRepository.findById(request.arvoreId())
-                .orElseThrow(() -> new EntityNotFoundException("Árvore não encontrada: " + request.arvoreId()));
-        manutencao.setArvore(arvore);
+        manutencao.setEndereco(request.endereco());
         manutencao.setTipo(request.tipo());
         manutencao.setPrioridade(request.prioridade());
         manutencao.setDataAgendada(request.dataAgendada());
@@ -70,8 +64,7 @@ public class ManutencaoArvoreService {
     private ManutencaoArvoreResponse toResponse(ManutencaoArvore m) {
         return new ManutencaoArvoreResponse(
                 m.getId(),
-                m.getArvore() == null ? null : m.getArvore().getId(),
-                m.getArvore() == null ? null : m.getArvore().getNome(),
+                m.getEndereco(),
                 m.getTipo(),
                 m.getPrioridade(),
                 m.getDataAgendada(),

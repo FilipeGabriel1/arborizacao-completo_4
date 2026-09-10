@@ -95,59 +95,58 @@
     if (!container || !legend) return;
 
     var total = dados.reduce(function (s, d) { return s + d.valor; }, 0);
-    if (total === 0) {
-      container.innerHTML = '<div class="donut-center"><span>0</span><small>Total</small></div>';
-      return;
-    }
 
-    var size = 160;
-    var cx = size / 2;
-    var cy = size / 2;
-    var r = 60;
-    var strokeWidth = 22;
-    var circumference = 2 * Math.PI * r;
+    var totalEl = document.getElementById(containerId + 'Total');
+    if (totalEl) totalEl.textContent = formatarNumero(total);
+
+    var r = 40;
+    var circunferencia = 2 * Math.PI * r;
 
     var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', size);
-    svg.setAttribute('height', size);
-    svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
+    svg.setAttribute('viewBox', '0 0 100 100');
+
+    if (total === 0) {
+      var empty = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      empty.setAttribute('cx', '50');
+      empty.setAttribute('cy', '50');
+      empty.setAttribute('r', r);
+      empty.setAttribute('fill', 'none');
+      empty.setAttribute('stroke', '#374151');
+      empty.setAttribute('stroke-width', '15');
+      svg.appendChild(empty);
+      container.innerHTML = '';
+      container.appendChild(svg);
+      legend.innerHTML = '<span style="color:#6b7280;">Sem dados</span>';
+      return;
+    }
 
     var offset = 0;
     dados.forEach(function (d) {
       if (d.valor === 0) return;
       var pct = d.valor / total;
-      var dashLength = pct * circumference;
-      var dashGap = circumference - dashLength;
+      var dash = pct * circunferencia;
 
       var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', cx);
-      circle.setAttribute('cy', cy);
+      circle.setAttribute('cx', '50');
+      circle.setAttribute('cy', '50');
       circle.setAttribute('r', r);
       circle.setAttribute('fill', 'none');
-      circle.setAttribute('stroke', cores[d.chave] || '#49a970');
-      circle.setAttribute('stroke-width', strokeWidth);
-      circle.setAttribute('stroke-dasharray', dashLength + ' ' + dashGap);
+      circle.setAttribute('stroke', cores[d.chave] || '#999');
+      circle.setAttribute('stroke-width', '15');
+      circle.setAttribute('stroke-dasharray', dash + ' ' + (circunferencia - dash));
       circle.setAttribute('stroke-dashoffset', -offset);
-      circle.setAttribute('stroke-linecap', 'round');
       svg.appendChild(circle);
 
-      offset += dashLength;
+      offset += dash;
     });
 
     container.innerHTML = '';
     container.appendChild(svg);
 
-    var center = document.createElement('div');
-    center.className = 'donut-center';
-    center.innerHTML = '<span>' + formatarNumero(total) + '</span><small>Total</small>';
-    container.appendChild(center);
-
     legend.innerHTML = dados.map(function (d) {
       var pct = total > 0 ? Math.round(d.valor / total * 100) : 0;
-      return '<div class="chart-legend-item">' +
-        '<span class="chart-legend-dot" style="background:' + (cores[d.chave] || '#999') + '"></span>' +
-        d.rotulo + ' ' + pct + '% (' + formatarNumero(d.valor) + ')' +
-        '</div>';
+      var cor = cores[d.chave] || '#999';
+      return '<span><i style="background:' + cor + '"></i> ' + d.rotulo + ' ' + pct + '%</span>';
     }).join('');
   }
 
@@ -372,10 +371,8 @@
     tbody.innerHTML = recentes.map(function (a) {
       var especie = a.especieNomePopular || 'Não informada';
       var area = a.areaNome || '—';
-      var foto = (a.fotoUrl || (a.fotos && a.fotos.length > 0 ? a.fotos[0].url : null)) || '';
-      var imgHtml = foto ? '<img src="' + foto + '" style="width:28px;height:28px;border-radius:6px;object-fit:cover;" onerror="this.style.display=\'none\'" />' : '';
       return '<tr>' +
-        '<td>' + imgHtml + ' <span class="tree-id">ARB-' + String(a.id).padStart(6, '0') + '</span></td>' +
+        '<td><span class="tree-id">ARB-' + String(a.id).padStart(6, '0') + '</span></td>' +
         '<td>' + especie + '</td>' +
         '<td>' + area + '</td>' +
         '<td>' + formatarData(a.criadoEm) + '</td>' +
@@ -476,6 +473,7 @@
       renderActivityFeed();
       initMap();
       initSearch();
+      animarEntrada(document.querySelector('.dashboard-grid'));
     });
   });
 })();

@@ -25,7 +25,7 @@ let editingId = null;
 let manutencoes = [];
 
 const inputs = {
-  arvoreId: document.getElementById('arvoreId'),
+  endereco: document.getElementById('endereco'),
   tipo: document.getElementById('tipo'),
   prioridade: document.getElementById('prioridade'),
   dataAgendada: document.getElementById('dataAgendada'),
@@ -50,23 +50,13 @@ inputs.tipo.value = 'PODA_LIMPEZA';
 inputs.prioridade.value = 'MEDIA';
 inputs.status.value = 'PENDENTE';
 
-async function carregarSelects() {
-  const arvores = await buscarTudo('/api/arvores');
-  const select = inputs.arvoreId;
-  (arvores ?? []).forEach(a => {
-    const opt = document.createElement('option');
-    opt.value = a.id;
-    opt.textContent = (a.nome || 'Sem nome') + (a.areaNome ? ' — ' + a.areaNome : '');
-    select.appendChild(opt);
-  });
-}
-
 async function carregarManutencoes() {
   const itens = await buscarTudo(apiBase);
   if (itens === null) return;
   manutencoes = itens;
   renderizar(manutencoes);
   atualizarKPIs(manutencoes);
+  animarEntrada(manutencoesList);
 }
 
 const tipoIcons = {
@@ -101,7 +91,7 @@ function renderizar(manutencoes) {
         <span class="os-card-prio ${prioClass}">${m.prioridade || '—'}</span>
       </div>
       <div class="os-card-body">
-        <div class="os-card-tree">${icon} ${m.arvoreNome || 'Árvore não informada'}</div>
+        <div class="os-card-tree">${icon} ${m.endereco || 'Endereço não informado'}</div>
         <div class="os-card-tipo">${tipoLabel}</div>
         <div class="os-card-meta">
           ${m.dataAgendada ? '📅 ' + new Date(m.dataAgendada).toLocaleDateString('pt-BR') : ''}
@@ -124,7 +114,7 @@ function renderizar(manutencoes) {
 
 function iniciarEdicao(m) {
   editingId = m.id;
-  inputs.arvoreId.value = m.arvoreId || '';
+  inputs.endereco.value = m.endereco || '';
   inputs.tipo.value = m.tipo || 'PODA_LIMPEZA';
   inputs.prioridade.value = m.prioridade || 'MEDIA';
   inputs.dataAgendada.value = m.dataAgendada || '';
@@ -155,6 +145,7 @@ function cancelarEdicao() {
 async function remover(m) {
   if (!confirm(`Remover a OS-${String(m.id).padStart(5, '0')}?`)) return;
   await fetch(`${apiBase}/${m.id}`, { method: 'DELETE' });
+  showToast('OS removida com sucesso!', 'sucesso');
   carregarManutencoes();
 }
 
@@ -162,34 +153,48 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
 
-  const payload = {
-    arvoreId: Number(inputs.arvoreId.value),
-    tipo: inputs.tipo.value,
-    prioridade: inputs.prioridade.value,
-    dataAgendada: inputs.dataAgendada.value || null,
-    dataExecucao: null,
-    responsavelExecucao: inputs.responsavelExecucao.value || null,
-    observacoes: inputs.observacoes.value || null,
-    status: inputs.status.value
-  };
+  if (!form.reportValidity()) return;
 
-  const url = editingId ? `${apiBase}/${editingId}` : apiBase;
-  const method = editingId ? 'PUT' : 'POST';
+  try {
+    const payload = {
+      endereco: inputs.endereco.value || null,
+      tipo: inputs.tipo.value,
+      prioridade: inputs.prioridade.value,
+      dataAgendada: inputs.dataAgendada.value || null,
+      dataExecucao: null,
+      responsavelExecucao: inputs.responsavelExecucao.value || null,
+      observacoes: inputs.observacoes.value || null,
+      status: inputs.status.value
+    };
 
-  const res = await fetch(url, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+    console.log('Enviando payload:', JSON.stringify(payload));
 
-  if (!res.ok) {
-    const erro = await res.json().catch(() => ({}));
-    formMessage.innerHTML = `<div class="login-message erro">${erro.message || 'Não foi possível salvar a OS.'}</div>`;
-    return;
+    const url = editingId ? `${apiBase}/${editingId}` : apiBase;
+    const method = editingId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    console.log('Resposta:', res.status);
+
+    if (!res.ok) {
+      const erro = await res.json().catch(() => ({}));
+      console.error('Erro ao salvar OS:', res.status, erro);
+      formMessage.innerHTML = `<div class="login-message erro">${erro.message || erro.error || 'Não foi possível salvar a OS. Status: ' + res.status}</div>`;
+      return;
+    }
+
+    const wasEditing = editingId !== null;
+    cancelarEdicao();
+    showToast(wasEditing ? 'OS atualizada com sucesso!' : 'OS criada com sucesso!', 'sucesso');
+    await carregarManutencoes();
+  } catch (err) {
+    console.error('Exceção ao salvar OS:', err);
+    formMessage.innerHTML = `<div class="login-message erro">Erro interno: ${err.message}</div>`;
   }
-
-  cancelarEdicao();
-  carregarManutencoes();
 });
 
 cancelEditBtn.addEventListener('click', cancelarEdicao);
@@ -198,7 +203,7 @@ buscaTermo.addEventListener('input', () => {
   const termo = buscaTermo.value.toLowerCase().trim();
   if (!termo) { renderizar(manutencoes); return; }
   const filtrados = manutencoes.filter(m =>
-    (m.arvoreNome && m.arvoreNome.toLowerCase().includes(termo)) ||
+    (m.endereco && m.endereco.toLowerCase().includes(termo)) ||
     (m.tipo && m.tipo.toLowerCase().includes(termo)) ||
     (m.responsavelExecucao && m.responsavelExecucao.toLowerCase().includes(termo)) ||
     (m.status && m.status.toLowerCase().includes(termo))
@@ -222,4 +227,4 @@ function atualizarKPIs(manutencoes) {
   document.getElementById('kpiUrgentes').textContent = urgentes;
 }
 
-carregarSelects().then(carregarManutencoes);
+carregarManutencoes();
