@@ -145,8 +145,9 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
+  const wasEditing = !!editingId;
   cancelarEdicao();
-  showToast(editingId ? 'Plantio atualizado com sucesso!' : 'Plantio criado com sucesso!', 'sucesso');
+  showToast(wasEditing ? 'Plantio atualizado com sucesso!' : 'Plantio criado com sucesso!', 'sucesso');
   carregarPlantios();
 });
 

@@ -410,9 +410,24 @@ areaForm.addEventListener('submit', async (event) => {
       throw new Error(erro.message || `Falha ao salvar área: ${response.status}`);
     }
 
+    const savedArea = await response.json();
+    const wasEditing = !!editingId;
     resetForm();
-    await loadAreas();
-    showToast(editingId ? 'Área atualizada com sucesso!' : 'Área criada com sucesso!', 'sucesso');
+
+    if (wasEditing) {
+      const idx = areas.findIndex(a => a.id === savedArea.id);
+      if (idx !== -1) areas[idx] = savedArea; else areas.push(savedArea);
+    } else {
+      areas.push(savedArea);
+    }
+    renderAreaList();
+    updateCounters();
+    refreshMap();
+    animarEntrada(areasList);
+
+    showToast(wasEditing ? 'Área atualizada com sucesso!' : 'Área criada com sucesso!', 'sucesso');
+
+    loadAreas().catch(() => {});
   } catch (error) {
     console.error(error);
     showToast(error.message || 'Não foi possível salvar a área.', 'erro');
@@ -671,6 +686,7 @@ async function loadAreas() {
     updateCounters();
     refreshMap();
     animarEntrada(areasList);
+    areasList.scrollTop = 0;
   } catch (error) {
     console.error(error);
     areasList.innerHTML = '<p class="selection-text">Não foi possível carregar as áreas.</p>';
@@ -685,50 +701,53 @@ function renderAreaList() {
     return;
   }
 
-  areas.forEach((area) => {
-    const fragment = areaItemTemplate.content.cloneNode(true);
-const item = fragment.querySelector('.area-item');
-    const title = fragment.querySelector('h3');
-    const meta = fragment.querySelector('.area-meta');
-    const description = fragment.querySelector('.area-description');
-    const fotoBlock = fragment.querySelector('.area-foto');
-    const pill = fragment.querySelector('.pill');
-    const viewBtn = fragment.querySelector('.view-btn');
-    const editBtn = fragment.querySelector('.edit-btn');
-    const deleteBtn = fragment.querySelector('.delete-btn');
+  try {
+    areas.forEach((area) => {
+      const fotos = getFotosDaArea(area);
+      const fotosHtml = fotos.length
+        ? `<div class="area-foto">${fotos.map(url => `<img src="${url}" alt="${area.nome || 'Foto'}" onerror="this.remove();" />`).join('')}</div>`
+        : '';
 
-    title.textContent = area.nome;
-    meta.textContent = area.latitude != null
-      ? `Ponto: ${area.latitude.toFixed(6)}, ${area.longitude.toFixed(6)}`
-      : `${area.pontos?.length ?? 0} vértices`;
-    description.textContent = area.descricao || 'Sem descrição.';
+      const item = document.createElement('article');
+      item.className = 'area-item';
+      item.dataset.id = area.id;
+      item.innerHTML = `
+        <header>
+          <div>
+            <h3>${area.nome}</h3>
+            <p class="area-meta">${area.latitude != null
+              ? `Ponto: ${area.latitude.toFixed(6)}, ${area.longitude.toFixed(6)}`
+              : `${area.pontos?.length ?? 0} vértices`}</p>
+          </div>
+        </header>
+        ${fotosHtml}
+        <p class="area-description">${area.descricao || 'Sem descrição.'}</p>
+        <div class="area-actions">
+          <button class="ghost-button view-btn" type="button">Ver no mapa</button>
+          <button class="ghost-button edit-btn" type="button">Editar</button>
+          <button class="danger-button delete-btn" type="button">Excluir</button>
+        </div>
+      `;
 
-    if (getFotosDaArea(area).length) {
-      fotoBlock.innerHTML = getFotosDaArea(area)
-        .map((url) => `<img src="${url}" alt="${area.nome || 'Foto da área'}" onerror="this.remove();" />`)
-        .join('');
-    }
+      item.querySelector('.view-btn').addEventListener('click', () => openAreaDetails(area.id));
+      item.querySelector('.edit-btn').addEventListener('click', () => loadAreaInForm(area));
+      item.querySelector('.delete-btn').addEventListener('click', async () => {
+        if (!confirm(`Excluir a área "${area.nome}"?`)) return;
+        await fetch(`${apiBase}/${area.id}`, { method: 'DELETE' });
+        showToast('Área removida com sucesso!', 'sucesso');
+        await loadAreas();
+      });
 
-    viewBtn.addEventListener('click', () => openAreaDetails(area.id));
-    editBtn.addEventListener('click', () => loadAreaInForm(area));
-    deleteBtn.addEventListener('click', async () => {
-      if (!confirm(`Excluir a área "${area.nome}"?`)) {
-        return;
-      }
-
-      await fetch(`${apiBase}/${area.id}`, { method: 'DELETE' });
-      showToast('Área removida com sucesso!', 'sucesso');
-      await loadAreas();
+      areasList.appendChild(item);
     });
-
-    item.dataset.id = area.id;
-    areasList.appendChild(fragment);
-  });
+  } catch (err) {
+    console.error('[DEBUG] renderAreaList ERRO:', err);
+  }
 }
 
 function updateCounters() {
-  totalAreas.textContent = String(areas.length);
-  totalVertices.textContent = String(areas.reduce((acc, area) => acc + (area.pontos?.length ?? 0), 0));
+  if (totalAreas) totalAreas.textContent = String(areas.length);
+  if (totalVertices) totalVertices.textContent = String(areas.reduce((acc, area) => acc + (area.pontos?.length ?? 0), 0));
 }
 
 function focusArea(area) {

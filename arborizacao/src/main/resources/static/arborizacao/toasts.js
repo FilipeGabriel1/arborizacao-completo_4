@@ -17,7 +17,7 @@ window.showToast = function (mensagem, tipo) {
 
 window.animarEntrada = function (container) {
   if (!container) return;
-  var cards = container.querySelectorAll('.os-card, .arvore-card, .area-card, .card');
+  var cards = container.querySelectorAll('.os-card, .arvore-card, .area-card, .area-item, .card');
   cards.forEach(function (card, i) {
     card.style.opacity = '0';
     card.style.transform = 'translateY(18px)';

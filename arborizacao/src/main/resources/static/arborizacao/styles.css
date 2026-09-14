@@ -144,6 +144,11 @@ h1 {
   overflow: hidden;
 }
 
+.list-panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
 .panel {
   padding: 20px;
 }
@@ -544,6 +549,9 @@ button:hover {
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .area-item header {
@@ -558,10 +566,14 @@ button:hover {
   font-size: 1.05rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-width: 0;
 }
 
 .area-item h3:hover {
+  -webkit-line-clamp: unset;
   white-space: normal;
   word-break: break-word;
 }
@@ -572,7 +584,8 @@ button:hover {
   margin: 10px 0 14px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .area-description:hover {

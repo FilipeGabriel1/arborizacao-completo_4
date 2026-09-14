@@ -957,14 +957,20 @@
 .activity-body strong {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   max-width: 100%;
+}
+
+.area-item h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .area-item h3:hover,
 .sidebar-link:hover span,
 .recent-trees-table td:hover,
 .activity-body strong:hover {
+  -webkit-line-clamp: unset;
   white-space: normal;
   word-break: break-word;
 }

@@ -155,8 +155,9 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
+  const wasEditing = !!editingId;
   cancelarEdicao();
-  showToast(editingId ? 'Lote atualizado com sucesso!' : 'Lote criado com sucesso!', 'sucesso');
+  showToast(wasEditing ? 'Lote atualizado com sucesso!' : 'Lote criado com sucesso!', 'sucesso');
   carregarLotes();
 });
 
