@@ -410,24 +410,15 @@ areaForm.addEventListener('submit', async (event) => {
       throw new Error(erro.message || `Falha ao salvar área: ${response.status}`);
     }
 
-    const savedArea = await response.json();
     const wasEditing = !!editingId;
     resetForm();
-
-    if (wasEditing) {
-      const idx = areas.findIndex(a => a.id === savedArea.id);
-      if (idx !== -1) areas[idx] = savedArea; else areas.push(savedArea);
-    } else {
-      areas.push(savedArea);
-    }
-    renderAreaList();
-    updateCounters();
-    refreshMap();
-    animarEntrada(areasList);
-
     showToast(wasEditing ? 'Área atualizada com sucesso!' : 'Área criada com sucesso!', 'sucesso');
 
-    loadAreas().catch(() => {});
+    try {
+      await loadAreas();
+    } catch (_) {
+      location.reload();
+    }
   } catch (error) {
     console.error(error);
     showToast(error.message || 'Não foi possível salvar a área.', 'erro');
