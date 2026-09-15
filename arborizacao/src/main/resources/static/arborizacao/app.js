@@ -26,7 +26,7 @@ const descricaoInput = document.getElementById('descricao');
 const fotosContainer = document.getElementById('fotosContainer');
 const addFotoBtn = document.getElementById('addFotoBtn');
 const tipoInput = document.getElementById('tipo');
-const statusInput = document.getElementById('status');
+
 const drawModeInput = document.getElementById('drawMode');
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
@@ -623,7 +623,6 @@ function buildPayload() {
     fotoUrl: fotosValidas[0] || null,
     fotos: fotosValidas.map((url) => ({ url, descricao: null })),
     tipo: tipoInput.value,
-    status: statusInput.value,
     bairro: document.getElementById('bairro').value.trim() || null,
     logradouro: document.getElementById('logradouro').value.trim() || null,
     areaTotalM2: parseFloat(document.getElementById('areaTotalM2').value) || null,
@@ -1007,7 +1006,6 @@ function loadAreaInForm(area) {
   fotos = getFotosDaArea(area);
   renderFotoInputs();
   tipoInput.value = area.tipo || 'OUTRA';
-  statusInput.value = area.status || 'ATIVA';
   document.getElementById('bairro').value = area.bairro || '';
   document.getElementById('logradouro').value = area.logradouro || '';
   document.getElementById('areaTotalM2').value = area.areaTotalM2 || '';

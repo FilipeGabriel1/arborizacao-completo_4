@@ -1,0 +1,108 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< br.com.amasvisa:arborizacao >---------------------
+[INFO] Building arborizacao 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.1.0:run (default-cli) > test-compile @ arborizacao >>>
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ arborizacao ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 54 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ arborizacao ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ arborizacao ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ arborizacao ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target\test-classes
+[INFO] 
+[INFO] <<< spring-boot:4.1.0:run (default-cli) < test-compile @ arborizacao <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.1.0:run (default-cli) @ arborizacao ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.0)
+
+2026-09-14T11:20:50.130-03:00  INFO 6304 --- [arborizacao] [           main] b.c.a.a.ArborizacaoApplication           : Starting ArborizacaoApplication using Java 22.0.2 with PID 6304 (C:\Users\filip\Downloads\arborizacao-completo_4\arborizacao\target\classes started by filip in C:\Users\filip\Downloads\arborizacao-completo_4\arborizacao)
+2026-09-14T11:20:50.134-03:00  INFO 6304 --- [arborizacao] [           main] b.c.a.a.ArborizacaoApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-09-14T11:20:52.000-03:00  INFO 6304 --- [arborizacao] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-14T11:20:52.343-03:00  INFO 6304 --- [arborizacao] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 322 ms. Found 9 JPA repository interfaces.
+2026-09-14T11:20:54.177-03:00  INFO 6304 --- [arborizacao] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-14T11:20:54.222-03:00  INFO 6304 --- [arborizacao] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-14T11:20:54.223-03:00  INFO 6304 --- [arborizacao] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-09-14T11:20:54.409-03:00  INFO 6304 --- [arborizacao] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 4125 ms
+2026-09-14T11:20:55.039-03:00  INFO 6304 --- [arborizacao] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-14T11:20:55.227-03:00  INFO 6304 --- [arborizacao] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-14T11:20:56.560-03:00  INFO 6304 --- [arborizacao] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-14T11:20:56.693-03:00  INFO 6304 --- [arborizacao] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-14T11:20:59.381-03:00  INFO 6304 --- [arborizacao] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@460b77d6
+2026-09-14T11:20:59.387-03:00  INFO 6304 --- [arborizacao] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-14T11:20:59.700-03:00  WARN 6304 --- [arborizacao] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-14T11:20:59.826-03:00  INFO 6304 --- [arborizacao] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://gateway01.sa-east-1.prod.aws.tidbcloud.com:4000/arborizacao?sslMode=PREFERRED&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo&createDatabaseIfNotExist=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.11
+	Default catalog/schema: arborizacao/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-14T11:21:03.406-03:00  INFO 6304 --- [arborizacao] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: create table areas_arborizadas (area_id bigint not null auto_increment, area_total_m2 float(53), atualizado_em datetime(6) not null, bairro varchar(120), criado_em datetime(6) not null, descricao varchar(500), foto_url varchar(500), individuos_cadastrados integer, latitude float(53), logradouro varchar(200), longitude float(53), nome varchar(120) not null, responsavel_manutencao varchar(200), situacao_inventario enum ('CONCLUIDO','EM_ANDAMENTO','EM_ATUALIZACAO','NAO_INICIADO'), status enum ('ATIVA','EM_ANALISE','INATIVA') not null, tipo enum ('AVENIDA','BOSQUE','OUTRA','PARQUE','PRACA','RUA') not null, ultima_atualizacao_inventario datetime(6), primary key (area_id)) engine=InnoDB
+Hibernate: create table areas_fotos (areas_fotos_id bigint not null auto_increment, criado_em datetime(6) not null, descricao varchar(255), url varchar(500) not null, area_id bigint not null, primary key (areas_fotos_id)) engine=InnoDB
+Hibernate: create table areas_pontos (area_id bigint not null, latitude float(53), longitude float(53)) engine=InnoDB
+Hibernate: create table arvores (arvores_id bigint not null auto_increment, altura_primeira_bifurcacao float(53), altura_total float(53), atualizado_em datetime(6) not null, cap float(53), cavidades varchar(500), condicao_fitossanitaria enum ('BOM','CRITICO','REGULAR','RUIM'), criado_em datetime(6) not null, danos_tronco varchar(500), dap float(53), data_plantio date, descricao TEXT, diametro_copa float(53), doencas varchar(500), foto_url varchar(500), fungos varchar(500), galhos_secos varchar(500), georreferenciada bit not null, inclinacao varchar(500), latitude float(53), longitude float(53), nome varchar(120), numero_processo varchar(80), origem enum ('DOACAO','OBRIGACAO_LEGAL','OUTRA','PLANTIO_PROPRIO') not null, porte enum ('GRANDE','MEDIO','PEQUENO') not null, pragas varchar(500), prioridade_manejo enum ('ALTA','BAIXA','MEDIA','URGENTE'), raizes_expostas varchar(500), responsavel_cadastro varchar(150), sinais_apodrecimento varchar(500), status enum ('ATIVA','EM_MANUTENCAO','INATIVA','REMOVIDA') not null, tipo_arvore enum ('EXOTICA','FRUTIFERA','NATIVA','ORNAMENTAL','OUTRA') not null, tipo_conflito enum ('ACESSIBILIDADE','CALCADA','EDIFICACAO','ILUMINACAO','REDE_ELETRICA','REDE_SUBTERRANEA','SEM_CONFLITO','SINALIZACAO','TRANSITO'), tipo_manejo enum ('AMPLIACAO_CANTEIRO','AVALIACAO_SUPRESSAO','AVALIACAO_TRANSPLANTE','COMBATE_PRAGAS','EXTRACAO','MONITORAMENTO','NENHUM','PODA_ADEQUACAO','PODA_FORMACAO','PODA_LIMPEZA','PODA_RENOVACAO','REPOUSO','TRANSPLANTE','TRATAMENTO_FITOSANITARIO','TUTORAMENTO'), area_id bigint, especie_id bigint, primary key (arvores_id)) engine=InnoDB
+Hibernate: create table arvores_fotos (arvores_fotos_id bigint not null auto_increment, criado_em datetime(6) not null, descricao varchar(255), url varchar(500) not null, arvore_id bigint not null, primary key (arvores_fotos_id)) engine=InnoDB
+Hibernate: create table auditoria (auditoria_id bigint not null auto_increment, acao enum ('CRIACAO','EDICAO','EXCLUSAO') not null, data_hora datetime(6) not null, detalhe varchar(500), entidade enum ('AREA','ARVORE','DOACAO','ESPECIE','USUARIO') not null, entidade_id bigint, usuario_email varchar(150), primary key (auditoria_id)) engine=InnoDB
+Hibernate: create table doacoes_arvores (doacoes_arvores_id bigint not null auto_increment, cpf varchar(14), data_doacao date, descricao TEXT, destinacao varchar(150), quantidade integer, rg varchar(20), solicitante varchar(150), arvore_id bigint, primary key (doacoes_arvores_id)) engine=InnoDB
+Hibernate: create table especies_arvores (especies_arvores_id bigint not null auto_increment, atualizado_em datetime(6) not null, criado_em datetime(6) not null, familia varchar(120), foto_url varchar(500), indicacao_plantio TEXT, nome_cientifico varchar(180), nome_popular varchar(120) not null, observacoes TEXT, porte_padrao varchar(20), primary key (especies_arvores_id)) engine=InnoDB
+Hibernate: create table especies_fotos (especies_fotos_id bigint not null auto_increment, criado_em datetime(6) not null, descricao varchar(255), url varchar(500) not null, especie_id bigint not null, primary key (especies_fotos_id)) engine=InnoDB
+Hibernate: create table lotes_sementeira (lote_id bigint not null auto_increment, atualizado_em datetime(6) not null, criado_em datetime(6) not null, data_producao date, numero_lote varchar(30) not null, observacoes varchar(500), origem_sementes varchar(200), quantidade_disponivel integer, quantidade_doadas integer, quantidade_perdas integer, quantidade_plantadas integer, quantidade_produzida integer, status enum ('ATIVO','CANCELADO','ENCERRADO') not null, especie_id bigint, primary key (lote_id)) engine=InnoDB
+Hibernate: create table manutencoes_arvore (manutencao_id bigint not null auto_increment, atualizado_em datetime(6) not null, criado_em datetime(6) not null, data_agendada date, data_execucao date, endereco varchar(300), observacoes TEXT, prioridade enum ('ALTA','BAIXA','MEDIA','URGENTE') not null, responsavel_execucao varchar(150), status varchar(30), tipo enum ('AMPLIACAO_CANTEIRO','AVALIACAO_SUPRESSAO','AVALIACAO_TRANSPLANTE','COMBATE_PRAGAS','EXTRACAO','MONITORAMENTO','NENHUM','PODA_ADEQUACAO','PODA_FORMACAO','PODA_LIMPEZA','PODA_RENOVACAO','REPOUSO','TRANSPLANTE','TRATAMENTO_FITOSANITARIO','TUTORAMENTO') not null, primary key (manutencao_id)) engine=InnoDB
+Hibernate: create table plantios (plantio_id bigint not null auto_increment, atualizado_em datetime(6) not null, criado_em datetime(6) not null, data_plantio date, descricao TEXT, quantidade_mudas integer, responsavel varchar(150), status enum ('CANCELADO','CONCLUIDO','EM_EXECUCAO','PLANEJADO') not null, area_id bigint, especie_id bigint, primary key (plantio_id)) engine=InnoDB
+Hibernate: create table usuarios (id bigint not null auto_increment, ativo bit not null, criado_em datetime(6) not null, email varchar(150) not null, nome varchar(120) not null, perfil enum ('ADMIN','FUNCIONARIO') not null, senha varchar(100) not null, primary key (id)) engine=InnoDB
+Hibernate: alter table especies_arvores drop index UK6193fh0yipg3kwcm78sewd03r
+Hibernate: alter table especies_arvores add constraint UK6193fh0yipg3kwcm78sewd03r unique (nome_cientifico)
+Hibernate: alter table usuarios drop index uk_usuarios_email
+Hibernate: alter table usuarios add constraint uk_usuarios_email unique (email)
+Hibernate: alter table areas_fotos add constraint FKlwshh2ff5hwt1dsc7m8firv18 foreign key (area_id) references areas_arborizadas (area_id)
+Hibernate: alter table areas_pontos add constraint FK97mkje7bg67p7jhd12ashxy9x foreign key (area_id) references areas_arborizadas (area_id)
+Hibernate: alter table arvores add constraint FKg6ufc6k1tgpl57e6yxgve31g9 foreign key (area_id) references areas_arborizadas (area_id)
+Hibernate: alter table arvores add constraint FKg99407rbydixglr5bbvqv3afh foreign key (especie_id) references especies_arvores (especies_arvores_id)
+Hibernate: alter table arvores_fotos add constraint FKkkhwfgq17gdp0lsxloahsqf3l foreign key (arvore_id) references arvores (arvores_id)
+Hibernate: alter table doacoes_arvores add constraint FKjoj5mmlb88ej6a2st1nedpoyt foreign key (arvore_id) references arvores (arvores_id)
+Hibernate: alter table especies_fotos add constraint FKoc3aak24o1gaoepth6i1qermr foreign key (especie_id) references especies_arvores (especies_arvores_id)
+Hibernate: alter table lotes_sementeira add constraint FKjn5wln9apv5ugre2u2afjf93l foreign key (especie_id) references especies_arvores (especies_arvores_id)
+Hibernate: alter table plantios add constraint FKjw5jso138sn7qo0h1m8csbyar foreign key (area_id) references areas_arborizadas (area_id)
+Hibernate: alter table plantios add constraint FK9krrmn5j0qt4weug7wiinwvoe foreign key (especie_id) references especies_arvores (especies_arvores_id)
+2026-09-14T11:21:11.179-03:00  INFO 6304 --- [arborizacao] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-14T11:21:11.396-03:00  INFO 6304 --- [arborizacao] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-14T11:21:14.235-03:00  WARN 6304 --- [arborizacao] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-14T11:21:14.644-03:00  INFO 6304 --- [arborizacao] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name usuarioDetailsService
+2026-09-14T11:21:15.206-03:00  INFO 6304 --- [arborizacao] [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-09-14T11:21:15.799-03:00  INFO 6304 --- [arborizacao] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-14T11:21:15.815-03:00  INFO 6304 --- [arborizacao] [           main] b.c.a.a.ArborizacaoApplication           : Started ArborizacaoApplication in 26.92 seconds (process running for 27.827)
+Hibernate: select count(*) from usuarios u1_0
+Hibernate: insert into usuarios (ativo,criado_em,email,nome,perfil,senha) values (?,?,?,?,?,?)
+2026-09-14T11:21:17.019-03:00  WARN 6304 --- [arborizacao] [           main] b.c.a.arborizacao.config.DataSeedConfig  : Usuário administrador padrão criado -> e-mail: admin@amasvisa.com.br (TROQUE a senha após o primeiro login!)
+2026-09-14T11:21:43.387-03:00  INFO 6304 --- [arborizacao] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-14T11:21:43.388-03:00  INFO 6304 --- [arborizacao] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-14T11:21:43.391-03:00  INFO 6304 --- [arborizacao] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+2026-09-14T11:27:36.169-03:00  WARN 6304 --- [arborizacao] [l-1:housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m6s620ms910µs).

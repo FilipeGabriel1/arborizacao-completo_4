@@ -224,7 +224,7 @@ async function carregarSelects() {
   (especies ?? []).forEach((especie) => {
     const option = document.createElement('option');
     option.value = especie.id;
-    option.textContent = especie.nomePopular;
+    option.textContent = especie.nomeCientifico ? `${especie.nomePopular} (${especie.nomeCientifico})` : especie.nomePopular;
     especieIdInput.appendChild(option);
   });
 

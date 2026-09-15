@@ -1,0 +1,150 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< br.com.amasvisa:arborizacao >---------------------
+[INFO] Building arborizacao 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.1.0:run (default-cli) > test-compile @ arborizacao >>>
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ arborizacao ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 54 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ arborizacao ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ arborizacao ---
+[INFO] Copying 1 resource from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ arborizacao ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:4.1.0:run (default-cli) < test-compile @ arborizacao <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.1.0:run (default-cli) @ arborizacao ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.0)
+
+2026-09-14T12:21:55.211-03:00  INFO 18280 --- [arborizacao] [           main] b.c.a.a.ArborizacaoApplication           : Starting ArborizacaoApplication using Java 22.0.2 with PID 18280 (C:\Users\filip\Downloads\arborizacao-completo_4\arborizacao\target\classes started by filip in C:\Users\filip\Downloads\arborizacao-completo_4\arborizacao)
+2026-09-14T12:21:55.214-03:00  INFO 18280 --- [arborizacao] [           main] b.c.a.a.ArborizacaoApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-09-14T12:21:56.304-03:00  INFO 18280 --- [arborizacao] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-14T12:21:56.461-03:00  INFO 18280 --- [arborizacao] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 142 ms. Found 9 JPA repository interfaces.
+2026-09-14T12:21:57.468-03:00  INFO 18280 --- [arborizacao] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-09-14T12:21:57.490-03:00  INFO 18280 --- [arborizacao] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-09-14T12:21:57.490-03:00  INFO 18280 --- [arborizacao] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-09-14T12:21:57.564-03:00  INFO 18280 --- [arborizacao] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2298 ms
+2026-09-14T12:21:57.855-03:00  INFO 18280 --- [arborizacao] [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-14T12:21:57.997-03:00  INFO 18280 --- [arborizacao] [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-14T12:21:58.712-03:00  INFO 18280 --- [arborizacao] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-14T12:21:58.766-03:00  INFO 18280 --- [arborizacao] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-09-14T12:22:00.374-03:00  INFO 18280 --- [arborizacao] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@9763e61
+2026-09-14T12:22:00.378-03:00  INFO 18280 --- [arborizacao] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-09-14T12:22:00.591-03:00  WARN 18280 --- [arborizacao] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-14T12:22:00.691-03:00  INFO 18280 --- [arborizacao] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://gateway01.sa-east-1.prod.aws.tidbcloud.com:4000/arborizacao?sslMode=PREFERRED&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo&createDatabaseIfNotExist=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.11
+	Default catalog/schema: arborizacao/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-14T12:22:02.658-03:00  INFO 18280 --- [arborizacao] [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+Hibernate: alter table areas_arborizadas modify column situacao_inventario enum ('CONCLUIDO','EM_ANDAMENTO','EM_ATUALIZACAO','NAO_INICIADO')
+Hibernate: alter table areas_arborizadas modify column status enum ('ATIVA','EM_ANALISE','INATIVA') not null
+Hibernate: alter table areas_arborizadas modify column tipo enum ('AVENIDA','BOSQUE','OUTRA','PARQUE','PRACA','RUA') not null
+Hibernate: alter table arvores modify column condicao_fitossanitaria enum ('BOM','CRITICO','REGULAR','RUIM')
+Hibernate: alter table arvores modify column origem enum ('DOACAO','OBRIGACAO_LEGAL','OUTRA','PLANTIO_PROPRIO') not null
+Hibernate: alter table arvores modify column porte enum ('GRANDE','MEDIO','PEQUENO') not null
+Hibernate: alter table arvores modify column prioridade_manejo enum ('ALTA','BAIXA','MEDIA','URGENTE')
+Hibernate: alter table arvores modify column status enum ('ATIVA','EM_MANUTENCAO','INATIVA','REMOVIDA') not null
+Hibernate: alter table arvores modify column tipo_arvore enum ('EXOTICA','FRUTIFERA','NATIVA','ORNAMENTAL','OUTRA') not null
+Hibernate: alter table arvores modify column tipo_conflito enum ('ACESSIBILIDADE','CALCADA','EDIFICACAO','ILUMINACAO','REDE_ELETRICA','REDE_SUBTERRANEA','SEM_CONFLITO','SINALIZACAO','TRANSITO')
+Hibernate: alter table arvores modify column tipo_manejo enum ('AMPLIACAO_CANTEIRO','AVALIACAO_SUPRESSAO','AVALIACAO_TRANSPLANTE','COMBATE_PRAGAS','EXTRACAO','MONITORAMENTO','NENHUM','PODA_ADEQUACAO','PODA_FORMACAO','PODA_LIMPEZA','PODA_RENOVACAO','REPOUSO','TRANSPLANTE','TRATAMENTO_FITOSANITARIO','TUTORAMENTO')
+Hibernate: alter table auditoria modify column acao enum ('CRIACAO','EDICAO','EXCLUSAO') not null
+Hibernate: alter table auditoria modify column entidade enum ('AREA','ARVORE','DOACAO','ESPECIE','USUARIO') not null
+Hibernate: alter table lotes_sementeira modify column status enum ('ATIVO','CANCELADO','ENCERRADO') not null
+Hibernate: alter table manutencoes_arvore modify column prioridade enum ('ALTA','BAIXA','MEDIA','URGENTE') not null
+Hibernate: alter table manutencoes_arvore modify column tipo enum ('AMPLIACAO_CANTEIRO','AVALIACAO_SUPRESSAO','AVALIACAO_TRANSPLANTE','COMBATE_PRAGAS','EXTRACAO','MONITORAMENTO','NENHUM','PODA_ADEQUACAO','PODA_FORMACAO','PODA_LIMPEZA','PODA_RENOVACAO','REPOUSO','TRANSPLANTE','TRATAMENTO_FITOSANITARIO','TUTORAMENTO') not null
+Hibernate: alter table plantios modify column status enum ('CANCELADO','CONCLUIDO','EM_EXECUCAO','PLANEJADO') not null
+Hibernate: alter table usuarios modify column perfil enum ('ADMIN','FUNCIONARIO') not null
+2026-09-14T12:22:06.862-03:00  INFO 18280 --- [arborizacao] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-14T12:22:07.073-03:00  INFO 18280 --- [arborizacao] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-14T12:22:09.091-03:00  WARN 18280 --- [arborizacao] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-14T12:22:09.306-03:00  INFO 18280 --- [arborizacao] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name usuarioDetailsService
+2026-09-14T12:22:09.688-03:00  INFO 18280 --- [arborizacao] [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-09-14T12:22:10.237-03:00  INFO 18280 --- [arborizacao] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-09-14T12:22:10.247-03:00  INFO 18280 --- [arborizacao] [           main] b.c.a.a.ArborizacaoApplication           : Started ArborizacaoApplication in 15.773 seconds (process running for 16.312)
+Hibernate: select count(*) from usuarios u1_0
+2026-09-14T12:22:51.371-03:00  INFO 18280 --- [arborizacao] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-09-14T12:22:51.372-03:00  INFO 18280 --- [arborizacao] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-09-14T12:22:51.373-03:00  INFO 18280 --- [arborizacao] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+Hibernate: select u1_0.id,u1_0.ativo,u1_0.criado_em,u1_0.email,u1_0.nome,u1_0.perfil,u1_0.senha from usuarios u1_0 where upper(u1_0.email)=upper(?)
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.porte=?
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select ma1_0.manutencao_id,ma1_0.atualizado_em,ma1_0.criado_em,ma1_0.data_agendada,ma1_0.data_execucao,ma1_0.endereco,ma1_0.observacoes,ma1_0.prioridade,ma1_0.responsavel_execucao,ma1_0.status,ma1_0.tipo from manutencoes_arvore ma1_0 limit ?,?
+Hibernate: select ea1_0.especies_arvores_id,ea1_0.atualizado_em,ea1_0.criado_em,ea1_0.familia,ea1_0.foto_url,ea1_0.indicacao_plantio,ea1_0.nome_cientifico,ea1_0.nome_popular,ea1_0.observacoes,ea1_0.porte_padrao from especies_arvores ea1_0 limit ?,?
+Hibernate: select a1_0.arvores_id,a1_0.altura_primeira_bifurcacao,a1_0.altura_total,a1_0.area_id,a1_0.atualizado_em,a1_0.cap,a1_0.cavidades,a1_0.condicao_fitossanitaria,a1_0.criado_em,a1_0.danos_tronco,a1_0.dap,a1_0.data_plantio,a1_0.descricao,a1_0.diametro_copa,a1_0.doencas,a1_0.especie_id,a1_0.foto_url,a1_0.fungos,a1_0.galhos_secos,a1_0.georreferenciada,a1_0.inclinacao,a1_0.latitude,a1_0.longitude,a1_0.nome,a1_0.numero_processo,a1_0.origem,a1_0.porte,a1_0.pragas,a1_0.prioridade_manejo,a1_0.raizes_expostas,a1_0.responsavel_cadastro,a1_0.sinais_apodrecimento,a1_0.status,a1_0.tipo_arvore,a1_0.tipo_conflito,a1_0.tipo_manejo from arvores a1_0 limit ?,?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.porte=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.porte=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.origem=?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.origem=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.origem=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.origem=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.status=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.status=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.status=?
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.status=?
+Hibernate: select da1_0.doacoes_arvores_id,da1_0.arvore_id,da1_0.cpf,da1_0.data_doacao,da1_0.descricao,da1_0.destinacao,da1_0.quantidade,da1_0.rg,da1_0.solicitante from doacoes_arvores da1_0 where da1_0.data_doacao is not null order by da1_0.data_doacao desc limit ?
+Hibernate: select a1_0.arvores_id,a1_0.altura_primeira_bifurcacao,a1_0.altura_total,a1_0.area_id,a1_0.atualizado_em,a1_0.cap,a1_0.cavidades,a1_0.condicao_fitossanitaria,a1_0.criado_em,a1_0.danos_tronco,a1_0.dap,a1_0.data_plantio,a1_0.descricao,a1_0.diametro_copa,a1_0.doencas,a1_0.especie_id,a1_0.foto_url,a1_0.fungos,a1_0.galhos_secos,a1_0.georreferenciada,a1_0.inclinacao,a1_0.latitude,a1_0.longitude,a1_0.nome,a1_0.numero_processo,a1_0.origem,a1_0.porte,a1_0.pragas,a1_0.prioridade_manejo,a1_0.raizes_expostas,a1_0.responsavel_cadastro,a1_0.sinais_apodrecimento,a1_0.status,a1_0.tipo_arvore,a1_0.tipo_conflito,a1_0.tipo_manejo from arvores a1_0 order by a1_0.criado_em desc limit ?
+Hibernate: select count(*) from arvores a1_0
+Hibernate: select count(a1_0.arvores_id) from arvores a1_0 where a1_0.origem=?
+Hibernate: select count(*) from doacoes_arvores da1_0
+Hibernate: select count(*) from areas_arborizadas aa1_0
+Hibernate: select count(*) from especies_arvores ea1_0
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+Hibernate: select aa1_0.area_id,aa1_0.area_total_m2,aa1_0.atualizado_em,aa1_0.bairro,aa1_0.criado_em,aa1_0.descricao,aa1_0.foto_url,aa1_0.individuos_cadastrados,aa1_0.latitude,aa1_0.logradouro,aa1_0.longitude,aa1_0.nome,aa1_0.responsavel_manutencao,aa1_0.situacao_inventario,aa1_0.status,aa1_0.tipo,aa1_0.ultima_atualizacao_inventario from areas_arborizadas aa1_0 limit ?,?
+Hibernate: select p1_0.area_id,p1_0.latitude,p1_0.longitude from areas_pontos p1_0 where p1_0.area_id=?
+Hibernate: select f1_0.area_id,f1_0.areas_fotos_id,f1_0.criado_em,f1_0.descricao,f1_0.url from areas_fotos f1_0 where f1_0.area_id=?
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  18:03 min
+[INFO] Finished at: 2026-09-14T12:39:53-03:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.1.0:run (default-cli) on project arborizacao: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
