@@ -322,6 +322,7 @@ function iniciarEdicao(arvore) {
   descricaoInput.value = arvore.descricao || '';
   // Novos campos
   document.getElementById('responsavelCadastro').value = arvore.responsavelCadastro || '';
+  document.getElementById('responsavelManejo').value = arvore.responsavelCadastro || '';
   document.getElementById('cap').value = arvore.cap ?? '';
   document.getElementById('dap').value = arvore.dap ?? '';
   document.getElementById('alturaTotal').value = arvore.alturaTotal ?? '';
@@ -425,7 +426,7 @@ form.addEventListener('submit', async (event) => {
     // Manejo
     tipoManejo: document.getElementById('tipoManejo')?.value || null,
     prioridadeManejo: document.getElementById('prioridadeManejo')?.value || null,
-    responsavelCadastro: document.getElementById('responsavelCadastro')?.value || null,
+    responsavelCadastro: document.getElementById('responsavelCadastro')?.value || document.getElementById('responsavelManejo')?.value || null,
     fotos: []
   };
 
