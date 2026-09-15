@@ -379,7 +379,14 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formMessage.innerHTML = '';
 
-  if (!form.reportValidity()) return;
+  const activeTab = document.querySelector('.tab-content.active');
+  if (activeTab && !activeTab.querySelector('input, select, textarea')?.validity?.valid) {
+    const invalid = activeTab.querySelector(':invalid');
+    if (invalid) {
+      invalid.reportValidity();
+      return;
+    }
+  }
 
   const payload = {
     nome: nomeInput.value || null,
