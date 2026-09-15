@@ -49,6 +49,36 @@ document.querySelectorAll('input[name="prioridadeRadio"]').forEach(radio => {
   });
 });
 
+// GPS button
+const gpsBtn = document.getElementById('gpsBtn');
+if (gpsBtn) {
+  gpsBtn.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      showToast('Geolocalização não suportada pelo navegador.', 'erro');
+      return;
+    }
+    gpsBtn.textContent = '📍 Obtendo localização...';
+    gpsBtn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        latitudeInput.value = pos.coords.latitude.toFixed(6);
+        longitudeInput.value = pos.coords.longitude.toFixed(6);
+        georreferenciadaInput.checked = true;
+        gpsBtn.textContent = '📍 Usar minha localização';
+        gpsBtn.disabled = false;
+        showToast('Localização obtida com sucesso!', 'sucesso');
+      },
+      (err) => {
+        console.error(err);
+        showToast('Não foi possível obter a localização: ' + err.message, 'erro');
+        gpsBtn.textContent = '📍 Usar minha localização';
+        gpsBtn.disabled = false;
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+}
+
 // Auto-calculate DAP from CAP
 const capInput = document.getElementById('cap');
 const dapInput = document.getElementById('dap');
