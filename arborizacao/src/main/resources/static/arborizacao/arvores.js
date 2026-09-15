@@ -380,7 +380,7 @@ form.addEventListener('submit', async (event) => {
   formMessage.innerHTML = '';
 
   const activeTab = document.querySelector('.tab-content.active');
-  if (activeTab && !activeTab.querySelector('input, select, textarea')?.validity?.valid) {
+  if (activeTab) {
     const invalid = activeTab.querySelector(':invalid');
     if (invalid) {
       invalid.reportValidity();
