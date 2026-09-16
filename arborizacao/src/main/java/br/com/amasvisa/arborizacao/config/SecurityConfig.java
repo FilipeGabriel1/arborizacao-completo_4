@@ -73,7 +73,8 @@ public class SecurityConfig {
                         "/api/arvores/**",
                         "/api/especies/**",
                         "/api/placar/**",
-                        "/api/places/**"
+                        "/api/places/**",
+                        "/api/sementeira/**"
                 ).permitAll()
                 .requestMatchers("/api/auth/me").authenticated()
                 .anyRequest().authenticated()

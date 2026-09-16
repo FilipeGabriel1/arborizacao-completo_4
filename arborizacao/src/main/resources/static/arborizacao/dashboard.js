@@ -62,14 +62,14 @@
       buscarTudo('/api/especies'),
       fetch('/api/placar', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       buscarTudo('/api/sementeira'),
-      buscarTudo('/api/usuarios')
+      fetch('/api/usuarios', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
     ]).then(function (results) {
       areasData = results[0];
       arvoresData = results[1];
       especiesData = results[2];
       placarData = results[3];
       sementeiraData = results[4] || [];
-      usuariosData = results[5] || [];
+      usuariosData = Array.isArray(results[5]) ? results[5] : [];
       return { areas: areasData, arvores: arvoresData, especies: especiesData, placar: placarData };
     });
   }
