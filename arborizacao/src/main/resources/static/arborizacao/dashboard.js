@@ -75,6 +75,9 @@
   }
 
   function renderKPIs() {
+    console.log('[DEBUG] sementeiraData:', sementeiraData);
+    console.log('[DEBUG] usuariosData:', usuariosData);
+    console.log('[DEBUG] placarData:', placarData);
     var totalArvores = arvoresData.length;
     var totalAreas = areasData.length;
     var totalEspecies = especiesData.length;
