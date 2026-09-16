@@ -12,6 +12,8 @@
   let arvoresData = [];
   let especiesData = [];
   let placarData = null;
+  let sementeiraData = [];
+  let usuariosData = [];
 
   function formatarNumero(n) {
     return Number(n).toLocaleString('pt-BR');
@@ -58,12 +60,16 @@
       buscarTudo('/api/areas'),
       buscarTudo('/api/arvores'),
       buscarTudo('/api/especies'),
-      fetch('/api/placar', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      fetch('/api/placar', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      buscarTudo('/api/sementeira'),
+      buscarTudo('/api/usuarios')
     ]).then(function (results) {
       areasData = results[0];
       arvoresData = results[1];
       especiesData = results[2];
       placarData = results[3];
+      sementeiraData = results[4] || [];
+      usuariosData = results[5] || [];
       return { areas: areasData, arvores: arvoresData, especies: especiesData, placar: placarData };
     });
   }
@@ -87,6 +93,20 @@
       document.getElementById('summaryDoacoes').textContent = formatarNumero(placarData.totalDoacoes || 0);
       document.getElementById('summaryMudasDoadas').textContent = formatarNumero(placarData.totalMudasDoadas || 0);
     }
+
+    document.getElementById('summaryUsuarios').textContent = formatarNumero(usuariosData.length);
+
+    var mProduzidas = sementeiraData.reduce(function (s, l) { return s + (l.quantidadeProduzida || 0); }, 0);
+    var mDisponiveis = sementeiraData.reduce(function (s, l) { return s + (l.quantidadeDisponivel || 0); }, 0);
+    var mDoadas = sementeiraData.reduce(function (s, l) { return s + (l.quantidadeDoadas || 0); }, 0);
+    var mPlantadas = sementeiraData.reduce(function (s, l) { return s + (l.quantidadePlantadas || l.quantidadeDestinadas || 0); }, 0);
+    var mPerdas = sementeiraData.reduce(function (s, l) { return s + (l.quantidadePerdas || 0); }, 0);
+
+    document.getElementById('nurseryProduzidas').textContent = formatarNumero(mProduzidas);
+    document.getElementById('nurseryDisponiveis').textContent = formatarNumero(mDisponiveis);
+    document.getElementById('nurseryDoadas').textContent = formatarNumero(mDoadas);
+    document.getElementById('nurseryPlantadas').textContent = formatarNumero(mPlantadas);
+    document.getElementById('nurseryPerdas').textContent = formatarNumero(mPerdas);
   }
 
   function criarDonut(containerId, legendId, dados, cores) {
