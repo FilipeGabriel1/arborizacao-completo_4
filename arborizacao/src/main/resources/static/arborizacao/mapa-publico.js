@@ -951,13 +951,20 @@ function inicializarCarousel(id, items) {
   const track = document.getElementById(id + '-track');
   const dotsContainer = document.getElementById(id + '-dots');
   if (!track || !items.length) {
-    console.warn(`[CAROUSEL] SKIP: track=${!!track} items=${items?.length} id=${id}`);
     return;
   }
-  console.log(`[CAROUSEL] OK: ${id} → ${items.length} itens`);
 
-  const visibleCount = window.innerWidth <= 600 ? 2 : window.innerWidth <= 900 ? 3 : 5;
-  const totalPages = Math.ceil(items.length / visibleCount);
+  function getVisibleCount() {
+    const w = track.parentElement?.offsetWidth || window.innerWidth;
+    if (w <= 600) return 1;
+    if (w <= 900) return 2;
+    return 3;
+  }
+
+  function getTotalPages() {
+    return Math.ceil(items.length / getVisibleCount());
+  }
+
   let currentPage = 0;
 
   function renderizar() {
@@ -1003,7 +1010,8 @@ function inicializarCarousel(id, items) {
 
     if (dotsContainer) {
       dotsContainer.innerHTML = '';
-      for (let i = 0; i < totalPages; i++) {
+      const tp = getTotalPages();
+      for (let i = 0; i < tp; i++) {
         const dot = document.createElement('span');
         dot.className = 'carousel-dot' + (i === 0 ? ' ativo' : '');
         dot.addEventListener('click', () => {
@@ -1016,10 +1024,12 @@ function inicializarCarousel(id, items) {
   }
 
   function atualizar() {
-    const cardWidth = track.querySelector('.carousel-card')?.offsetWidth || 200;
-    const gap = 16;
-    const offset = currentPage * (cardWidth + gap) * visibleCount;
-    track.style.transform = `translateX(-${offset}px)`;
+    const cards = track.querySelectorAll('.carousel-card');
+    const visibleCount = getVisibleCount();
+    const idx = Math.min(currentPage * visibleCount, cards.length - 1);
+    if (cards[idx]) {
+      cards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    }
 
     if (dotsContainer) {
       dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
@@ -1042,7 +1052,7 @@ function inicializarCarousel(id, items) {
 
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
-      currentPage = Math.min(totalPages - 1, currentPage + 1);
+      currentPage = Math.min(getTotalPages() - 1, currentPage + 1);
       atualizar();
     });
   }
