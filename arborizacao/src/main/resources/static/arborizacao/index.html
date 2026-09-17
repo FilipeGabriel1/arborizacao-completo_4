@@ -380,7 +380,7 @@
         </div>
         <div class="sementeira-especies">
           <h3>Espécies mais produzidas</h3>
-          <ul class="sementeira-especies-lista">
+          <ul class="sementeira-especies-lista" id="sementeiraEspecies">
             <li><span>Ipê-amarelo</span><strong>1.320</strong></li>
             <li><span>Oiti</span><strong>980</strong></li>
             <li><span>Arvoreira</span><strong>760</strong></li>
@@ -461,6 +461,42 @@
 
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
   <script src="./mapa-publico.js?v=20260903-2"></script>
+  <script>
+    (function() {
+      fetch('/api/sementeira?page=0&size=500')
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          var lotes = (data && data.value) ? data.value : [];
+          if (lotes.length === 0) return;
+
+          var produzidas = 0, disponiveis = 0, doadas = 0, destinadas = 0;
+          var especiesMap = {};
+
+          lotes.forEach(function(l) {
+            produzidas += l.quantidadeProduzida || 0;
+            disponiveis += l.quantidadeDisponivel || 0;
+            doadas += l.quantidadeDoadas || 0;
+            destinadas += l.quantidadePlantadas || l.quantidadeDestinadas || 0;
+            var nome = l.especieNomePopular || 'Não informado';
+            especiesMap[nome] = (especiesMap[nome] || 0) + (l.quantidadeProduzida || 0);
+          });
+
+          document.getElementById('statProduzidas').textContent = produzidas.toLocaleString('pt-BR');
+          document.getElementById('statDisponiveis').textContent = disponiveis.toLocaleString('pt-BR');
+          document.getElementById('statDoadas').textContent = doadas.toLocaleString('pt-BR');
+          document.getElementById('statDestinadas').textContent = destinadas.toLocaleString('pt-BR');
+
+          var especiesArr = Object.entries(especiesMap).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 5);
+          var lista = document.getElementById('sementeiraEspecies');
+          if (especiesArr.length > 0 && lista) {
+            lista.innerHTML = especiesArr.map(function(e) {
+              return '<li><span>' + e[0] + '</span><strong>' + e[1].toLocaleString('pt-BR') + '</strong></li>';
+            }).join('');
+          }
+        })
+        .catch(function() {});
+    })();
+  </script>
 </body>
 </html>
 
