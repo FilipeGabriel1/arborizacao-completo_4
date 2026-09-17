@@ -204,6 +204,10 @@ function montarTabelas() {
 }
 
 function exportarPDF() {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    alert('Biblioteca PDF não carregada. Verifique sua conexão com a internet e recarregue a página (Ctrl+Shift+R).');
+    return;
+  }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p', 'mm', 'a4');
   const tabelas = montarTabelas();
@@ -250,6 +254,10 @@ function exportarPDF() {
 }
 
 function exportarExcel() {
+  if (!window.XLSX) {
+    alert('Biblioteca Excel não carregada. Verifique sua conexão com a internet e recarregue a página (Ctrl+Shift+R).');
+    return;
+  }
   const tabelas = montarTabelas();
   const wb = XLSX.utils.book_new();
 
