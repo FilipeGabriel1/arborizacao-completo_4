@@ -10,6 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./dashboard.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
   <!-- SIDEBAR -->
@@ -52,6 +55,11 @@
         <p>Indicadores consolidados do sistema de arborização urbana.</p>
       </div>
       <div class="topbar-actions">
+        <div class="export-buttons">
+          <button class="export-btn export-pdf" onclick="exportarPDF()" title="Exportar PDF">📄 PDF</button>
+          <button class="export-btn export-excel" onclick="exportarExcel()" title="Exportar Excel">📊 Excel</button>
+          <button class="export-btn export-csv" onclick="exportarCSV()" title="Exportar CSV">📋 CSV</button>
+        </div>
         <span id="userEmail" style="font-size:0.82rem;color:var(--muted);"></span>
         <form action="/logout" method="post" class="logout-form">
           <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
@@ -189,5 +197,21 @@
   <script src="./auth.js"></script>
   <script src="./toasts.js"></script>
   <script src="./relatorios.js"></script>
+  <style>
+    .export-buttons { display: flex; gap: 8px; flex-shrink: 0; }
+    .export-btn {
+      padding: 8px 14px; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+      background: rgba(255,255,255,0.06); color: var(--text); font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .export-btn:hover { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+    .export-pdf:hover { border-color: #ef4444; color: #fca5a5; }
+    .export-excel:hover { border-color: #22c55e; color: #86efac; }
+    .export-csv:hover { border-color: #3b82f6; color: #93c5fd; }
+    @media (max-width: 768px) {
+      .export-buttons { flex-wrap: wrap; }
+      .export-btn { font-size: 0.72rem; padding: 6px 10px; }
+    }
+  </style>
 </body>
 </html>

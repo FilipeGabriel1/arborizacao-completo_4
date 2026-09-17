@@ -12,6 +12,8 @@ async function buscarTudo(url, pageSize = 200) {
   }
 }
 
+let dadosExport = { arvores: [], areas: [], especies: [], lotes: [], plantios: [], manutencoes: [] };
+
 const CORES_PORTE = { PEQUENO: '#22c55e', MEDIO: '#16a34a', GRANDE: '#4ade80' };
 const ROTULOS_PORTE = { PEQUENO: 'Pequeno', MEDIO: 'Médio', GRANDE: 'Grande' };
 const CORES_ORIGEM = { DOACAO: '#1e40af', OBRIGACAO_LEGAL: '#3b82f6', PLANTIO_PROPRIO: '#60a5fa', OUTRA: '#93c5fd' };
@@ -37,6 +39,8 @@ async function carregarDados() {
   const l = lotes ?? [];
   const p = plantios ?? [];
   const m = manutencoes ?? [];
+
+  dadosExport = { arvores: a, areas: ar, especies: e, lotes: l, plantios: p, manutencoes: m };
 
   document.getElementById('kpiArvores').textContent = a.length;
   document.getElementById('kpiAreas').textContent = ar.length;
@@ -158,3 +162,127 @@ function renderTopEspecies(arvores) {
 }
 
 carregarDados();
+
+function formatarData() {
+  return new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+}
+
+function montarTabelas() {
+  const d = dadosExport;
+  return [
+    {
+      titulo: 'Árvores (' + d.arvores.length + ')',
+      colunas: ['ID', 'Nome', 'Espécie', 'Porte', 'Origem', 'Condição', 'Status', 'Área'],
+      linhas: d.arvores.map(a => [a.id, a.nome || '', a.especieNomePopular || '', a.porte || '', a.origem || '', a.condicaoFitossanitaria || '', a.status || '', a.areaNome || ''])
+    },
+    {
+      titulo: 'Áreas Verdes (' + d.areas.length + ')',
+      colunas: ['ID', 'Nome', 'Tipo', 'Bairro', 'Status'],
+      linhas: d.areas.map(a => [a.id, a.nome || '', a.tipo || '', a.bairro || '', a.status || ''])
+    },
+    {
+      titulo: 'Espécies (' + d.especies.length + ')',
+      colunas: ['ID', 'Nome Popular', 'Nome Científico', 'Família'],
+      linhas: d.especies.map(e => [e.id, e.nomePopular || '', e.nomeCientifico || '', e.familia || ''])
+    },
+    {
+      titulo: 'Lotes Sementeira (' + d.lotes.length + ')',
+      colunas: ['ID', 'Lote', 'Espécie', 'Produzida', 'Disponível', 'Doadas', 'Plantadas', 'Perdas', 'Data'],
+      linhas: d.lotes.map(l => [l.id, l.numeroLote || '', l.especieNomePopular || '', l.quantidadeProduzida || 0, l.quantidadeDisponivel || 0, l.quantidadeDoadas || 0, l.quantidadePlantadas || 0, l.quantidadePerdas || 0, l.dataProducao || ''])
+    },
+    {
+      titulo: 'Plantios (' + d.plantios.length + ')',
+      colunas: ['ID', 'Área', 'Espécie', 'Qtd Mudas', 'Data', 'Responsável', 'Status'],
+      linhas: d.plantios.map(p => [p.id, p.areaNome || '', p.especieNomePopular || '', p.quantidadeMudas || 0, p.dataPlantio || '', p.responsavel || '', p.status || ''])
+    },
+    {
+      titulo: 'Ordens de Serviço (' + d.manutencoes.length + ')',
+      colunas: ['ID', 'Tipo', 'Prioridade', 'Status', 'Data Solicitada', 'Responsável'],
+      linhas: d.manutencoes.map(m => [m.id, m.tipo || '', m.prioridade || '', m.status || '', m.dataAgendada || '', m.responsavel || ''])
+    }
+  ];
+}
+
+function exportarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p', 'mm', 'a4');
+  const tabelas = montarTabelas();
+  let y = 15;
+
+  doc.setFontSize(16);
+  doc.text('Relatório — Arborização Urbana', 14, y);
+  doc.setFontSize(9);
+  doc.setTextColor(120);
+  doc.text('Gerado em: ' + new Date().toLocaleString('pt-BR'), 14, y + 6);
+  doc.setTextColor(0);
+  y += 14;
+
+  tabelas.forEach(t => {
+    if (y > 260) { doc.addPage(); y = 15; }
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'bold');
+    doc.text(t.titulo, 14, y);
+    y += 2;
+    doc.setFont(undefined, 'normal');
+
+    if (t.linhas.length === 0) {
+      doc.setFontSize(9);
+      doc.setTextColor(150);
+      doc.text('Sem dados.', 14, y + 5);
+      doc.setTextColor(0);
+      y += 10;
+      return;
+    }
+
+    doc.autoTable({
+      startY: y,
+      head: [t.colunas],
+      body: t.linhas,
+      styles: { fontSize: 7, cellPadding: 2 },
+      headStyles: { fillColor: [34, 120, 62] },
+      margin: { left: 14, right: 14 },
+      didDrawPage: (data) => { y = data.cursor.y + 4; }
+    });
+    y = doc.lastAutoTable.finalY + 6;
+  });
+
+  doc.save('relatorio-arborizacao-' + formatarData() + '.pdf');
+}
+
+function exportarExcel() {
+  const tabelas = montarTabelas();
+  const wb = XLSX.utils.book_new();
+
+  tabelas.forEach(t => {
+    const wsData = [t.colunas, ...t.linhas];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = t.colunas.map(() => ({ wch: 18 }));
+    const nome = t.titulo.split('(')[0].trim().substring(0, 31);
+    XLSX.utils.book_append_sheet(wb, ws, nome);
+  });
+
+  XLSX.writeFile(wb, 'relatorio-arborizacao-' + formatarData() + '.xlsx');
+}
+
+function exportarCSV() {
+  const tabelas = montarTabelas();
+  const d = dadosExport;
+  const csvRows = [];
+
+  tabelas.forEach(t => {
+    csvRows.push('--- ' + t.titulo + ' ---');
+    csvRows.push(t.colunas.join(';'));
+    t.linhas.forEach(l => {
+      csvRows.push(l.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(';'));
+    });
+    csvRows.push('');
+  });
+
+  const blob = new Blob(['\uFEFF' + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'relatorio-arborizacao-' + formatarData() + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
