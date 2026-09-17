@@ -644,6 +644,10 @@ button:hover {
   box-shadow: var(--shadow);
 }
 
+.pub-hamburger {
+  display: none;
+}
+
 .prefeitura-marca {
   display: flex;
   align-items: center;
@@ -2573,6 +2577,7 @@ button:hover {
   background: linear-gradient(180deg, rgba(13, 31, 18, 0.95) 0%, rgba(10, 26, 14, 0.98) 100%);
   border: 1px solid rgba(74, 222, 128, 0.15);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 .conheca-header {
@@ -2648,6 +2653,8 @@ button:hover {
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .carousel-card:hover {
@@ -2691,6 +2698,9 @@ button:hover {
   margin: 0 0 2px;
   font-size: 0.75rem;
   color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .carousel-card-badge {
@@ -2731,6 +2741,10 @@ button:hover {
   color: #4ade80;
   cursor: pointer;
   transition: background 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .carousel-card-btn:hover {
@@ -2943,6 +2957,10 @@ button:hover {
 }
 
 @media (max-width: 600px) {
+  body {
+    padding: 12px;
+  }
+
   .conheca-section {
     padding: 20px;
   }
@@ -2951,8 +2969,32 @@ button:hover {
     flex: 0 0 calc(50% - 8px);
   }
 
+  .carousel-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+
+  .carousel-container {
+    gap: 8px;
+  }
+
   .sementeira-stats {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .rodape-institucional {
+    grid-template-columns: 1fr;
+    padding: 20px 16px;
+    gap: 16px;
+  }
+
+  .rodape-institucional strong {
+    font-size: 0.85rem;
+  }
+
+  .rodape-institucional p {
+    font-size: 0.8rem;
   }
 }
 

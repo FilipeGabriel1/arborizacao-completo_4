@@ -328,7 +328,7 @@
       <div class="carousel-dots" id="especies-carousel-dots"></div>
     </section>
 
-    <section class="conheca-section">
+    <section class="conheca-section" id="sementeira">
       <div class="conheca-header">
         <div class="conheca-titulo">
           <span class="conheca-icon">🌱</span>
@@ -497,6 +497,16 @@
         })
         .catch(function() {});
     })();
+
+    window.abrirRelatorioSementeira = function() {
+      var modal = document.getElementById('relatorioModal');
+      if (modal) modal.classList.remove('hidden');
+    };
+
+    window.fecharRelatorioSementeira = function() {
+      var modal = document.getElementById('relatorioModal');
+      if (modal) modal.classList.add('hidden');
+    };
   </script>
 </body>
 </html>
