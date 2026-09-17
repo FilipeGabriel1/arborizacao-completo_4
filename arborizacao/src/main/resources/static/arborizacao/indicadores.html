@@ -287,110 +287,46 @@
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value">523</div>
-        <div class="stat-label">Árvores Plantadas</div>
+        <div class="stat-value" id="statArvores">—</div>
+        <div class="stat-label">Árvores Cadastradas</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">147</div>
-        <div class="stat-label">Árvores Doadas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">28</div>
+        <div class="stat-value" id="statAreas">—</div>
         <div class="stat-label">Áreas Arborizadas</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">34</div>
+        <div class="stat-value" id="statEspecies">—</div>
         <div class="stat-label">Espécies Registradas</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">1.2k</div>
+        <div class="stat-value" id="statMudas">—</div>
         <div class="stat-label">Mudas Produzidas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statPlantios">—</div>
+        <div class="stat-label">Plantios Realizados</div>
       </div>
     </div>
 
     <div class="charts-grid">
       <div class="chart-card">
         <h3>Árvores por Porte</h3>
-        <div class="bar-chart">
-          <div class="bar-row">
-            <span class="bar-label">Pequeno</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 45%;"></div></div>
-            <span class="bar-value">235</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Médio</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 35%;"></div></div>
-            <span class="bar-value">183</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Grande</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 20%;"></div></div>
-            <span class="bar-value">105</span>
-          </div>
-        </div>
+        <div class="bar-chart" id="chartPorte"></div>
       </div>
 
       <div class="chart-card">
         <h3>Árvores por Origem</h3>
-        <div class="bar-chart">
-          <div class="bar-row">
-            <span class="bar-label">Plantada</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 78%;"></div></div>
-            <span class="bar-value">523</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Doadas</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 22%;"></div></div>
-            <span class="bar-value">147</span>
-          </div>
-        </div>
+        <div class="bar-chart" id="chartOrigem"></div>
       </div>
 
       <div class="chart-card">
         <h3>Espécies Mais Registradas</h3>
-        <div class="bar-chart">
-          <div class="bar-row">
-            <span class="bar-label">Ipê Amarelo</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 85%;"></div></div>
-            <span class="bar-value">89</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Pau-Brasil</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 62%;"></div></div>
-            <span class="bar-value">65</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Cajarana</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 48%;"></div></div>
-            <span class="bar-value">50</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Castanheira</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 35%;"></div></div>
-            <span class="bar-value">37</span>
-          </div>
-        </div>
+        <div class="bar-chart" id="chartEspecies"></div>
       </div>
 
       <div class="chart-card">
         <h3>Áreas por Tipo</h3>
-        <div class="bar-chart">
-          <div class="bar-row">
-            <span class="bar-label">Praça</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 55%;"></div></div>
-            <span class="bar-value">15</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Calçada</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 30%;"></div></div>
-            <span class="bar-value">8</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-label">Escola</span>
-            <div class="bar-track"><div class="bar-fill" style="width: 15%;"></div></div>
-            <span class="bar-value">5</span>
-          </div>
-        </div>
+        <div class="bar-chart" id="chartAreasTipo"></div>
       </div>
     </div>
   </main>
@@ -398,6 +334,69 @@
   <footer class="footer">
     <p>© 2026 Prefeitura Municipal de Vitória de Santo Antão - Amasvisa. Todos os direitos reservados.</p>
   </footer>
+
+  <script>
+    (function() {
+      var CORES = {
+        PEQUENO: '#22c55e', MEDIO: '#16a34a', GRANDE: '#4ade80',
+        NATIVA: '#22c55e', EXOTICA: '#3b82f6', PLANTIO_PROPRIO: '#60a5fa', DOACAO: '#f97316', OBRIGACAO_LEGAL: '#a78bfa', OUTRA: '#9ca3af',
+        PRACA: '#22c55e', BOSQUE: '#16a34a', PRAIA: '#3b82f6', ESCOLA: '#f97316', OUTRO: '#9ca3af', CALCADA: '#a78bfa', ROSSIO: '#60a5fa'
+      };
+
+      function agrupar(arr, campo) {
+        var m = {};
+        arr.forEach(function(item) { var k = item[campo] || 'Não informado'; m[k] = (m[k] || 0) + 1; });
+        return Object.entries(m).sort(function(a, b) { return b[1] - a[1]; });
+      }
+
+      function renderBar(containerId, dados, cores) {
+        var el = document.getElementById(containerId);
+        if (!el || dados.length === 0) return;
+        var max = dados[0][1];
+        el.innerHTML = dados.map(function(d) {
+          var pct = max > 0 ? (d[1] / max * 100) : 0;
+          var cor = cores[d[0]] || '#22c55e';
+          return '<div class="bar-row">' +
+            '<span class="bar-label">' + d[0] + '</span>' +
+            '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + cor + ';"></div></div>' +
+            '<span class="bar-value">' + d[1] + '</span></div>';
+        }).join('');
+      }
+
+      Promise.all([
+        fetch('/api/arvores?page=0&size=500').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+        fetch('/api/areas?page=0&size=500').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+        fetch('/api/especies?page=0&size=500').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+        fetch('/api/sementeira?page=0&size=500').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+        fetch('/api/plantios?page=0&size=500').then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; })
+      ]).then(function(results) {
+        var arvores = results[0] ? (results[0].value || []) : [];
+        var areas = results[1] ? (results[1].value || []) : [];
+        var especies = results[2] ? (results[2].value || []) : [];
+        var lotes = results[3] ? (results[3].value || []) : [];
+        var plantios = results[4] ? (results[4].value || []) : [];
+
+        var totalMudas = 0;
+        lotes.forEach(function(l) { totalMudas += l.quantidadeProduzida || 0; });
+
+        document.getElementById('statArvores').textContent = arvores.length;
+        document.getElementById('statAreas').textContent = areas.length;
+        document.getElementById('statEspecies').textContent = especies.length;
+        document.getElementById('statMudas').textContent = totalMudas.toLocaleString('pt-BR');
+        document.getElementById('statPlantios').textContent = plantios.length;
+
+        renderBar('chartPorte', agrupar(arvores, 'porte'), CORES);
+        renderBar('chartOrigem', agrupar(arvores, 'origem'), CORES);
+
+        var espCont = {};
+        arvores.forEach(function(a) { if (a.especieNomePopular) espCont[a.especieNomePopular] = (espCont[a.especieNomePopular] || 0) + 1; });
+        var espArr = Object.entries(espCont).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 6);
+        renderBar('chartEspecies', espArr, CORES);
+
+        renderBar('chartAreasTipo', agrupar(areas, 'tipo'), CORES);
+      });
+    })();
+  </script>
 
 </body>
 </html>
