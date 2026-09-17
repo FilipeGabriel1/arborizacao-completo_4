@@ -198,7 +198,7 @@ function montarTabelas() {
     {
       titulo: 'Ordens de Serviço (' + d.manutencoes.length + ')',
       colunas: ['ID', 'Tipo', 'Prioridade', 'Status', 'Data Solicitada', 'Responsável'],
-      linhas: d.manutencoes.map(m => [m.id, m.tipo || '', m.prioridade || '', m.status || '', m.dataAgendada || '', m.responsavel || ''])
+      linhas: d.manutencoes.map(m => [m.id, m.tipo || '', m.prioridade || '', m.status || '', m.dataAgendada || '', m.responsavelExecucao || ''])
     }
   ];
 }
