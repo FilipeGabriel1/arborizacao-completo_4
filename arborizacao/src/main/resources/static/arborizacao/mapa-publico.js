@@ -615,7 +615,7 @@ function obterUrlImagem(url) {
 const map = new maplibregl.Map({
   container: 'map',
   style: mapStyle,
-  center: [-46.634, -23.551],
+  center: [-35.291, -8.119],
   zoom: 12
 });
 

@@ -211,7 +211,7 @@
         },
         layers: [{ id: 'osm', type: 'raster', source: 'osm' }]
       },
-      center: [-34.89, -8.08],
+      center: [-35.291, -8.119],
       zoom: 13
     });
 
