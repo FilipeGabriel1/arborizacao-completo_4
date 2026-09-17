@@ -119,6 +119,16 @@
       background: rgba(74, 222, 128, 0.15);
     }
 
+    .navbar-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--branco);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 6px;
+    }
+
     /* HERO SECTION */
     .hero {
       position: relative;
@@ -332,7 +342,19 @@
 
       .navbar-links {
         display: none;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: rgba(13, 31, 18, 0.98);
+        flex-direction: column;
+        padding: 20px;
+        gap: 16px;
+        border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+        z-index: 99;
       }
+      .navbar-links.open { display: flex; }
+      .navbar-hamburger { display: flex; }
 
       .hero {
         padding: 100px 20px 60px;
@@ -363,7 +385,7 @@
       </div>
     </a>
 
-    <ul class="navbar-links">
+    <ul class="navbar-links" id="navLinks">
       <li><a href="./index.html">Início</a></li>
       <li><a href="./index.html">Mapa</a></li>
       <li><a href="./index.html">Áreas Verdes</a></li>
@@ -372,6 +394,7 @@
       <li><a href="./indicadores.html">Indicadores</a></li>
       <li><a href="./sobre.html">Sobre</a></li>
     </ul>
+    <button class="navbar-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
 
     <a href="./login.html" class="navbar-btn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

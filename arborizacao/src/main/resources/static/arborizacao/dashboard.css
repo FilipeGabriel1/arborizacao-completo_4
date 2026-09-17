@@ -833,10 +833,58 @@
   }
 }
 
+/* ===== HAMBURGER MENU ===== */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  line-height: 1;
+}
+.hamburger-btn:hover { background: rgba(255,255,255,0.08); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
 @media (max-width: 720px) {
+  .hamburger-btn { display: flex; align-items: center; justify-content: center; }
+
   .sidebar {
-    display: none;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 260px;
+    height: 100vh;
+    z-index: 100;
+    transition: left 0.3s ease;
+    background: var(--sidebar-bg, #0d1f12);
   }
+
+  .sidebar.open { left: 0; }
+  .sidebar-overlay.open { display: block; }
+
+  .sidebar-brand-text,
+  .sidebar-link span,
+  .sidebar-link .badge,
+  .sidebar-link .badge-count,
+  .sidebar-section-label,
+  .sidebar-footer-brand-text,
+  .sidebar-footer p { display: block !important; }
+
+  .sidebar-section { padding: 0 12px; }
+  .sidebar-link { padding: 10px 12px; font-size: 0.85rem; }
+  .sidebar-link .icon { font-size: 1.1rem; }
 
   .main-content {
     margin-left: 0;
@@ -857,12 +905,36 @@
   }
 
   .kpi-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 
   .chart-container {
     grid-template-columns: 1fr;
   }
+
+  .dashboard-grid { grid-template-columns: 1fr !important; }
+
+  .export-buttons { flex-wrap: wrap; }
+  .export-btn { font-size: 0.72rem; padding: 6px 10px; }
+
+  .manejo-layout { grid-template-columns: 1fr !important; }
+
+  .area-item header { flex-direction: column; align-items: flex-start; gap: 6px; }
+
+  .os-card-actions { flex-wrap: wrap; }
+  .os-card { min-width: 0; }
+
+  .form-card { padding: 16px; }
+  .form-card .two-columns { grid-template-columns: 1fr !important; }
+
+  .card-metric { min-width: 0; }
+  .card-metric-body { min-width: 0; }
+  .card-metric-value { font-size: 1.5rem; }
+}
+
+@media (max-width: 420px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .topbar-greeting h1 { font-size: 1.1rem; }
 }
 
 /* ===== TABS ===== */
@@ -1585,4 +1657,49 @@ select[required]:focus,
 textarea[required]:focus {
   border-color: var(--red) !important;
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* ===== RESPONSIVE: TABLES ===== */
+@media (max-width: 720px) {
+  .table-wrap,
+  .recent-trees-table,
+  .extrato-tabela { overflow-x: auto; -webkit-overflow-scrolling: touch; display: block; }
+  table { min-width: 500px; }
+}
+
+/* ===== RESPONSIVE: FORMS ===== */
+@media (max-width: 720px) {
+  .tabs-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+  .tab-btn { min-width: 80px; font-size: 0.68rem; padding: 6px 8px; }
+
+  .manejo-form-prioridade-grid,
+  .manejo-form-status-grid,
+  .manejo-form-tipo-grid { flex-wrap: wrap; }
+  .manejo-prio-card, .manejo-status-card, .manejo-tipo-card { min-width: 0; font-size: 0.72rem; padding: 6px 8px; }
+
+  .form-card input[type="text"],
+  .form-card input[type="email"],
+  .form-card input[type="password"],
+  .form-card input[type="date"],
+  .form-card input[type="number"],
+  .form-card select,
+  .form-card textarea { font-size: 16px; }
+
+  .busca-form { flex-direction: column; }
+  .busca-form input { min-width: 0; }
+
+  .card-header { flex-wrap: wrap; gap: 8px; }
+  .card-header h2 { font-size: 1rem; }
+
+  .section-cards { grid-template-columns: 1fr !important; }
+
+  .empty-state { font-size: 0.85rem; padding: 16px; }
+}
+
+@media (max-width: 420px) {
+  .topbar-greeting h1 { font-size: 1rem; }
+  .topbar-greeting p { font-size: 0.75rem; }
+  .card-metric-value { font-size: 1.3rem; }
+  .card-metric-label { font-size: 0.7rem; }
+}
 }

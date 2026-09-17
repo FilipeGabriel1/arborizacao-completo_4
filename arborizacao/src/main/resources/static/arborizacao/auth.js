@@ -87,4 +87,21 @@
       window.location.href = './usuarios.html';
     });
   }
+
+  // Mobile hamburger menu
+  const hamburger = document.querySelector('.hamburger-btn');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  if (hamburger && sidebar) {
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      if (overlay) overlay.classList.toggle('open');
+    });
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      });
+    }
+  }
 })();

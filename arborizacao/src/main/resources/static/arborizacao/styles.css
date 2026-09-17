@@ -1785,12 +1785,30 @@ button:hover {
 
   .prefeitura-bar {
     margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .prefeitura-bar .pub-hamburger {
+    display: flex;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
   }
 
   .user-bar {
     flex-wrap: wrap;
     justify-content: flex-start;
+    display: none;
+    width: 100%;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
   }
+
+  .user-bar.open { display: flex; }
 
   .user-bar #userEmail {
     flex-basis: 100%;
