@@ -1,6 +1,5 @@
 (function () {
   'use strict';
-  console.log('[DEBUG] dashboard.js carregado');
 
   const COLORS = {
     porte: { PEQUENO: '#49a970', MEDIO: '#2f9e5b', GRANDE: '#1a7a3e' },
@@ -76,9 +75,6 @@
   }
 
   function renderKPIs() {
-    console.log('[DEBUG] sementeiraData:', sementeiraData);
-    console.log('[DEBUG] usuariosData:', usuariosData);
-    console.log('[DEBUG] placarData:', placarData);
     var totalArvores = arvoresData.length;
     var totalAreas = areasData.length;
     var totalEspecies = especiesData.length;
@@ -490,7 +486,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    console.log('[DEBUG] DOMContentLoaded disparado');
     carregarDados().then(function () {
       renderKPIs();
       renderCharts();
@@ -499,8 +494,6 @@
       initMap();
       initSearch();
       animarEntrada(document.querySelector('.dashboard-grid'));
-    }).catch(function (err) {
-      console.error('[DEBUG] ERRO no carregarDados:', err);
     });
   });
 })();
