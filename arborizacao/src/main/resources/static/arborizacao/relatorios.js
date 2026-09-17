@@ -213,20 +213,32 @@ function exportarPDF() {
   const tabelas = montarTabelas();
   let y = 15;
 
-  doc.setFontSize(16);
-  doc.text('Relatório — Arborização Urbana', 14, y);
+  doc.setFillColor(34, 120, 62);
+  doc.rect(0, 0, 210, 28, 'F');
+  doc.setTextColor(255);
+  doc.setFontSize(18);
+  doc.text('Relatório — Arborização Urbana', 14, 14);
   doc.setFontSize(9);
-  doc.setTextColor(120);
-  doc.text('Gerado em: ' + new Date().toLocaleString('pt-BR'), 14, y + 6);
+  doc.text('Gerado em: ' + new Date().toLocaleString('pt-BR'), 14, 21);
   doc.setTextColor(0);
-  y += 14;
+  y += 18;
 
-  tabelas.forEach(t => {
+  tabelas.forEach((t, idx) => {
     if (y > 260) { doc.addPage(); y = 15; }
-    doc.setFontSize(11);
+
+    if (idx > 0) {
+      doc.setDrawColor(200);
+      doc.setLineWidth(0.3);
+      doc.line(14, y, 196, y);
+      y += 6;
+    }
+
+    doc.setFontSize(12);
     doc.setFont(undefined, 'bold');
+    doc.setTextColor(34, 120, 62);
     doc.text(t.titulo, 14, y);
-    y += 2;
+    doc.setTextColor(0);
+    y += 4;
     doc.setFont(undefined, 'normal');
 
     if (t.linhas.length === 0) {
@@ -245,7 +257,15 @@ function exportarPDF() {
       styles: { fontSize: 7, cellPadding: 2 },
       headStyles: { fillColor: [34, 120, 62] },
       margin: { left: 14, right: 14 },
-      didDrawPage: (data) => { y = data.cursor.y + 4; }
+      didDrawPage: (data) => {
+        y = data.cursor.y + 4;
+        const pg = doc.internal.getNumberOfPages();
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text('Arborização Urbana — Relatório', 14, 290);
+        doc.text('Página ' + data.pageNumber + ' de ' + pg, 105, 290, { align: 'center' });
+        doc.setTextColor(0);
+      }
     });
     y = doc.lastAutoTable.finalY + 6;
   });
