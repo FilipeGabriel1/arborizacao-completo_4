@@ -173,32 +173,38 @@ function montarTabelas() {
     {
       titulo: 'Árvores (' + d.arvores.length + ')',
       colunas: ['ID', 'Nome', 'Espécie', 'Porte', 'Origem', 'Condição', 'Status', 'Área'],
-      linhas: d.arvores.map(a => [a.id, a.nome || '', a.especieNomePopular || '', a.porte || '', a.origem || '', a.condicaoFitossanitaria || '', a.status || '', a.areaNome || ''])
+      linhas: d.arvores.map(a => [a.id, a.nome || '', a.especieNomePopular || '', a.porte || '', a.origem || '', a.condicaoFitossanitaria || '', a.status || '', a.areaNome || '']),
+      colWidths: { 0: { cellWidth: 10 }, 1: { cellWidth: 28 }, 2: { cellWidth: 28 } }
     },
     {
       titulo: 'Áreas Verdes (' + d.areas.length + ')',
       colunas: ['ID', 'Nome', 'Tipo', 'Bairro', 'Status'],
-      linhas: d.areas.map(a => [a.id, a.nome || '', a.tipo || '', a.bairro || '', a.status || ''])
+      linhas: d.areas.map(a => [a.id, a.nome || '', a.tipo || '', a.bairro || '', a.status || '']),
+      colWidths: { 0: { cellWidth: 10 }, 1: { cellWidth: 45 } }
     },
     {
       titulo: 'Espécies (' + d.especies.length + ')',
       colunas: ['ID', 'Nome Popular', 'Nome Científico', 'Família'],
-      linhas: d.especies.map(e => [e.id, e.nomePopular || '', e.nomeCientifico || '', e.familia || ''])
+      linhas: d.especies.map(e => [e.id, e.nomePopular || '', e.nomeCientifico || '', e.familia || '']),
+      colWidths: { 0: { cellWidth: 10 }, 1: { cellWidth: 40 }, 2: { cellWidth: 55 } }
     },
     {
       titulo: 'Lotes Sementeira (' + d.lotes.length + ')',
       colunas: ['ID', 'Lote', 'Espécie', 'Produzida', 'Disponível', 'Doadas', 'Plantadas', 'Perdas', 'Data'],
-      linhas: d.lotes.map(l => [l.id, l.numeroLote || '', l.especieNomePopular || '', l.quantidadeProduzida || 0, l.quantidadeDisponivel || 0, l.quantidadeDoadas || 0, l.quantidadePlantadas || 0, l.quantidadePerdas || 0, l.dataProducao || ''])
+      linhas: d.lotes.map(l => [l.id, l.numeroLote || '', l.especieNomePopular || '', l.quantidadeProduzida || 0, l.quantidadeDisponivel || 0, l.quantidadeDoadas || 0, l.quantidadePlantadas || 0, l.quantidadePerdas || 0, l.dataProducao || '']),
+      colWidths: { 0: { cellWidth: 10 }, 1: { cellWidth: 28 }, 2: { cellWidth: 22 } }
     },
     {
       titulo: 'Plantios (' + d.plantios.length + ')',
       colunas: ['ID', 'Área', 'Espécie', 'Qtd Mudas', 'Data', 'Responsável', 'Status'],
-      linhas: d.plantios.map(p => [p.id, p.areaNome || '', p.especieNomePopular || '', p.quantidadeMudas || 0, p.dataPlantio || '', p.responsavel || '', p.status || ''])
+      linhas: d.plantios.map(p => [p.id, p.areaNome || '', p.especieNomePopular || '', p.quantidadeMudas || 0, p.dataPlantio || '', p.responsavel || '', p.status || '']),
+      colWidths: { 0: { cellWidth: 10 }, 1: { cellWidth: 35 }, 2: { cellWidth: 25 } }
     },
     {
       titulo: 'Ordens de Serviço (' + d.manutencoes.length + ')',
       colunas: ['ID', 'Tipo', 'Prioridade', 'Status', 'Data Solicitada', 'Responsável'],
-      linhas: d.manutencoes.map(m => [m.id, m.tipo || '', m.prioridade || '', m.status || '', m.dataAgendada || '', m.responsavelExecucao || ''])
+      linhas: d.manutencoes.map(m => [m.id, m.tipo || '', m.prioridade || '', m.status || '', m.dataAgendada || '', m.responsavelExecucao || '']),
+      colWidths: { 0: { cellWidth: 10 }, 1: { cellWidth: 32 }, 5: { cellWidth: 32 } }
     }
   ];
 }
@@ -254,8 +260,10 @@ function exportarPDF() {
       startY: y,
       head: [t.colunas],
       body: t.linhas,
-      styles: { fontSize: 7, cellPadding: 2 },
-      headStyles: { fillColor: [34, 120, 62] },
+      styles: { fontSize: 7.5, cellPadding: 3, lineColor: [180, 180, 180], lineWidth: 0.3, overflow: 'linebreak' },
+      headStyles: { fillColor: [34, 120, 62], textColor: [255, 255, 255], lineColor: [34, 120, 62], lineWidth: 0.5, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [245, 248, 245] },
+      columnStyles: t.colWidths || {},
       margin: { left: 14, right: 14 },
       didDrawPage: (data) => {
         y = data.cursor.y + 4;
