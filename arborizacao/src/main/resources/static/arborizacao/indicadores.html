@@ -445,10 +445,19 @@
         arvores.forEach(function(a) { if (a.especieNomePopular) espCont[a.especieNomePopular] = (espCont[a.especieNomePopular] || 0) + 1; });
         var espArr = Object.entries(espCont).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 6);
         renderBar('chartEspecies', espArr, CORES, {});
-
         renderBar('chartAreasTipo', agrupar(areas, 'tipo'), CORES, AREA_LABELS);
       });
     })();
+  </script>
+
+  <!-- VLibras - Acessibilidade para surdos/mudos -->
+  <div vw class="enabled">
+    <a href="#" vw-access-button class="active"></a>
+    <vw-plugin></vw-plugin>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
   </script>
 
 </body>
