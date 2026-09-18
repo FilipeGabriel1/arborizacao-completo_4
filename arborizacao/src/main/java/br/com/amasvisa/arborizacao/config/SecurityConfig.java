@@ -58,12 +58,16 @@ public class SecurityConfig {
                         "/arborizacao/styles.css",
                         "/arborizacao/csrf.js",
                         "/arborizacao/acessibilidade.js",
+                        "/arborizacao/cookie-consent.js",
                         "/arborizacao/favicon.svg",
                         "/arborizacao/img/**",
                         "/arborizacao/sementeira.html",
                         "/arborizacao/indicadores.html",
                         "/arborizacao/sobre.html",
                         "/arborizacao/historico-publico.html",
+                        "/arborizacao/politica-privacidade.html",
+                        "/arborizacao/termos-de-uso.html",
+                        "/arborizacao/direitos-titular.html",
                         "/api/csrf",
                         "/login"
                 ).permitAll()

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Termos de Uso • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --verde-escuro: #0d1f12; --verde-medio: #1a3a1a; --verde-claro: #4ade80; --branco: #ffffff; --cinza-claro: #e5e7eb; --texto-muted: #9ca3af; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { font-family: 'Inter', sans-serif; background: var(--verde-escuro); color: var(--branco); min-height: 100vh; overflow-x: hidden; }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; background: rgba(13,31,18,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(74,222,128,0.15); }
+    .navbar-left { display: flex; align-items: center; gap: 14px; }
+    .navbar-hamburger { display: none; align-items: center; justify-content: center; background: none; border: none; color: var(--branco); font-size: 1.4rem; cursor: pointer; padding: 6px; }
+    .navbar-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--branco); }
+    .navbar-brand-img { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 30% 25%, #ffffff, #e8e2d2); box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 0 0 3px rgba(240,194,75,0.55); flex-shrink: 0; }
+    .navbar-brand-img img { width: 78%; height: 78%; object-fit: contain; }
+    .navbar-brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .navbar-brand-text strong { font-size: 1.15rem; font-weight: 800; }
+    .navbar-brand-text small { font-size: 0.65rem; color: var(--texto-muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .navbar-center { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .navbar-center a { color: var(--cinza-claro); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .navbar-center a:hover { color: var(--verde-claro); }
+    .navbar-right { display: flex; align-items: center; }
+    .navbar-btn { padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(74,222,128,0.5); background: transparent; color: var(--verde-claro); font-weight: 600; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+    .navbar-btn:hover { background: rgba(74,222,128,0.15); }
+    .navbar-dropdown { display: none; position: fixed; top: 62px; left: 0; right: 0; background: rgba(13,31,18,0.98); flex-direction: column; padding: 16px 24px; gap: 12px; border-bottom: 1px solid rgba(74,222,128,0.15); z-index: 99; overflow-y: auto; max-height: calc(100vh - 62px); }
+    .navbar-dropdown.open { display: flex; }
+    .navbar-dropdown a { color: var(--cinza-claro); text-decoration: none; font-size: 0.95rem; font-weight: 500; padding: 10px 0; border-bottom: 1px solid rgba(74,222,128,0.08); transition: color 0.2s; }
+    .navbar-dropdown a:last-child { border-bottom: none; }
+    .navbar-dropdown a:hover { color: var(--verde-claro); }
+    .page-content { padding: 140px 48px 80px; max-width: 900px; margin: 0 auto; }
+    .page-header { margin-bottom: 48px; }
+    .page-label { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 999px; background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); color: var(--verde-claro); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px; }
+    .page-header h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+    .page-header h1 span { color: var(--verde-claro); }
+    .page-header p { font-size: 1.1rem; color: var(--texto-muted); max-width: 60ch; line-height: 1.7; }
+    .legal-section { margin-bottom: 40px; }
+    .legal-section h2 { font-size: 1.3rem; margin-bottom: 12px; color: var(--verde-claro); }
+    .legal-section h3 { font-size: 1.05rem; margin: 16px 0 8px; color: var(--cinza-claro); }
+    .legal-section p, .legal-section li { color: var(--texto-muted); line-height: 1.8; margin-bottom: 8px; }
+    .legal-section ul { padding-left: 24px; margin-bottom: 12px; }
+    .legal-section li { margin-bottom: 6px; }
+    .legal-section a { color: var(--verde-claro); text-decoration: none; }
+    .legal-section a:hover { text-decoration: underline; }
+    .footer { padding: 24px 48px; border-top: 1px solid rgba(74,222,128,0.1); text-align: center; color: var(--texto-muted); font-size: 0.8rem; }
+    .footer a { color: var(--verde-claro); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .navbar { display: grid; grid-template-columns: 1fr auto 1fr; padding: 10px 16px; }
+      .navbar-left { display: flex; align-items: center; justify-content: flex-start; }
+      .navbar-hamburger { display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--branco); font-size: 1.4rem; cursor: pointer; padding: 6px; }
+      .navbar-brand-img { width: 34px; height: 34px; }
+      .navbar-brand-text strong { font-size: 0.85rem; }
+      .navbar-brand-text small { font-size: 0.5rem; }
+      .navbar-center { display: none; }
+      .navbar-center.mobile-open { display: flex; }
+      .navbar-right { display: flex; justify-content: flex-end; }
+      .navbar-btn { padding: 8px 14px; font-size: 0.78rem; }
+      .page-content { padding: 100px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-left">
+      <button class="navbar-hamburger" onclick="document.getElementById('navbarDropdown').classList.toggle('open')" aria-label="Menu">☰</button>
+      <a href="./entrar.html" class="navbar-brand">
+        <span class="navbar-brand-img"><img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura" /></span>
+        <div class="navbar-brand-text"><strong>Arborização Urbana</strong><small>Vitória de Santo Antão</small></div>
+      </a>
+    </div>
+    <ul class="navbar-center">
+      <li><a href="./index.html">Início</a></li>
+      <li><a href="./index.html">Mapa</a></li>
+      <li><a href="./especies-publico.html">Espécies</a></li>
+      <li><a href="./index.html#sementeira">Sementeira</a></li>
+      <li><a href="./indicadores.html">Indicadores</a></li>
+      <li><a href="./sobre.html">Sobre</a></li>
+    </ul>
+    <div class="navbar-right">
+      <a href="./login.html" class="navbar-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Área técnica
+      </a>
+    </div>
+  </nav>
+  <div class="navbar-dropdown" id="navbarDropdown">
+    <a href="./index.html">Início</a>
+    <a href="./index.html">Mapa</a>
+    <a href="./especies-publico.html">Espécies</a>
+    <a href="./index.html#sementeira">Sementeira</a>
+    <a href="./indicadores.html">Indicadores</a>
+    <a href="./sobre.html">Sobre</a>
+  </div>
+
+  <main class="page-content">
+    <div class="page-header">
+      <div class="page-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        Termos de Uso
+      </div>
+      <h1>Termos de <span>Uso</span></h1>
+      <p>Última atualização: Setembro de 2026</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>1. Aceitação dos Termos</h2>
+      <p>Ao acessar e utilizar o Sistema de Arborização Urbana de Vitória de Santo Antão, disponível em <a href="./entrar.html">arborizacao.amasvisa.com.br</a>, você concorda com estes Termos de Uso. Caso não concorde, não utilize o sistema.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>2. Descrição do Serviço</h2>
+      <p>O sistema é uma plataforma pública de gestão do patrimônio arbóreo municipal, desenvolvida pela Prefeitura Municipal de Vitória de Santo Antão por intermédio da AMASVISA. O sistema permite:</p>
+      <ul>
+        <li>Consulta pública ao mapa de árvores do município</li>
+        <li>Visualização de espécies, áreas verdes e indicadores ambientais</li>
+        <li>Registro de doações de árvores por cidadãos</li>
+        <li>Gestão interna de plantios, manejo e manutenção (funcionários autorizados)</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>3. Uso Permitido</h2>
+      <p>O sistema pode ser utilizado para:</p>
+      <ul>
+        <li>Consulta pública de informações ambientais</li>
+        <li>Participação cidadã através de doações de árvores</li>
+        <li>Gestão administrativa do programa de arborização (funcionários autorizados)</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>4. Uso Proibido</h2>
+      <p>É vedado utilizar o sistema para:</p>
+      <ul>
+        <li>Fornecer dados falsos ou incorretos</li>
+        <li>Tentar acessar contas de outros usuários</li>
+        <li>Realizar ações que comprometam a segurança do sistema</li>
+        <li>Utilizar dados obtidos para fins comerciais não autorizados</li>
+        <li>Interferir no funcionamento do sistema</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>5. Responsabilidades</h2>
+      <h3>5.1 Da Prefeitura / AMASVISA</h3>
+      <ul>
+        <li>Manter o sistema disponível e funcionando</li>
+        <li>Garantir a segurança dos dados pessoais tratados</li>
+        <li>Disponibilizar informações claras sobre o tratamento de dados</li>
+        <li>Manter os dados atualizados e corretos</li>
+      </ul>
+      <h3>5.2 Do Usuário</h3>
+      <ul>
+        <li>Fornecer dados verdadeiros ao utilizar o sistema</li>
+        <li>Manter a confidencialidade de suas credenciais de acesso</li>
+        <li>Comunicar qualquer uso indevido de sua conta</li>
+        <li>Cumprir estes Termos de Uso e a legislação vigente</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>6. Propriedade Intelectual</h2>
+      <p>O código-fonte do sistema é de código aberto e disponível para consulta. O conteúdo visual, textos e dados ambientais são de propriedade da Prefeitura Municipal de Vitória de Santo Antão e da AMASVISA.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>7. Disponibilidade</h2>
+      <p>O sistema é oferecido "como está", podendo sofrer interrupções para manutenção. A Prefeitura e a AMASVISA não se responsabilizam por indisponibilidades temporárias.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>8. Alterações</h2>
+      <p>Estes Termos de Uso podem ser alterados a qualquer momento. As alterações entram em vigor imediatamente após a publicação no sistema.</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>9. Legislação Aplicável</h2>
+      <p>Estes Termos são regidos pelas leis da República Federativa do Brasil, em especial a Lei nº 13.709/2018 (LGPD) e a Lei nº 12.965/2014 (Marco Civil da Internet).</p>
+    </div>
+
+    <div class="legal-section">
+      <h2>10. Canal de Comunicação</h2>
+      <p>Em caso de dúvidas sobre estes Termos de Uso:</p>
+      <ul>
+        <li><strong>E-mail:</strong> <a href="mailto:amavisa@prefeituradavitoria.pe.gov.br">amavisa@prefeituradavitoria.pe.gov.br</a></li>
+        <li><strong>Telefone:</strong> (81) 99906-1465</li>
+        <li><strong>Endereço:</strong> Rua Dr. Demócrito Cavalcante, 131, Bairro Livramento – Vitória de Santo Antão/PE, CEP 55602-420</li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 Prefeitura Municipal de Vitória de Santo Antão - AMASVISA. Todos os direitos reservados.</p>
+    <p style="margin-top: 8px;">
+      <a href="./politica-privacidade.html">Política de Privacidade</a> ·
+      <a href="./termos-de-uso.html">Termos de Uso</a> ·
+      <a href="./direitos-titular.html">Direitos do Titular</a>
+    </p>
+  </footer>
+
+  <div vw class="enabled"><a href="#" vw-access-button class="active"></a><vw-plugin></vw-plugin></div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+  <script src="./acessibilidade.js"></script>
+</body>
+</html>
