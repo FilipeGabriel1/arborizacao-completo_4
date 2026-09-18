@@ -10,7 +10,7 @@ public record AreaArborizadaRequest(
         String descricao,
         String fotoUrl,
         @NotNull TipoArea tipo,
-        @NotNull AreaStatus status,
+        AreaStatus status,
         String bairro,
         String logradouro,
         Double areaTotalM2,

@@ -44,7 +44,7 @@ public class AreaArborizada {
     private TipoArea tipo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
+    @Column(nullable = true, length = 30)
     private AreaStatus status;
 
     @Column(length = 120)

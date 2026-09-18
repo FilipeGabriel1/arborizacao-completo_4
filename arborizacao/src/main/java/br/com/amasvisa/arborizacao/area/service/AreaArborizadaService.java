@@ -40,7 +40,7 @@ public class AreaArborizadaService {
         area.setDescricao(request.descricao());
         area.setFotoUrl(request.fotoUrl());
         area.setTipo(request.tipo());
-        area.setStatus(request.status());
+        area.setStatus(request.status() != null ? request.status() : AreaStatus.ATIVA);
         area.setBairro(request.bairro());
         area.setLogradouro(request.logradouro());
         area.setAreaTotalM2(request.areaTotalM2());
@@ -77,7 +77,7 @@ public class AreaArborizadaService {
         area.setDescricao(request.descricao());
         area.setFotoUrl(request.fotoUrl());
         area.setTipo(request.tipo());
-        area.setStatus(request.status());
+        area.setStatus(request.status() != null ? request.status() : area.getStatus());
         area.setBairro(request.bairro());
         area.setLogradouro(request.logradouro());
         area.setAreaTotalM2(request.areaTotalM2());
