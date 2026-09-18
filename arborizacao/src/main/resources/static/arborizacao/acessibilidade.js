@@ -26,7 +26,7 @@
   style.textContent = '\
     .a11y-widget {\
       position: fixed;\
-      bottom: 90px;\
+      bottom: 70px;\
       right: 20px;\
       z-index: 10000;\
       display: flex;\
@@ -75,7 +75,7 @@
       50% { box-shadow: 0 4px 20px rgba(34,197,94,0.5); }\
     }\
     @media (max-width: 720px) {\
-      .a11y-widget { bottom: 80px; right: 12px; }\
+      .a11y-widget { bottom: 70px; right: 12px; }\
       .a11y-btn { padding: 8px 10px; font-size: 0.7rem; }\
       .a11y-btn span { display: none; }\
     }';
