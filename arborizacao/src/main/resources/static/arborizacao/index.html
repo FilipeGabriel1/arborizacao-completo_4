@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="./styles.css?v=20260908-2" />
+  <link rel="stylesheet" href="./styles.css?v=20260924-4" />
 </head>
 <body>
   <main class="app-shell">
@@ -125,93 +125,13 @@
 
       <div class="numeros-graficos">
         <div class="numeros-grafico-card">
-          <h3>DOADAS X PLANTADAS</h3>
-          <div class="grafico-barras-container">
-            <div class="grafico-barras-eixo-y">
-              <span>600</span>
-              <span>450</span>
-              <span>300</span>
-              <span>150</span>
-              <span>0</span>
-            </div>
-            <div class="grafico-barras-area" id="graficoBarras">
-              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:30%"></div><div class="barra-plantadas" style="height:20%"></div></div>
-              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:50%"></div><div class="barra-plantadas" style="height:35%"></div></div>
-              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:40%"></div><div class="barra-plantadas" style="height:45%"></div></div>
-              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:60%"></div><div class="barra-plantadas" style="height:50%"></div></div>
-              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:35%"></div><div class="barra-plantadas" style="height:55%"></div></div>
-              <div class="grafico-barras-coluna"><div class="barra-doadas" style="height:45%"></div><div class="barra-plantadas" style="height:65%"></div></div>
-            </div>
-            <div class="grafico-barras-eixo-x">
-              <span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span>
-            </div>
-            <div class="grafico-legend">
-              <span><span class="dot-doadas"></span> Doadas</span>
-              <span><span class="dot-plantadas"></span> Plantadas</span>
-            </div>
-          </div>
+          <h3>Árvores por porte</h3>
+          <div id="chartPorte"></div>
         </div>
 
         <div class="numeros-grafico-card">
-          <h3>ÁRVORES POR PORTE</h3>
-          <div class="grafico-donut-container">
-            <div class="grafico-donut">
-              <svg viewBox="0 0 100 100" id="graficoPorte">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" stroke-width="15" stroke-dasharray="87.96 162.84" stroke-dashoffset="0"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#16a34a" stroke-width="15" stroke-dasharray="100.53 150.27" stroke-dashoffset="-87.96"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#4ade80" stroke-width="15" stroke-dasharray="62.83 187.97" stroke-dashoffset="-188.49"/>
-              </svg>
-              <div class="donut-center">
-                <span class="donut-valor" id="totalPorte">0</span>
-                <span class="donut-label">Total</span>
-              </div>
-            </div>
-            <div class="grafico-donut-legend" id="legendPorte">
-              <span><i style="background:#22c55e"></i> Pequeno 0%</span>
-              <span><i style="background:#16a34a"></i> Médio 0%</span>
-              <span><i style="background:#4ade80"></i> Grande 0%</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="numeros-grafico-card">
-          <h3>ÁRVORES POR ORIGEM</h3>
-          <div class="grafico-donut-container">
-            <div class="grafico-donut">
-              <svg viewBox="0 0 100 100" id="graficoOrigem">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#1e40af" stroke-width="15" stroke-dasharray="170.9 80" stroke-dashoffset="0"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#60a5fa" stroke-width="15" stroke-dasharray="80.42 170.48" stroke-dashoffset="-170.9"/>
-              </svg>
-              <div class="donut-center">
-                <span class="donut-valor" id="totalOrigem">0</span>
-                <span class="donut-label">Total</span>
-              </div>
-            </div>
-            <div class="grafico-donut-legend" id="legendOrigem">
-              <span><i style="background:#1e40af"></i> Nativas 0%</span>
-              <span><i style="background:#60a5fa"></i> Exóticas 0%</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="numeros-grafico-card">
-          <h3>ÁRVORES POR STATUS</h3>
-          <div class="grafico-donut-container">
-            <div class="grafico-donut">
-              <svg viewBox="0 0 100 100" id="graficoStatus">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#22c55e" stroke-width="15" stroke-dasharray="200 50" stroke-dashoffset="0"/>
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="15" stroke-dasharray="30 220" stroke-dashoffset="-200"/>
-              </svg>
-              <div class="donut-center">
-                <span class="donut-valor" id="totalStatus">0</span>
-                <span class="donut-label">Total</span>
-              </div>
-            </div>
-            <div class="grafico-donut-legend" id="legendStatus">
-              <span><i style="background:#22c55e"></i> Ativa 0%</span>
-              <span><i style="background:#ef4444"></i> Inativa 0%</span>
-            </div>
-          </div>
+          <h3>Árvores por origem</h3>
+          <div id="chartOrigem"></div>
         </div>
       </div>
 
@@ -466,7 +386,8 @@
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-  <script src="./mapa-publico.js?v=20260903-2"></script>
+  <script src="./painel-arvore.js?v=20260924-2"></script>
+  <script src="./mapa-publico.js?v=20260924-5"></script>
   <script>
     (function() {
       fetch('/api/sementeira?page=0&size=500')

@@ -66,6 +66,7 @@ public class PlacarService {
                 arvoreRepository.count(),
                 arvoreRepository.countByOrigem(OrigemArvore.DOACAO),
                 doacaoRepository.count(),
+                doacaoRepository.sumQuantidade(),
                 areaRepository.count(),
                 especieRepository.count(),
                 porPorte,

@@ -41,10 +41,10 @@ public class DoacaoArvore {
     @Column(name = "quantidade")
     private Integer quantidade;
 
-    @Column(length = 14)
+    @Column(length = 255)
     private String cpf;
 
-    @Column(length = 20)
+    @Column(length = 255)
     private String rg;
 
     public DoacaoArvore() {

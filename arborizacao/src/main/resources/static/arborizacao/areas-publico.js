@@ -94,7 +94,7 @@ function renderizar(areasFiltradas) {
     const fotoCard = todasFotos.length ? todasFotos[0] : placeholder;
 
     return `
-      <div class="area-card">
+      <a href="./area-det.html?id=${area.id}" class="area-card" style="text-decoration:none;color:inherit;display:block;cursor:pointer">
         <img class="area-card-img" src="${fotoCard}" alt="${area.nome}" onerror="this.onerror=null;this.src='${placeholder}'" />
         <div class="area-card-body">
           <p class="area-card-nome">${area.nome}</p>
@@ -102,9 +102,9 @@ function renderizar(areasFiltradas) {
           <p class="area-card-desc">${area.descricao || ''}</p>
         </div>
         <div class="area-card-footer">
-          ${todasFotos.length > 1 ? `<button class="area-card-btn" onclick='abrirGaleria(${JSON.stringify(todasFotos).replace(/'/g, "&#39;")}, "Fotos • ${area.nome.replace(/'/g, "\\'")}")'>Ver fotos (${todasFotos.length})</button>` : ''}
+          ${todasFotos.length > 1 ? `<span class="area-card-btn" onclick='event.preventDefault();event.stopPropagation();abrirGaleria(${JSON.stringify(todasFotos).replace(/'/g, "&#39;")}, "Fotos • ${area.nome.replace(/'/g, "\\'")}")'>Ver fotos (${todasFotos.length})</span>` : ''}
         </div>
-      </div>
+      </a>
     `;
   }).join('');
 }

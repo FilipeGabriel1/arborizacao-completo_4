@@ -50,7 +50,7 @@ async function buscarTudo(url, pageSize = 200) {
   const todos = [];
   let pagina = 0;
   for (;;) {
-    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`, { credentials: 'same-origin' });
     if (!res.ok) return null;
     const data = await res.json();
     const itens = Array.isArray(data) ? data : (data.value ?? []);
@@ -146,7 +146,7 @@ function renderizar(filtrados) {
       doacao.descricao
     ].filter(Boolean).join(' • ');
     const identificacao = [doacao.solicitante, doacao.cpf ? mascararCpf(doacao.cpf) : '']
-      .filter(Boolean).join(' • ') || 'Doador não informado';
+      .filter(Boolean).join(' • ') || 'Solicitante não informado';
 
     tr.innerHTML = `
       <td class="extrato-data">${formatarData(doacao.dataDoacao)}</td>
@@ -203,7 +203,7 @@ function cancelarEdicao() {
 
 async function remover(doacao) {
   if (!confirm('Remover este registro de doação?')) return;
-  await fetch(`${apiBase}/${doacao.id}`, { method: 'DELETE' });
+  await fetch(`${apiBase}/${doacao.id}`, { method: 'DELETE', credentials: 'same-origin' });
   showToast('Doação removida com sucesso!', 'sucesso');
   carregarDoacoes();
 }
@@ -230,6 +230,7 @@ form.addEventListener('submit', async (event) => {
 
   const res = await fetch(url, {
     method,
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });

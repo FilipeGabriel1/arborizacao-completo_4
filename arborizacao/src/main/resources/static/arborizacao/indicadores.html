@@ -37,9 +37,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 16px 48px;
-      background: rgba(13, 31, 18, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+      background: #0d1a13;
+border-bottom: 1px solid rgba(74, 222, 128, 0.15);
     }
     .navbar-left {
       display: flex;
@@ -90,7 +89,7 @@
     .navbar-btn:hover { background: rgba(74, 222, 128, 0.15); }
     .navbar-dropdown {
       display: none; position: fixed; top: 62px; left: 0; right: 0;
-      background: rgba(13, 31, 18, 0.98); flex-direction: column;
+      background: #0d1a13; flex-direction: column;
       padding: 16px 24px; gap: 12px; border-bottom: 1px solid rgba(74, 222, 128, 0.15);
       z-index: 99; overflow-y: auto; max-height: calc(100vh - 62px);
     }
@@ -154,7 +153,7 @@
       padding: 28px;
       border-radius: 16px;
       border: 1px solid rgba(74, 222, 128, 0.15);
-      background: rgba(26, 58, 26, 0.4);
+      background: #0d1a13;
       text-align: center;
     }
 
@@ -181,7 +180,7 @@
       padding: 28px;
       border-radius: 16px;
       border: 1px solid rgba(74, 222, 128, 0.15);
-      background: rgba(26, 58, 26, 0.4);
+      background: #0d1a13;
     }
 
     .chart-card h3 {
@@ -193,6 +192,52 @@
     .bar-chart {
       display: grid;
       gap: 12px;
+    }
+
+    .pie-chart {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pie-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .pie-wrap svg {
+      width: min(200px, 70%);
+      height: auto;
+      aspect-ratio: 1;
+      display: block;
+      border-radius: 50%;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: var(--texto-muted);
+      margin-top: 16px;
+      width: 100%;
+    }
+
+    .chart-legend span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chart-legend i {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
     }
 
     .bar-row {
@@ -359,22 +404,22 @@
     <div class="charts-grid">
       <div class="chart-card">
         <h3>Árvores por Porte</h3>
-        <div class="bar-chart" id="chartPorte"></div>
+        <div class="pie-chart" id="chartPorte"></div>
       </div>
 
       <div class="chart-card">
         <h3>Árvores por Origem</h3>
-        <div class="bar-chart" id="chartOrigem"></div>
+        <div class="pie-chart" id="chartOrigem"></div>
       </div>
 
       <div class="chart-card">
         <h3>Espécies Mais Registradas</h3>
-        <div class="bar-chart" id="chartEspecies"></div>
+        <div class="pie-chart" id="chartEspecies"></div>
       </div>
 
       <div class="chart-card">
         <h3>Áreas por Tipo</h3>
-        <div class="bar-chart" id="chartAreasTipo"></div>
+        <div class="pie-chart" id="chartAreasTipo"></div>
       </div>
     </div>
   </main>
@@ -395,10 +440,13 @@
       var AREA_LABELS = { PRACA: 'Praça', BOSQUE: 'Bosque', PRAIA: 'Praia', ESCOLA: 'Escola', OUTRO: 'Outro', CALCADA: 'Calçada', ROSSIO: 'Rossio' };
 
       var CORES = {
-        PEQUENO: '#22c55e', MEDIO: '#22c55e', GRANDE: '#22c55e',
-        NATIVA: '#22c55e', EXOTICA: '#22c55e', PLANTIO_PROPRIO: '#22c55e', DOACAO: '#22c55e', OBRIGACAO_LEGAL: '#22c55e', OUTRA: '#22c55e',
-        PRACA: '#22c55e', BOSQUE: '#22c55e', PRAIA: '#22c55e', ESCOLA: '#22c55e', OUTRO: '#22c55e', CALCADA: '#22c55e', ROSSIO: '#22c55e'
+        PEQUENO: '#4ade80', MEDIO: '#22c55e', GRANDE: '#16a34a',
+        NATIVA: '#22c55e', EXOTICA: '#60a5fa', PLANTIO_PROPRIO: '#3b82f6', DOACAO: '#1e40af', OBRIGACAO_LEGAL: '#93c5fd', OUTRA: '#a3e635',
+        PRACA: '#22c55e', BOSQUE: '#16a34a', PRAIA: '#38bdf8', ESCOLA: '#fbbf24', OUTRO: '#94a3b8', CALCADA: '#fb923c', ROSSIO: '#c084fc',
+        BOM: '#22c55e', REGULAR: '#eab308', RUIM: '#f97316', CRITICO: '#ef4444',
+        PLANEJADO: '#3b82f6', EM_EXECUCAO: '#eab308', CONCLUIDO: '#22c55e', CANCELADO: '#ef4444'
       };
+      var CORES_CICLICAS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#14b8a6', '#f97316'];
 
       function agrupar(arr, campo) {
         var m = {};
@@ -406,19 +454,65 @@
         return Object.entries(m).sort(function(a, b) { return b[1] - a[1]; });
       }
 
-      function renderBar(containerId, dados, cores, labels) {
+      function polarToCartesian(cx, cy, r, angleDeg) {
+        var a = (angleDeg - 90) * Math.PI / 180;
+        return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+      }
+
+      function fatiaPie(cx, cy, r, startAngle, endAngle) {
+        if (endAngle - startAngle >= 359.99) {
+          return 'M ' + cx + ' ' + (cy - r) +
+            ' A ' + r + ' ' + r + ' 0 0 1 ' + cx + ' ' + (cy + r) +
+            ' A ' + r + ' ' + r + ' 0 0 1 ' + cx + ' ' + (cy - r) + ' Z';
+        }
+        var start = polarToCartesian(cx, cy, r, endAngle);
+        var end = polarToCartesian(cx, cy, r, startAngle);
+        var large = endAngle - startAngle <= 180 ? 0 : 1;
+        return 'M ' + cx + ' ' + cy +
+          ' L ' + start.x + ' ' + start.y +
+          ' A ' + r + ' ' + r + ' 0 ' + large + ' 0 ' + end.x + ' ' + end.y +
+          ' Z';
+      }
+
+      function renderPie(containerId, dados, cores, labels) {
         var el = document.getElementById(containerId);
-        if (!el || dados.length === 0) { if (el) el.innerHTML = '<p style="color:var(--texto-muted);font-size:0.85rem;">Sem dados</p>'; return; }
-        var max = dados[0][1];
-        el.innerHTML = dados.map(function(d) {
-          var pct = max > 0 ? (d[1] / max * 100) : 0;
-          var cor = cores[d[0]] || '#22c55e';
-          var nome = (labels && labels[d[0]]) || d[0];
-          return '<div class="bar-row">' +
-            '<span class="bar-label" title="' + nome + '">' + nome + '</span>' +
-            '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + cor + ';"></div></div>' +
-            '<span class="bar-value">' + d[1] + '</span></div>';
-        }).join('');
+        if (!el) return;
+        var itens = dados.filter(function(d) { return d[1] > 0; });
+        if (itens.length === 0) {
+          el.innerHTML = '<p style="color:var(--texto-muted);font-size:0.85rem;">Sem dados</p>';
+          return;
+        }
+        var total = itens.reduce(function(s, d) { return s + d[1]; }, 0);
+        var cx = 100, cy = 100, r = 80;
+        var paths = '';
+        var legend = '';
+        if (itens.length === 1) {
+          var unico = itens[0];
+          var corUnico = cores[unico[0]] || CORES_CICLICAS[0];
+          var nomeUnico = (labels && labels[unico[0]]) || unico[0];
+          paths = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r +
+            '" fill="' + corUnico + '" stroke="#0d1a13" stroke-width="2">' +
+            '<title>' + nomeUnico + ': ' + unico[1] + '</title></circle>';
+          legend = '<span><i style="background:' + corUnico + ';"></i>' + nomeUnico + ' (' + unico[1] + ' • 100%)</span>';
+        } else {
+          var angle = 0;
+          itens.forEach(function(d, i) {
+            var slice = (d[1] / total) * 360;
+            var cor = cores[d[0]] || CORES_CICLICAS[i % CORES_CICLICAS.length];
+            var nome = (labels && labels[d[0]]) || d[0];
+            paths += '<path d="' + fatiaPie(cx, cy, r, angle, angle + slice) +
+              '" fill="' + cor + '" stroke="#0d1a13" stroke-width="2">' +
+              '<title>' + nome + ': ' + d[1] + '</title></path>';
+            var pct = Math.round((d[1] / total) * 100);
+            legend += '<span><i style="background:' + cor + ';"></i>' + nome + ' (' + d[1] + ' • ' + pct + '%)</span>';
+            angle += slice;
+          });
+        }
+        el.innerHTML =
+          '<div class="pie-wrap">' +
+          '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de pizza">' + paths + '</svg>' +
+          '<div class="chart-legend">' + legend + '</div>' +
+          '</div>';
       }
 
       Promise.all([
@@ -443,14 +537,14 @@
         document.getElementById('statMudas').textContent = totalMudas.toLocaleString('pt-BR');
         document.getElementById('statPlantios').textContent = plantios.length;
 
-        renderBar('chartPorte', agrupar(arvores, 'porte'), CORES, PORTE_LABELS);
-        renderBar('chartOrigem', agrupar(arvores, 'origem'), CORES, ORIGEM_LABELS);
+        renderPie('chartPorte', agrupar(arvores, 'porte'), CORES, PORTE_LABELS);
+        renderPie('chartOrigem', agrupar(arvores, 'origem'), CORES, ORIGEM_LABELS);
 
         var espCont = {};
         arvores.forEach(function(a) { if (a.especieNomePopular) espCont[a.especieNomePopular] = (espCont[a.especieNomePopular] || 0) + 1; });
         var espArr = Object.entries(espCont).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 6);
-        renderBar('chartEspecies', espArr, CORES, {});
-        renderBar('chartAreasTipo', agrupar(areas, 'tipo'), CORES, AREA_LABELS);
+        renderPie('chartEspecies', espArr, {}, {});
+        renderPie('chartAreasTipo', agrupar(areas, 'tipo'), CORES, AREA_LABELS);
       });
     })();
   </script>

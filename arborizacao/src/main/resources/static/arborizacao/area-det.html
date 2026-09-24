@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalhe da Área • Arborização Urbana</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css?v=20260921" />
+  <style>
+    .det-hero { display:flex; gap:2rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:2rem; }
+    .det-fotos-col { width:100%; max-width:500px; flex-shrink:0; }
+    .det-foto-principal { width:100%; border-radius:12px; overflow:hidden; background:var(--panel); }
+    .det-foto-principal img { width:100%; height:auto; display:block; object-fit:cover; max-height:360px; }
+    .det-foto-placeholder { width:100%; height:260px; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:3rem; }
+    .det-info { flex:1; min-width:280px; }
+    .det-info h1 { font-size:1.8rem; margin-bottom:.3rem; }
+    .det-tipo-pill { display:inline-block; background:var(--accent); color:#000; padding:2px 10px; border-radius:999px; font-size:.8rem; font-weight:600; margin-bottom:1rem; }
+    .det-campo { margin-bottom:.8rem; }
+    .det-campo small { display:block; color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px; }
+    .det-campo p { margin:0; }
+    .det-actions { margin-top:1.5rem; display:flex; gap:.75rem; flex-wrap:wrap; }
+    .det-actions a { text-decoration:none; }
+    .det-voltar { display:inline-flex; align-items:center; gap:.4rem; margin-bottom:1rem; color:var(--accent); text-decoration:none; font-weight:500; }
+    .det-voltar:hover { text-decoration:underline; }
+    .det-galeria { margin-top:2rem; }
+    .det-galeria h2 { margin-bottom:1rem; }
+    .det-galeria-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:.75rem; }
+    .det-galeria-grid img { width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer; transition:transform .15s; }
+    .det-galeria-grid img:hover { transform:scale(1.03); }
+    .det-arvores { margin-top:2rem; }
+    .det-arvores h2 { margin-bottom:1rem; }
+    .det-arvore-item { display:flex; align-items:center; gap:.75rem; padding:.6rem 0; border-bottom:1px solid var(--border); }
+    .det-arvore-item:last-child { border-bottom:none; }
+    .det-arvore-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="prefeitura-bar">
+      <div class="prefeitura-marca">
+        <span class="prefeitura-brasao">
+          <img src="./img/logo-prefeitura.png" alt="Brasão da Prefeitura de Vitória de Santo Antão" />
+        </span>
+        <div>
+          <strong>Prefeitura de Vitória de Santo Antão</strong>
+          <small>Meio Ambiente • Arborização Urbana • AMASVISA</small>
+        </div>
+      </div>
+      <button class="pub-hamburger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menu">☰</button>
+      <nav class="user-bar">
+        <span>Consulta pública</span>
+        <a href="./index.html" class="ghost-button">← Mapa</a>
+        <a href="./especies-publico.html" class="ghost-button">Espécies</a>
+        <a href="./areas-publico.html" class="ghost-button">Áreas</a>
+      </nav>
+    </header>
+
+    <section class="workspace">
+      <a href="./areas-publico.html" class="det-voltar">← Voltar para áreas</a>
+      <div id="detCarregando" class="historico-vazio">Carregando área...</div>
+      <div id="detErro" class="historico-vazio hidden">Área não encontrada.</div>
+      <div id="detConteudo" class="hidden">
+        <div class="det-hero">
+          <div class="det-fotos-col">
+            <div class="det-foto-principal" id="detFotoPrincipal">
+              <div class="det-foto-placeholder">🌳</div>
+            </div>
+          </div>
+          <div class="det-info">
+            <h1 id="detNome"></h1>
+            <span class="det-tipo-pill" id="detTipo"></span>
+            <div class="det-campo"><small>Descrição</small><p id="detDescricao"></p></div>
+            <div class="det-campo"><small>Bairro</small><p id="detBairro"></p></div>
+            <div class="det-campo"><small>Logradouro</small><p id="detLogradouro"></p></div>
+            <div class="det-campo"><small>Área total</small><p id="detAreaTotal"></p></div>
+            <div class="det-campo"><small>Responsável pela manutenção</small><p id="detResponsavel"></p></div>
+            <div class="det-campo"><small>Situação do inventário</small><p id="detInventario"></p></div>
+            <div class="det-campo"><small>Indivíduos cadastrados</small><p id="detIndividuos"></p></div>
+            <div class="det-actions">
+              <a href="#" class="primary-button" id="detBtnMapa">Ver no mapa</a>
+              <a href="./areas-publico.html" class="ghost-button">← Voltar</a>
+            </div>
+          </div>
+        </div>
+
+        <section class="det-galeria hidden" id="detGaleriaSection">
+          <h2>Galeria de fotos</h2>
+          <div class="det-galeria-grid" id="detGaleriaGrid"></div>
+        </section>
+
+        <section class="det-arvores hidden" id="detArvoresSection">
+          <h2>Árvores nesta área</h2>
+          <div id="detArvoresLista"></div>
+        </section>
+      </div>
+    </section>
+
+    <footer class="rodape-institucional">
+      <div>
+        <strong>Prefeitura de Vitória de Santo Antão</strong>
+        <p>Secretaria de Meio Ambiente e Arborização Urbana</p>
+      </div>
+      <div>
+        <strong>AMASVISA</strong>
+        <p>Gestão participativa das áreas arborizadas da cidade, em parceria com a Prefeitura.</p>
+      </div>
+      <p class="rodape-assinatura">© 2026 Prefeitura de Vitória de Santo Antão • AMASVISA — Todos os direitos reservados.</p>
+    </footer>
+  </main>
+
+  <script src="./area-det.js"></script>
+  <div vw class="enabled">
+    <a href="#" vw-access-button class="active"></a>
+    <vw-plugin></vw-plugin>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>new window.VLibras.Widget('https://vlibras.gov.br/app');</script>
+  <script src="./acessibilidade.js"></script>
+  <script src="./cookie-consent.js"></script>
+</body>
+</html>

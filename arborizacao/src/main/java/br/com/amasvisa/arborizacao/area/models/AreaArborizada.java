@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -74,6 +75,7 @@ public class AreaArborizada {
 
     @ElementCollection
     @CollectionTable(name = "areas_pontos", joinColumns = @JoinColumn(name = "area_id"))
+    @OrderColumn(name = "ordem")
     private List<PontoGeografico> pontos = new ArrayList<>();
 
     @Column(nullable = false)

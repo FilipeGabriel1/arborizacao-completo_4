@@ -12,7 +12,7 @@
     :root { --verde-escuro: #0d1f12; --verde-medio: #1a3a1a; --verde-claro: #4ade80; --branco: #ffffff; --cinza-claro: #e5e7eb; --texto-muted: #9ca3af; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { font-family: 'Inter', sans-serif; background: var(--verde-escuro); color: var(--branco); min-height: 100vh; overflow-x: hidden; }
-    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; background: rgba(13,31,18,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(74,222,128,0.15); }
+    .navbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; background: #0d1a13; border-bottom: 1px solid rgba(74,222,128,0.15); }
     .navbar-left { display: flex; align-items: center; gap: 14px; }
     .navbar-hamburger { display: none; align-items: center; justify-content: center; background: none; border: none; color: var(--branco); font-size: 1.4rem; cursor: pointer; padding: 6px; }
     .navbar-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--branco); }
@@ -27,7 +27,7 @@
     .navbar-right { display: flex; align-items: center; }
     .navbar-btn { padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(74,222,128,0.5); background: transparent; color: var(--verde-claro); font-weight: 600; font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
     .navbar-btn:hover { background: rgba(74,222,128,0.15); }
-    .navbar-dropdown { display: none; position: fixed; top: 62px; left: 0; right: 0; background: rgba(13,31,18,0.98); flex-direction: column; padding: 16px 24px; gap: 12px; border-bottom: 1px solid rgba(74,222,128,0.15); z-index: 99; overflow-y: auto; max-height: calc(100vh - 62px); }
+    .navbar-dropdown { display: none; position: fixed; top: 62px; left: 0; right: 0; background: #0d1a13; flex-direction: column; padding: 16px 24px; gap: 12px; border-bottom: 1px solid rgba(74,222,128,0.15); z-index: 99; overflow-y: auto; max-height: calc(100vh - 62px); }
     .navbar-dropdown.open { display: flex; }
     .navbar-dropdown a { color: var(--cinza-claro); text-decoration: none; font-size: 0.95rem; font-weight: 500; padding: 10px 0; border-bottom: 1px solid rgba(74,222,128,0.08); transition: color 0.2s; }
     .navbar-dropdown a:last-child { border-bottom: none; }

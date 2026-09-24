@@ -13,7 +13,6 @@ const carouselNome = document.getElementById('carouselNome');
 const carouselInfo = document.getElementById('carouselInfo');
 
 let especies = [];
-let selecionadaId = null;
 let carouselFotos = [];
 let carouselIndex = 0;
 let filtroPorte = null;
@@ -56,7 +55,6 @@ function montarListaFotos(especie) {
 }
 
 function selecionarEspecie(especie) {
-  selecionadaId = especie ? especie.id : null;
   carouselFotos = especie ? montarListaFotos(especie) : [];
   carouselIndex = 0;
   renderizarCarrossel(especie);
@@ -108,7 +106,7 @@ function navegarCarrossel(delta) {
   const novoIndice = carouselIndex + delta;
   if (novoIndice < 0 || novoIndice >= carouselFotos.length) return;
   carouselIndex = novoIndice;
-  const especie = especies.find((e) => e.id === selecionadaId) || null;
+  const especie = especies.find((e) => e.id === carouselFotos[0]?.id) || null;
   renderizarCarrossel(especie);
 }
 
@@ -153,12 +151,16 @@ function renderizar(lista) {
   especiesVazio.classList.toggle('hidden', lista.length > 0);
 
   lista.forEach((especie) => {
-    const item = document.createElement('article');
-    item.className = 'area-item especie-card';
+    const link = document.createElement('a');
+    link.href = './especie-det.html?id=' + especie.id;
+    link.className = 'area-item especie-card';
+    link.style.textDecoration = 'none';
+    link.style.color = 'inherit';
+    link.style.display = 'block';
     const fotoHtml = especie.fotoUrl
       ? `<div class="area-foto"><img src="${obterUrlImagem(especie.fotoUrl)}" alt="${especie.nomePopular || 'Foto da espécie'}" onerror="this.remove();" loading="lazy" /></div>`
       : '';
-    item.innerHTML = `
+    link.innerHTML = `
       ${fotoHtml}
       <header>
         <h3>${especie.nomePopular}</h3>
@@ -168,20 +170,13 @@ function renderizar(lista) {
       ${especie.observacoes ? `<p class="area-description">${especie.observacoes}</p>` : ''}
       ${especie.indicacaoPlantio ? `<p class="area-description"><strong>Indicação para plantio:</strong> ${especie.indicacaoPlantio}</p>` : ''}
     `;
-    if (especie.id === selecionadaId) {
-      item.classList.add('selecionada');
-    }
-    item.addEventListener('click', () => {
-      selecionarEspecie(especie);
-      renderizar(lista);
-    });
-    especiesList.appendChild(item);
+    especiesList.appendChild(link);
   });
 }
 
 function manterSelecao(lista) {
-  if (!lista.some((e) => e.id === selecionadaId)) {
-    selecionarEspecie(lista[0] || null);
+  if (lista.length > 0) {
+    selecionarEspecie(lista[0]);
   }
 }
 

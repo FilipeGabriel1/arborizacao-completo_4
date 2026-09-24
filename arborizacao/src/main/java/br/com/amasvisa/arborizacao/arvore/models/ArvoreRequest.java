@@ -38,7 +38,7 @@ public record ArvoreRequest(
         String raizesExpostas,
         String sinaisApodrecimento,
         // Conflitos
-        TipoConflito tipoConflito,
+        List<TipoConflito> tiposConflito,
         // Manejo
         TipoManejo tipoManejo,
         PrioridadeManejo prioridadeManejo,

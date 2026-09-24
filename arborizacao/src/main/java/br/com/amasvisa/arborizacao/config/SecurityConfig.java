@@ -55,10 +55,12 @@ public class SecurityConfig {
                         "/arborizacao/areas-publico.html",
                         "/arborizacao/areas-publico.js",
                         "/arborizacao/mapa-publico.js",
+                        "/arborizacao/painel-arvore.js",
                         "/arborizacao/styles.css",
                         "/arborizacao/csrf.js",
                         "/arborizacao/acessibilidade.js",
                         "/arborizacao/cookie-consent.js",
+                        "/arborizacao/kml.js",
                         "/arborizacao/favicon.svg",
                         "/arborizacao/img/**",
                         "/arborizacao/sementeira.html",
@@ -68,6 +70,10 @@ public class SecurityConfig {
                         "/arborizacao/politica-privacidade.html",
                         "/arborizacao/termos-de-uso.html",
                         "/arborizacao/direitos-titular.html",
+                        "/arborizacao/especie-det.html",
+                        "/arborizacao/especie-det.js",
+                        "/arborizacao/area-det.html",
+                        "/arborizacao/area-det.js",
                         "/api/csrf",
                         "/login"
                 ).permitAll()
@@ -79,7 +85,8 @@ public class SecurityConfig {
                         "/api/especies/**",
                         "/api/placar/**",
                         "/api/places/**",
-                        "/api/sementeira/**"
+                        "/api/sementeira/**",
+                        "/api/kml/export/**"
                 ).permitAll()
                 .requestMatchers("/api/auth/me").authenticated()
                 .anyRequest().authenticated()

@@ -15,6 +15,7 @@ import br.com.amasvisa.arborizacao.arvore.models.ArvoreFotoResponse;
 import br.com.amasvisa.arborizacao.arvore.models.ArvoreRequest;
 import br.com.amasvisa.arborizacao.arvore.models.ArvoreResponse;
 import br.com.amasvisa.arborizacao.arvore.models.EspecieArvore;
+import br.com.amasvisa.arborizacao.arvore.models.TipoConflito;
 import br.com.amasvisa.arborizacao.arvore.repository.ArvoreRepository;
 import br.com.amasvisa.arborizacao.auditoria.models.AcaoAuditoria;
 import br.com.amasvisa.arborizacao.auditoria.models.TipoEntidadeAuditoria;
@@ -123,7 +124,7 @@ public class ArvoreService {
         arvore.setRaizesExpostas(request.raizesExpostas());
         arvore.setSinaisApodrecimento(request.sinaisApodrecimento());
         // Conflitos
-        arvore.setTipoConflito(request.tipoConflito());
+        arvore.setTipoConflito(joinConflitos(request.tiposConflito()));
         // Manejo
         arvore.setTipoManejo(request.tipoManejo());
         arvore.setPrioridadeManejo(request.prioridadeManejo());
@@ -151,6 +152,28 @@ public class ArvoreService {
     private Arvore obterEntidade(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Árvore não encontrada: " + id));
+    }
+
+    private String joinConflitos(List<TipoConflito> tipos) {
+        if (tipos == null || tipos.isEmpty()) {
+            return TipoConflito.SEM_CONFLITO.name();
+        }
+        return tipos.stream()
+                .filter(java.util.Objects::nonNull)
+                .map(TipoConflito::name)
+                .distinct()
+                .collect(java.util.stream.Collectors.joining(","));
+    }
+
+    private List<TipoConflito> splitConflitos(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return List.of(TipoConflito.SEM_CONFLITO);
+        }
+        return java.util.Arrays.stream(valor.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(TipoConflito::valueOf)
+                .toList();
     }
 
     private ArvoreResponse toResponse(Arvore arvore) {
@@ -192,7 +215,7 @@ public class ArvoreService {
                 arvore.getDanosTronco(),
                 arvore.getRaizesExpostas(),
                 arvore.getSinaisApodrecimento(),
-                arvore.getTipoConflito(),
+                splitConflitos(arvore.getTipoConflito()),
                 arvore.getTipoManejo(),
                 arvore.getPrioridadeManejo(),
                 arvore.getResponsavelCadastro(),

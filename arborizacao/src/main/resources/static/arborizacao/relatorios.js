@@ -52,10 +52,10 @@ async function carregarDados() {
 
   animarEntrada(document.querySelector('.dashboard-grid'));
 
-  renderDonut('chartPorte', 'chartPorteLegend', 'chartPorteTotal', agrupar(a, 'porte'), CORES_PORTE, ROTULOS_PORTE);
-  renderDonut('chartOrigem', 'chartOrigemLegend', 'chartOrigemTotal', agrupar(a, 'origem'), CORES_ORIGEM, ROTULOS_ORIGEM);
-  renderDonut('chartCondicao', 'chartCondicaoLegend', 'chartCondicaoTotal', agrupar(a, 'condicaoFitossanitaria'), CORES_CONDICAO, ROTULOS_CONDICAO);
-  renderDonut('chartPlantios', 'chartPlantiosLegend', 'chartPlantiosTotal', agrupar(p, 'status'), CORES_PLANTIO, ROTULOS_PLANTIO);
+  renderPieChart('chartPorte', agrupar(a, 'porte'), CORES_PORTE, ROTULOS_PORTE);
+  renderPieChart('chartOrigem', agrupar(a, 'origem'), CORES_ORIGEM, ROTULOS_ORIGEM);
+  renderPieChart('chartCondicao', agrupar(a, 'condicaoFitossanitaria'), CORES_CONDICAO, ROTULOS_CONDICAO);
+  renderPieChart('chartPlantios', agrupar(p, 'status'), CORES_PLANTIO, ROTULOS_PLANTIO);
 
   renderTopEspecies(a, e);
 }
@@ -69,54 +69,68 @@ function agrupar(items, campo) {
   return Object.entries(contagem).sort((a, b) => b[1] - a[1]);
 }
 
-function renderDonut(svgId, legendId, totalId, dados, cores, rotulos) {
-  const svg = document.getElementById(svgId);
-  const legend = document.getElementById(legendId);
-  const totalEl = document.getElementById(totalId);
-  svg.innerHTML = '';
-  legend.innerHTML = '';
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const a = (angleDeg - 90) * Math.PI / 180;
+  return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+}
 
-  const total = dados.reduce((s, d) => s + d[1], 0);
-  if (totalEl) totalEl.textContent = total;
+function fatiaPie(cx, cy, r, startAngle, endAngle) {
+  if (endAngle - startAngle >= 359.99) {
+    return 'M ' + cx + ' ' + (cy - r) +
+      ' A ' + r + ' ' + r + ' 0 0 1 ' + cx + ' ' + (cy + r) +
+      ' A ' + r + ' ' + r + ' 0 0 1 ' + cx + ' ' + (cy - r) + ' Z';
+  }
+  const start = polarToCartesian(cx, cy, r, endAngle);
+  const end = polarToCartesian(cx, cy, r, startAngle);
+  const large = endAngle - startAngle <= 180 ? 0 : 1;
+  return 'M ' + cx + ' ' + cy +
+    ' L ' + start.x + ' ' + start.y +
+    ' A ' + r + ' ' + r + ' 0 ' + large + ' 0 ' + end.x + ' ' + end.y +
+    ' Z';
+}
 
-  if (dados.length === 0) {
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', '50');
-    circle.setAttribute('cy', '50');
-    circle.setAttribute('r', '40');
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', '#374151');
-    circle.setAttribute('stroke-width', '15');
-    svg.appendChild(circle);
-    legend.innerHTML = '<span style="color:#6b7280;">Sem dados</span>';
+function renderPieChart(containerId, dados, cores, rotulos) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const itens = (dados || []).filter(([, valor]) => valor > 0);
+  if (itens.length === 0) {
+    el.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">Sem dados</p>';
     return;
   }
-
-  const circunferencia = 2 * Math.PI * 40;
-  let offset = 0;
-
-  dados.forEach(([chave, valor]) => {
-    const percentual = valor / total;
-    const dash = percentual * circunferencia;
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', '50');
-    circle.setAttribute('cy', '50');
-    circle.setAttribute('r', '40');
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', cores[chave] || '#999');
-    circle.setAttribute('stroke-width', '15');
-    circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
-    circle.setAttribute('stroke-dashoffset', `${-offset}`);
-    svg.appendChild(circle);
-    offset += dash;
-  });
-
-  const pctFmt = (v) => ((v / total) * 100).toFixed(0);
-  legend.innerHTML = dados.map(([chave, valor]) => {
-    const cor = cores[chave] || '#999';
-    const label = rotulos[chave] || chave;
-    return `<span><i style="background:${cor}"></i> ${label} ${pctFmt(valor)}%</span>`;
+  const total = itens.reduce((s, [, v]) => s + v, 0);
+  const cx = 100, cy = 100, r = 80;
+  let paths = '';
+  if (itens.length === 1) {
+    const [chave, valor] = itens[0];
+    const cor = cores[chave] || '#22c55e';
+    const nome = (rotulos && rotulos[chave]) || chave;
+    paths = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r +
+      '" fill="' + cor + '" stroke="#0f172a" stroke-width="2">' +
+      '<title>' + nome + ': ' + valor + '</title></circle>';
+  } else {
+    let angle = 0;
+    itens.forEach(([chave, valor]) => {
+      const slice = (valor / total) * 360;
+      const cor = cores[chave] || '#22c55e';
+      const nome = (rotulos && rotulos[chave]) || chave;
+      paths += '<path d="' + fatiaPie(cx, cy, r, angle, angle + slice) +
+        '" fill="' + cor + '" stroke="#0f172a" stroke-width="2">' +
+        '<title>' + nome + ': ' + valor + '</title></path>';
+      angle += slice;
+    });
+  }
+  const legend = itens.map(([chave, valor]) => {
+    const cor = cores[chave] || '#22c55e';
+    const nome = (rotulos && rotulos[chave]) || chave;
+    const pct = Math.round((valor / total) * 100);
+    return '<span><i style="background:' + cor + ';"></i>' +
+      nome + ' (' + valor + ' • ' + pct + '%)</span>';
   }).join('');
+  el.innerHTML =
+    '<div class="pie-wrap">' +
+    '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de pizza">' + paths + '</svg>' +
+    '<div class="chart-legend">' + legend + '</div>' +
+    '</div>';
 }
 
 function renderTopEspecies(arvores) {

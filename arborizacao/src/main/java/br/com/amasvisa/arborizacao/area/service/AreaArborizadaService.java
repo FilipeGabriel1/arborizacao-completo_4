@@ -18,6 +18,7 @@ import br.com.amasvisa.arborizacao.area.models.AreaFotoResponse;
 import br.com.amasvisa.arborizacao.area.models.PontoGeografico;
 import br.com.amasvisa.arborizacao.area.models.PontoGeograficoDTO;
 import br.com.amasvisa.arborizacao.area.repository.AreaArborizadaRepository;
+import br.com.amasvisa.arborizacao.arvore.repository.ArvoreRepository;
 import br.com.amasvisa.arborizacao.comum.PaginaResponse;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -25,10 +26,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class AreaArborizadaService {
 
     private final AreaArborizadaRepository repository;
+    private final ArvoreRepository arvoreRepository;
     private final AuditoriaService auditoriaService;
 
-    public AreaArborizadaService(AreaArborizadaRepository repository, AuditoriaService auditoriaService) {
+    public AreaArborizadaService(AreaArborizadaRepository repository, ArvoreRepository arvoreRepository, AuditoriaService auditoriaService) {
         this.repository = repository;
+        this.arvoreRepository = arvoreRepository;
         this.auditoriaService = auditoriaService;
     }
 
@@ -154,18 +157,20 @@ public class AreaArborizadaService {
                 .map(foto -> new AreaFotoResponse(foto.getId(), foto.getUrl(), foto.getDescricao(), foto.getCriadoEm()))
                 .toList();
 
+        int individuos = arvoreRepository.findByArea_Id(area.getId()).size();
+
         return new AreaArborizadaResponse(
                 area.getId(),
                 area.getNome(),
                 area.getDescricao(),
                 area.getFotoUrl(),
                 area.getTipo(),
-                null, area.getBairro(),
+                area.getStatus(), area.getBairro(),
                 area.getLogradouro(),
                 area.getAreaTotalM2(),
                 area.getResponsavelManutencao(),
                 area.getSituacaoInventario(),
-                area.getIndividuosCadastrados(),
+                individuos,
                 area.getUltimaAtualizacaoInventario(),
                 area.getLatitude(),
                 area.getLongitude(),

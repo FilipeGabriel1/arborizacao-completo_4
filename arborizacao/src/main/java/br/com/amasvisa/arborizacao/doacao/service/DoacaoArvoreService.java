@@ -44,8 +44,8 @@ public class DoacaoArvoreService {
         doacao.setDataDoacao(request.dataDoacao());
         doacao.setDestinacao(request.destinacao());
         doacao.setQuantidade(request.quantidade());
-        doacao.setCpf(encryptService.encrypt(request.cpf()));
-        doacao.setRg(encryptService.encrypt(request.rg()));
+        doacao.setCpf(encryptService.encrypt(request.cpf().replaceAll("\\D", "")));
+        doacao.setRg(encryptService.encrypt(request.rg().replaceAll("\\D", "")));
 
         DoacaoArvoreResponse response = toResponse(repository.save(doacao));
         auditoriaService.registrar(TipoEntidadeAuditoria.DOACAO, response.id(), AcaoAuditoria.CRIACAO,

@@ -289,7 +289,7 @@ function renderizarFeed(placar) {
     itens.push({
       tipo: 'doacao',
       data: d.dataDoacao,
-      titulo: d.solicitante || 'Doador não informado',
+      titulo: d.solicitante || 'Solicitante não informado',
       detalhe: `Doação • ${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}${d.descricao ? ' • ' + d.descricao : ''}`
     });
   });
@@ -319,6 +319,104 @@ function renderizarFeed(placar) {
   });
 }
 
+const CORES_DONUT = {
+  porte: { PEQUENO: '#49a970', MEDIO: '#2f9e5b', GRANDE: '#1a7a3e' },
+  origem: { NATIVA: '#49a970', EXOTICA: '#6aa7dc' }
+};
+
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const a = (angleDeg - 90) * Math.PI / 180;
+  return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+}
+
+function donutSegment(cx, cy, rOuter, rInner, startAngle, endAngle) {
+  const sweep = endAngle - startAngle;
+  if (sweep <= 0) return '';
+  if (sweep >= 359.99) {
+    return { full: true, mid: (rOuter + rInner) / 2, thick: rOuter - rInner };
+  }
+  const large = sweep > 180 ? 1 : 0;
+  const o1 = polarToCartesian(cx, cy, rOuter, startAngle);
+  const o2 = polarToCartesian(cx, cy, rOuter, endAngle);
+  const i1 = polarToCartesian(cx, cy, rInner, endAngle);
+  const i2 = polarToCartesian(cx, cy, rInner, startAngle);
+  return {
+    d: `M ${o1.x} ${o1.y}` +
+      ` A ${rOuter} ${rOuter} 0 ${large} 1 ${o2.x} ${o2.y}` +
+      ` L ${i1.x} ${i1.y}` +
+      ` A ${rInner} ${rInner} 0 ${large} 0 ${i2.x} ${i2.y} Z`
+  };
+}
+
+function criarDonutChart(containerId, dados, cores) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const itens = (dados || []).filter((d) => d.valor > 0);
+  const total = itens.reduce((s, d) => s + d.valor, 0);
+  if (total <= 0) {
+    container.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">Sem dados</p>';
+    return;
+  }
+
+  const cx = 100, cy = 100, rOuter = 90, rInner = 58;
+  let paths = '';
+  let angle = 0;
+
+  itens.forEach((d) => {
+    const slice = (d.valor / total) * 360;
+    const cor = cores[d.chave] || '#999';
+    const seg = donutSegment(cx, cy, rOuter, rInner, angle, angle + slice);
+    if (seg && seg.full) {
+      paths += `<circle cx="${cx}" cy="${cy}" r="${seg.mid}" fill="none" stroke="${cor}" stroke-width="${seg.thick}"><title>${d.rotulo}: ${d.valor}</title></circle>`;
+    } else if (seg && seg.d) {
+      paths += `<path d="${seg.d}" fill="${cor}" stroke="#080e0b" stroke-width="1.5"><title>${d.rotulo}: ${d.valor}</title></path>`;
+    }
+    angle += slice;
+  });
+
+  const legend = itens.map((d) => {
+    const cor = cores[d.chave] || '#999';
+    const pct = Math.round((d.valor / total) * 100);
+    return `<span><i style="background:${cor};"></i>${d.rotulo} (${d.valor} • ${pct}%)</span>`;
+  }).join('');
+
+  container.innerHTML =
+    '<div class="donut-wrap">' +
+    '<div class="donut-svg-box">' +
+    `<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de rosca">${paths}</svg>` +
+    '<div class="donut-center">' +
+    `<span class="donut-valor">${total}</span>` +
+    '<span class="donut-label">Total</span>' +
+    '</div>' +
+    '</div>' +
+    `<div class="chart-legend">${legend}</div>` +
+    '</div>';
+}
+
+function renderizarGraficos() {
+  const porPorte = {};
+  const porOrigem = {};
+
+  arvores.forEach((a) => {
+    const p = a.porte || 'MEDIO';
+    porPorte[p] = (porPorte[p] || 0) + 1;
+    const nativa = a.tipoArvore === 'NATIVA' ? 'NATIVA' : 'EXOTICA';
+    porOrigem[nativa] = (porOrigem[nativa] || 0) + 1;
+  });
+
+  criarDonutChart('chartPorte', [
+    { chave: 'PEQUENO', rotulo: 'Pequeno', valor: porPorte.PEQUENO || 0 },
+    { chave: 'MEDIO', rotulo: 'Médio', valor: porPorte.MEDIO || 0 },
+    { chave: 'GRANDE', rotulo: 'Grande', valor: porPorte.GRANDE || 0 }
+  ], CORES_DONUT.porte);
+
+  criarDonutChart('chartOrigem', [
+    { chave: 'NATIVA', rotulo: 'Nativas', valor: porOrigem.NATIVA || 0 },
+    { chave: 'EXOTICA', rotulo: 'Exóticas', valor: porOrigem.EXOTICA || 0 }
+  ], CORES_DONUT.origem);
+}
+
 function renderizarPlacar(placar) {
   animarValor(placarPlantadasEl, placar.totalArvores);
   animarValor(placarDoadasEl, placar.totalDoadas);
@@ -326,15 +424,8 @@ function renderizarPlacar(placar) {
   animarValor(placarEspeciesEl, placar.totalEspecies);
   if (placarAtualizadoEmEl) placarAtualizadoEmEl.textContent = new Date(placar.atualizadoEm).toLocaleTimeString('pt-BR');
 
-  // Novos elementos da seção numeros
   const placarDoacoesEl = document.getElementById('placarDoacoes');
   const placarAtivoEl = document.getElementById('placarAtivo');
-  const totalPorteEl = document.getElementById('totalPorte');
-  const totalOrigemEl = document.getElementById('totalOrigem');
-  const totalStatusEl = document.getElementById('totalStatus');
-  const legendPorteEl = document.getElementById('legendPorte');
-  const legendOrigemEl = document.getElementById('legendOrigem');
-  const legendStatusEl = document.getElementById('legendStatus');
   const listaAtividadesEl = document.getElementById('listaAtividades');
 
   if (placarDoacoesEl) animarValor(placarDoacoesEl, placar.totalDoacoes);
@@ -342,177 +433,6 @@ function renderizarPlacar(placar) {
     const arvoresPorStatus = placar.arvoresPorStatus || {};
     const ativas = arvoresPorStatus['ATIVA'] || 0;
     animarValor(placarAtivoEl, ativas);
-  }
-
-  // Gráfico de Porte
-  if (totalPorteEl && placar.arvoresPorPorte) {
-    const porte = placar.arvoresPorPorte;
-    const total = Object.values(porte).reduce((s, v) => s + Number(v || 0), 0);
-    animarValor(totalPorteEl, total);
-
-    const cores = { PEQUENO: '#22c55e', MEDIO: '#16a34a', GRANDE: '#4ade80' };
-    const rotulos = { PEQUENO: 'Pequeno', MEDIO: 'Médio', GRANDE: 'Grande' };
-    const circunferencia = 2 * Math.PI * 40;
-    let offset = 0;
-
-    const svg = document.getElementById('graficoPorte');
-    if (svg) {
-      svg.innerHTML = '';
-      const entradas = Object.entries(porte).filter(([, v]) => Number(v || 0) > 0);
-      
-      if (entradas.length === 0) {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', '50');
-        circle.setAttribute('cy', '50');
-        circle.setAttribute('r', '40');
-        circle.setAttribute('fill', 'none');
-        circle.setAttribute('stroke', '#374151');
-        circle.setAttribute('stroke-width', '15');
-        svg.appendChild(circle);
-      } else {
-        entradas.forEach(([chave, valor]) => {
-          const percentual = total > 0 ? (Number(valor || 0) / total) : 0;
-          const dash = percentual * circunferencia;
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', '50');
-          circle.setAttribute('cy', '50');
-          circle.setAttribute('r', '40');
-          circle.setAttribute('fill', 'none');
-          circle.setAttribute('stroke', cores[chave] || '#999');
-          circle.setAttribute('stroke-width', '15');
-          circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
-          circle.setAttribute('stroke-dashoffset', `${-offset}`);
-          svg.appendChild(circle);
-          offset += dash;
-        });
-      }
-    }
-
-    if (legendPorteEl) {
-      const entradas = Object.entries(porte).filter(([, v]) => Number(v || 0) > 0);
-      if (entradas.length === 0) {
-        legendPorteEl.innerHTML = '<span style="color: #6b7280;">Sem dados</span>';
-      } else {
-        legendPorteEl.innerHTML = entradas.map(([chave, valor]) => {
-          const percentual = total > 0 ? ((Number(valor || 0) / total) * 100).toFixed(0) : 0;
-          return `<span><i style="background:${cores[chave] || '#999'}"></i> ${rotulos[chave] || chave} ${percentual}%</span>`;
-        }).join('');
-      }
-    }
-  }
-
-  // Gráfico de Origem
-  if (totalOrigemEl && placar.arvoresPorOrigem) {
-    const origem = placar.arvoresPorOrigem;
-    const total = Object.values(origem).reduce((s, v) => s + Number(v || 0), 0);
-    animarValor(totalOrigemEl, total);
-
-    const cores = { DOACAO: '#1e40af', OBRIGACAO_LEGAL: '#3b82f6', PLANTIO_PROPRIO: '#60a5fa', OUTRA: '#93c5fd' };
-    const rotulos = { DOACAO: 'Doação', OBRIGACAO_LEGAL: 'Obrigação legal', PLANTIO_PROPRIO: 'Plantio próprio', OUTRA: 'Outra' };
-    const circunferencia = 2 * Math.PI * 40;
-    let offset = 0;
-
-    const svg = document.getElementById('graficoOrigem');
-    if (svg) {
-      svg.innerHTML = '';
-      const entradas = Object.entries(origem).filter(([, v]) => Number(v || 0) > 0);
-      
-      if (entradas.length === 0) {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', '50');
-        circle.setAttribute('cy', '50');
-        circle.setAttribute('r', '40');
-        circle.setAttribute('fill', 'none');
-        circle.setAttribute('stroke', '#374151');
-        circle.setAttribute('stroke-width', '15');
-        svg.appendChild(circle);
-      } else {
-        entradas.forEach(([chave, valor]) => {
-          const percentual = total > 0 ? (Number(valor || 0) / total) : 0;
-          const dash = percentual * circunferencia;
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', '50');
-          circle.setAttribute('cy', '50');
-          circle.setAttribute('r', '40');
-          circle.setAttribute('fill', 'none');
-          circle.setAttribute('stroke', cores[chave] || '#999');
-          circle.setAttribute('stroke-width', '15');
-          circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
-          circle.setAttribute('stroke-dashoffset', `${-offset}`);
-          svg.appendChild(circle);
-          offset += dash;
-        });
-      }
-    }
-
-    if (legendOrigemEl) {
-      const entradas = Object.entries(origem).filter(([, v]) => Number(v || 0) > 0);
-      if (entradas.length === 0) {
-        legendOrigemEl.innerHTML = '<span style="color: #6b7280;">Sem dados</span>';
-      } else {
-        legendOrigemEl.innerHTML = entradas.map(([chave, valor]) => {
-          const percentual = total > 0 ? ((Number(valor || 0) / total) * 100).toFixed(0) : 0;
-          return `<span><i style="background:${cores[chave] || '#999'}"></i> ${rotulos[chave] || chave} ${percentual}%</span>`;
-        }).join('');
-      }
-    }
-  }
-
-  // Gráfico de Status
-  if (totalStatusEl && placar.arvoresPorStatus) {
-    const status = placar.arvoresPorStatus;
-    const total = Object.values(status).reduce((s, v) => s + Number(v || 0), 0);
-    animarValor(totalStatusEl, total);
-
-    const cores = { ATIVA: '#22c55e', INATIVA: '#ef4444', REMOVIDA: '#f97316', EM_MANUTENCAO: '#eab308' };
-    const rotulos = { ATIVA: 'Ativa', INATIVA: 'Inativa', REMOVIDA: 'Removida', EM_MANUTENCAO: 'Em manutenção' };
-    const circunferencia = 2 * Math.PI * 40;
-    let offset = 0;
-
-    const svg = document.getElementById('graficoStatus');
-    if (svg) {
-      svg.innerHTML = '';
-      const entradas = Object.entries(status).filter(([, v]) => Number(v || 0) > 0);
-      
-      if (entradas.length === 0) {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', '50');
-        circle.setAttribute('cy', '50');
-        circle.setAttribute('r', '40');
-        circle.setAttribute('fill', 'none');
-        circle.setAttribute('stroke', '#374151');
-        circle.setAttribute('stroke-width', '15');
-        svg.appendChild(circle);
-      } else {
-        entradas.forEach(([chave, valor]) => {
-          const percentual = total > 0 ? (Number(valor || 0) / total) : 0;
-          const dash = percentual * circunferencia;
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', '50');
-          circle.setAttribute('cy', '50');
-          circle.setAttribute('r', '40');
-          circle.setAttribute('fill', 'none');
-          circle.setAttribute('stroke', cores[chave] || '#999');
-          circle.setAttribute('stroke-width', '15');
-          circle.setAttribute('stroke-dasharray', `${dash} ${circunferencia - dash}`);
-          circle.setAttribute('stroke-dashoffset', `${-offset}`);
-          svg.appendChild(circle);
-          offset += dash;
-        });
-      }
-    }
-
-    if (legendStatusEl) {
-      const entradas = Object.entries(status).filter(([, v]) => Number(v || 0) > 0);
-      if (entradas.length === 0) {
-        legendStatusEl.innerHTML = '<span style="color: #6b7280;">Sem dados</span>';
-      } else {
-        legendStatusEl.innerHTML = entradas.map(([chave, valor]) => {
-          const percentual = total > 0 ? ((Number(valor || 0) / total) * 100).toFixed(0) : 0;
-          return `<span><i style="background:${cores[chave] || '#999'}"></i> ${rotulos[chave] || chave} ${percentual}%</span>`;
-        }).join('');
-      }
-    }
   }
 
   // Lista de atividades
@@ -536,7 +456,7 @@ function renderizarPlacar(placar) {
         itens.push({
           tipo: 'doacao',
           data: d.dataDoacao,
-          titulo: d.solicitante || 'Doador não informado',
+          titulo: d.solicitante || 'Solicitante não informado',
           detalhe: `Doação • ${quantidade} muda(s)${d.especieNomePopular ? ' de ' + d.especieNomePopular : ''}`
         });
       });
@@ -624,11 +544,34 @@ map.addControl(new maplibregl.NavigationControl(), 'top-right');
 let markers = [];
 
 map.on('load', async () => {
-  ensureLayers();
-  await carregarDados();
-  refreshMap();
-  setupLayerToggles();
+  try {
+    ensureLayers();
+  } catch (err) {
+    console.error('[DEBUG] ensureLayers falhou:', err);
+  }
+  try {
+    await carregarDados();
+  } catch (err) {
+    console.error('[DEBUG] carregarDados falhou:', err);
+  }
+  try {
+    refreshMap();
+  } catch (err) {
+    console.error('[DEBUG] refreshMap falhou:', err);
+  }
+  try {
+    setupLayerToggles();
+  } catch (err) {
+    console.error('[DEBUG] setupLayerToggles falhou:', err);
+  }
 });
+
+function alternarVisibilidade(nomesCamadas, visivel) {
+  nomesCamadas.forEach((nome) => {
+    if (!map.getLayer(nome)) return;
+    map.setLayoutProperty(nome, 'visibility', visivel ? 'visible' : 'none');
+  });
+}
 
 function setupLayerToggles() {
   const camadaArvores = document.getElementById('camadaArvores');
@@ -638,35 +581,28 @@ function setupLayerToggles() {
 
   if (camadaArvores) {
     camadaArvores.addEventListener('change', () => {
-      map.setLayoutProperty('arvores-cluster', 'visibility', camadaArvores.checked ? 'visible' : 'none');
-      map.setLayoutProperty('arvores-cluster-count', 'visibility', camadaArvores.checked ? 'visible' : 'none');
-      map.setLayoutProperty('arvores-circle', 'visibility', camadaArvores.checked ? 'visible' : 'none');
+      alternarVisibilidade(['arvores-clusters', 'arvores-cluster-count', 'arvores-circle'], camadaArvores.checked);
     });
   }
 
   if (camadaAreas) {
     camadaAreas.addEventListener('change', () => {
-      map.setLayoutProperty('areas-fill', 'visibility', camadaAreas.checked ? 'visible' : 'none');
-      map.setLayoutProperty('areas-line', 'visibility', camadaAreas.checked ? 'visible' : 'none');
+      alternarVisibilidade(['areas-fill', 'areas-line'], camadaAreas.checked);
     });
   }
 
   if (camadaPontos) {
     camadaPontos.addEventListener('change', () => {
-      map.setLayoutProperty('areas-circle', 'visibility', camadaPontos.checked ? 'visible' : 'none');
+      alternarVisibilidade(['areas-circle'], camadaPontos.checked);
     });
   }
 
   if (camadaPracas) {
     camadaPracas.addEventListener('change', () => {
-      const features = areas.filter(a => a.tipo === 'PRACA' || a.tipo === 'PARQUE');
-      const pracaIds = features.map(f => f.id);
-      if (camadaPracas.checked) {
-        map.setFilter('areas-fill-pracas', null);
-        map.setFilter('areas-line-pracas', null);
-      } else {
-        map.setFilter('areas-fill-pracas', ['in', 'id', []]);
-        map.setFilter('areas-line-pracas', ['in', 'id', []]);
+      const visivel = camadaPracas.checked;
+      alternarVisibilidade(['areas-fill', 'areas-line'], visivel || (camadaAreas && camadaAreas.checked));
+      if (camadaAreas && !camadaAreas.checked) {
+        alternarVisibilidade(['areas-fill', 'areas-line'], false);
       }
     });
   }
@@ -701,7 +637,13 @@ function ensureLayers() {
     filter: ['==', ['geometry-type'], 'Point']
   });
 
-  map.addSource('arvores', { type: 'geojson', data: emptyFeatureCollection(), cluster: true, clusterMaxZoom: 14, clusterRadius: 50 });
+  map.addSource('arvores', {
+    type: 'geojson',
+    data: emptyFeatureCollection(),
+    cluster: true,
+    clusterMaxZoom: 10,
+    clusterRadius: 30
+  });
   
   map.addLayer({
     id: 'arvores-clusters',
@@ -771,7 +713,7 @@ async function buscarTudo(url, pageSize = 200) {
   const todos = [];
   let pagina = 0;
   for (;;) {
-    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`);
+    const res = await fetch(`${url}?page=${pagina}&size=${pageSize}`, { credentials: 'same-origin' });
     if (!res.ok) return null;
     const data = await res.json();
     const itens = Array.isArray(data) ? data : (data.value ?? []);
@@ -792,8 +734,21 @@ async function carregarDados() {
   totalAreasEl.textContent = areas.length;
   totalArvoresEl.textContent = arvores.length;
 
-  renderizarLista();
-  inicializarCarousels();
+  try {
+    renderizarGraficos();
+  } catch (err) {
+    console.error('[DEBUG] renderizarGraficos falhou:', err);
+  }
+  try {
+    renderizarLista();
+  } catch (err) {
+    console.error('[DEBUG] renderizarLista falhou:', err);
+  }
+  try {
+    inicializarCarousels();
+  } catch (err) {
+    console.error('[DEBUG] inicializarCarousels falhou:', err);
+  }
 }
 
 function refreshMap() {
@@ -809,7 +764,7 @@ function refreshMap() {
             [area.pontos[0].longitude, area.pontos[0].latitude]
           ]]
         },
-        properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+        properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status, poligono: true }
       });
     } else if (area.latitude != null && area.longitude != null) {
       areaFeatures.push({
@@ -830,8 +785,8 @@ function refreshMap() {
         nome: a.nome || `Árvore #${a.id}`,
         tipoArvore: a.tipoArvore,
         porte: a.porte,
-        status: a.status,
-        especie: a.especieNomePopular || ''
+        especie: a.especieNomePopular || '',
+        fotoUrl: a.fotoUrl || ''
       }
     }));
 
@@ -845,18 +800,27 @@ function mostrarPopupArea(feature) {
     ? feature.geometry.coordinates
     : feature.geometry.coordinates[0][0];
 
+  const ehPoligono = p.poligono === true || p.poligono === 'true' || p.poligono === 1 || p.poligono === '1';
+  const selo = ehPoligono ? '<span class="badge-arborizada">Área arborizada</span>' : '';
+
   new maplibregl.Popup()
     .setLngLat(coordinates)
-    .setHTML(`<strong>${p.nome}</strong><br/>Tipo: ${p.tipo}<br/>Status: ${p.status}`)
+    .setHTML(`<strong>${p.nome}</strong> ${selo}<br/>Tipo: ${p.tipo}<br/>Status: ${p.status}`)
     .addTo(map);
 }
 
 function mostrarPopupArvore(feature) {
   const p = feature.properties;
-  new maplibregl.Popup()
-    .setLngLat(feature.geometry.coordinates)
-    .setHTML(`<strong>${p.nome}</strong><br/>${p.especie ? 'Espécie: ' + p.especie + '<br/>' : ''}Tipo: ${p.tipoArvore} • Porte: ${p.porte}<br/>Status: ${p.status}`)
-    .addTo(map);
+  fetch('/api/arvores/' + p.id, { credentials: 'same-origin' })
+    .then(r => r.ok ? r.json() : null)
+    .then(arvore => {
+      if (window.abrirTelaArvore) abrirTelaArvore(arvore, p);
+      else if (window.montarPainelArvore) montarPainelArvore(arvore, p);
+    })
+    .catch(() => {
+      if (window.abrirTelaArvore) abrirTelaArvore(null, p);
+      else if (window.montarPainelArvore) montarPainelArvore(null, p);
+    });
 }
 
 function renderizarLista() {
@@ -975,7 +939,7 @@ function inicializarCarousel(id, items) {
         const todasFotos = fotosDaArea(item);
         const fotoCard = todasFotos.length ? todasFotos[0] : placeholder;
         return `
-          <div class="carousel-card">
+          <a href="./area-det.html?id=${item.id}" class="carousel-card" style="text-decoration:none;color:inherit">
             ${criarImgCarousel(fotoCard, item.nome, 'carousel-card-img', placeholder)}
             <div class="carousel-card-body">
               <p class="carousel-card-nome">${item.nome}</p>
@@ -983,10 +947,9 @@ function inicializarCarousel(id, items) {
               <div class="carousel-card-count">${arvoresCount} árvores</div>
             </div>
             <div class="carousel-card-footer">
-              <a href="#map" class="carousel-card-btn">Ver no mapa</a>
-              ${todasFotos.length ? `<button class="carousel-card-btn" onclick="abrirGaleria(fotosDaArea(${JSON.stringify(item).replace(/"/g, '&quot;')}), 'Fotos • ${item.nome}')">Ver fotos</button>` : ''}
+              <span class="carousel-card-btn">Ver detalhes</span>
             </div>
-          </div>
+          </a>
         `;
       } else {
         const placeholder = obterPlaceholder(item.nomePopular, 'especie');
@@ -996,14 +959,14 @@ function inicializarCarousel(id, items) {
         const fotoCard = todasFotos.length ? todasFotos[0] : placeholder;
         const badgeClass = item.origem === 'NATIVA' ? 'badge-nativa' : 'badge-exotica';
         return `
-          <div class="carousel-card">
+          <a href="./especie-det.html?id=${item.id}" class="carousel-card" style="text-decoration:none;color:inherit">
             ${criarImgCarousel(fotoCard, item.nomePopular, 'carousel-card-img', placeholder)}
             <div class="carousel-card-body">
               <p class="carousel-card-nome">${item.nomePopular}</p>
               <p class="carousel-card-meta">${item.nomeCientifico || ''}</p>
               <span class="carousel-card-badge ${badgeClass}">${item.origem || ''}</span>
             </div>
-          </div>
+          </a>
         `;
       }
     }).join('');

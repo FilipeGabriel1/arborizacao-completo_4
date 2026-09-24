@@ -26,8 +26,7 @@
       justify-content: space-between;\
       gap: 16px;\
       padding: 16px 24px;\
-      background: rgba(13, 31, 18, 0.97);\
-      backdrop-filter: blur(12px);\
+      background: #0d1a13;\
       border-top: 1px solid rgba(74, 222, 128, 0.2);\
       box-shadow: 0 -4px 20px rgba(0,0,0,0.4);\
     }\

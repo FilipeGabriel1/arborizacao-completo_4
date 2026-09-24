@@ -29,6 +29,7 @@
         <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
         <a href="./plantios.html" class="sidebar-link"><span class="icon">🌿</span><span>Plantios</span></a>
         <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
+        <a href="./doacoes.html" class="sidebar-link active"><span class="icon">🎁</span><span>Doações</span></a>
 
         <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
         <a href="./relatorios.html" class="sidebar-link"><span class="icon">📋</span><span>Relatórios</span></a>
@@ -73,7 +74,7 @@
             </select>
           </label>
           <label>
-            Solicitante / doador
+            Solicitante
             <input type="text" id="solicitante" required />
           </label>
           <label>
@@ -110,7 +111,7 @@
           <h2>Filtrar doações</h2>
         </div>
         <form id="buscaForm" class="busca-form">
-          <input type="text" id="buscaTermo" placeholder="Nome do doador, CPF ou ID..." />
+          <input type="text" id="buscaTermo" placeholder="Nome do solicitante, CPF ou ID..." />
           <div class="two-columns">
             <label>
               De
@@ -129,7 +130,7 @@
           <button type="submit" class="primary-button">Filtrar</button>
           <button type="button" class="ghost-button" id="limparFiltrosBtn">Limpar filtros</button>
         </form>
-        <p class="area-description">Filtre pelo doador, por período de doação (ex.: 2024 a 2025) ou pela espécie da árvore.</p>
+        <p class="area-description">Filtre pelo solicitante, por período de doação (ex.: 2024 a 2025) ou pela espécie da árvore.</p>
         <div id="buscaResultado"></div>
       </aside>
 
@@ -149,7 +150,7 @@
             <thead>
               <tr>
                 <th>Data</th>
-                <th>Doador</th>
+                <th>Solicitante</th>
                 <th>Descrição</th>
                 <th>Espécie</th>
                 <th class="extrato-qtd">Qtd.</th>

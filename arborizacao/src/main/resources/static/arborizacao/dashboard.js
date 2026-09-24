@@ -14,6 +14,7 @@
   let placarData = null;
   let sementeiraData = [];
   let usuariosData = [];
+  let manutencoesData = [];
 
   function formatarNumero(n) {
     return Number(n).toLocaleString('pt-BR');
@@ -62,7 +63,8 @@
       buscarTudo('/api/especies'),
       fetch('/api/placar', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       buscarTudo('/api/sementeira'),
-      fetch('/api/usuarios', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+      fetch('/api/usuarios', { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
+      buscarTudo('/api/manutencoes')
     ]).then(function (results) {
       areasData = results[0];
       arvoresData = results[1];
@@ -70,8 +72,18 @@
       placarData = results[3];
       sementeiraData = results[4] || [];
       usuariosData = Array.isArray(results[5]) ? results[5] : [];
+      manutencoesData = results[6] || [];
       return { areas: areasData, arvores: arvoresData, especies: especiesData, placar: placarData };
     });
+  }
+
+  function isEncerrada(m) {
+    var s = (m.status || '').toUpperCase();
+    return s === 'CONCLUIDA' || s === 'CANCELADA';
+  }
+
+  function contarPendentes() {
+    return manutencoesData.filter(function (m) { return !isEncerrada(m); }).length;
   }
 
   function renderKPIs() {
@@ -83,11 +95,10 @@
     animarValor(document.getElementById('kpiAreas'), totalAreas);
     animarValor(document.getElementById('kpiEspecies'), totalEspecies);
 
-    var inspecao = arvoresData.filter(function (a) { return a.status === 'EM_MANUTENCAO'; }).length;
-    var criticas = arvoresData.filter(function (a) { return a.status === 'INATIVA'; }).length;
-    document.getElementById('kpiInspecao').textContent = formatarNumero(inspecao || Math.round(totalArvores * 0.1));
-    document.getElementById('kpiManejo').textContent = formatarNumero(criticas || Math.round(totalArvores * 0.05));
-    document.getElementById('kpiMudas').textContent = formatarNumero(Math.round(totalArvores * 0.17));
+    document.getElementById('kpiManejo').textContent = formatarNumero(contarPendentes());
+
+    var mDisponiveisKpi = sementeiraData.reduce(function (s, l) { return s + (l.quantidadeDisponivel || 0); }, 0);
+    document.getElementById('kpiMudas').textContent = formatarNumero(mDisponiveisKpi);
 
     if (placarData) {
       document.getElementById('summaryDoacoes').textContent = formatarNumero(placarData.totalDoacoes || 0);
@@ -109,65 +120,108 @@
     document.getElementById('nurseryPerdas').textContent = formatarNumero(mPerdas);
   }
 
-  function criarDonut(containerId, legendId, dados, cores) {
+  function renderTasks() {
+    var criticas = arvoresData.filter(function (a) {
+      var c = a.condicaoFitossanitaria;
+      return c === 'RUIM' || c === 'CRITICO';
+    }).length;
+
+    var areasAndamento = areasData.filter(function (ar) {
+      var s = ar.situacaoInventario;
+      return s === 'EM_ANDAMENTO' || s === 'EM_ATUALIZACAO';
+    }).length;
+
+    var pManejos = document.getElementById('taskManejos');
+    if (pManejos) pManejos.textContent = formatarNumero(contarPendentes());
+    var pCriticas = document.getElementById('taskCriticas');
+    if (pCriticas) pCriticas.textContent = formatarNumero(criticas);
+    var pInventario = document.getElementById('taskInventario');
+    if (pInventario) pInventario.textContent = formatarNumero(areasAndamento);
+  }
+
+  function polarToCartesian(cx, cy, r, angleDeg) {
+    var a = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+
+  function polarToCartesian(cx, cy, r, angleDeg) {
+    var a = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+
+  function donutSegment(cx, cy, rOuter, rInner, startAngle, endAngle) {
+    var sweep = endAngle - startAngle;
+    if (sweep <= 0) return '';
+    if (sweep >= 359.99) {
+      return { full: true, mid: (rOuter + rInner) / 2, thick: rOuter - rInner };
+    }
+    var large = sweep > 180 ? 1 : 0;
+    var o1 = polarToCartesian(cx, cy, rOuter, startAngle);
+    var o2 = polarToCartesian(cx, cy, rOuter, endAngle);
+    var i1 = polarToCartesian(cx, cy, rInner, endAngle);
+    var i2 = polarToCartesian(cx, cy, rInner, startAngle);
+    return {
+      d: 'M ' + o1.x + ' ' + o1.y +
+        ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + o2.x + ' ' + o2.y +
+        ' L ' + i1.x + ' ' + i1.y +
+        ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + i2.x + ' ' + i2.y +
+        ' Z'
+    };
+  }
+
+  function criarDonutChart(containerId, dados, cores) {
     var container = document.getElementById(containerId);
-    var legend = document.getElementById(legendId);
-    if (!container || !legend) return;
+    if (!container) return;
 
-    var total = dados.reduce(function (s, d) { return s + d.valor; }, 0);
-
-    var totalEl = document.getElementById(containerId + 'Total');
-    if (totalEl) totalEl.textContent = formatarNumero(total);
-
-    var r = 40;
-    var circunferencia = 2 * Math.PI * r;
-
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 100 100');
-
-    if (total === 0) {
-      var empty = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      empty.setAttribute('cx', '50');
-      empty.setAttribute('cy', '50');
-      empty.setAttribute('r', r);
-      empty.setAttribute('fill', 'none');
-      empty.setAttribute('stroke', '#374151');
-      empty.setAttribute('stroke-width', '15');
-      svg.appendChild(empty);
-      container.innerHTML = '';
-      container.appendChild(svg);
-      legend.innerHTML = '<span style="color:#6b7280;">Sem dados</span>';
+    var itens = (dados || []).filter(function (d) { return d.valor > 0; });
+    if (itens.length === 0) {
+      container.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">Sem dados</p>';
       return;
     }
 
-    var offset = 0;
-    dados.forEach(function (d) {
-      if (d.valor === 0) return;
-      var pct = d.valor / total;
-      var dash = pct * circunferencia;
+    var total = itens.reduce(function (s, d) { return s + d.valor; }, 0);
+    if (total <= 0) {
+      container.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">Sem dados</p>';
+      return;
+    }
 
-      var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', '50');
-      circle.setAttribute('cy', '50');
-      circle.setAttribute('r', r);
-      circle.setAttribute('fill', 'none');
-      circle.setAttribute('stroke', cores[d.chave] || '#999');
-      circle.setAttribute('stroke-width', '15');
-      circle.setAttribute('stroke-dasharray', dash + ' ' + (circunferencia - dash));
-      circle.setAttribute('stroke-dashoffset', -offset);
-      svg.appendChild(circle);
+    var cx = 100, cy = 100, rOuter = 90, rInner = 58;
+    var paths = '';
+    var angle = 0;
 
-      offset += dash;
+    itens.forEach(function (d, idx) {
+      var slice = (d.valor / total) * 360;
+      var cor = cores[d.chave] || '#999';
+      var seg = donutSegment(cx, cy, rOuter, rInner, angle, angle + slice);
+      if (seg && seg.full) {
+        paths += '<circle cx="' + cx + '" cy="' + cy + '" r="' + seg.mid +
+          '" fill="none" stroke="' + cor + '" stroke-width="' + seg.thick +
+          '"><title>' + d.rotulo + ': ' + d.valor + '</title></circle>';
+      } else if (seg && seg.d) {
+        paths += '<path d="' + seg.d + '" fill="' + cor + '" stroke="#080e0b" stroke-width="1.5">' +
+          '<title>' + d.rotulo + ': ' + d.valor + '</title></path>';
+      }
+      angle += slice;
     });
 
-    container.innerHTML = '';
-    container.appendChild(svg);
-
-    legend.innerHTML = dados.map(function (d) {
-      var pct = total > 0 ? Math.round(d.valor / total * 100) : 0;
+    var legend = itens.map(function (d) {
       var cor = cores[d.chave] || '#999';
-      return '<span><i style="background:' + cor + '"></i> ' + d.rotulo + ' ' + pct + '%</span>';
+      var pct = Math.round((d.valor / total) * 100);
+      return '<span><i style="background:' + cor + ';"></i>' +
+        d.rotulo + ' (' + d.valor + ' • ' + pct + '%)</span>';
     }).join('');
+
+    container.innerHTML =
+      '<div class="donut-wrap">' +
+      '<div class="donut-svg-box">' +
+      '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de rosca">' + paths + '</svg>' +
+      '<div class="donut-center">' +
+      '<span class="donut-valor">' + total + '</span>' +
+      '<span class="donut-label">Total</span>' +
+      '</div>' +
+      '</div>' +
+      '<div class="chart-legend">' + legend + '</div>' +
+      '</div>';
   }
 
   function renderCharts() {
@@ -182,13 +236,13 @@
       porOrigem[nativas] = (porOrigem[nativas] || 0) + 1;
     });
 
-    criarDonut('chartPorte', 'legendPorte', [
+    criarDonutChart('chartPorte', [
       { chave: 'PEQUENO', rotulo: 'Pequeno', valor: porPorte.PEQUENO || 0 },
       { chave: 'MEDIO', rotulo: 'Médio', valor: porPorte.MEDIO || 0 },
       { chave: 'GRANDE', rotulo: 'Grande', valor: porPorte.GRANDE || 0 }
     ], COLORS.porte);
 
-    criarDonut('chartOrigem', 'legendOrigem', [
+    criarDonutChart('chartOrigem', [
       { chave: 'NATIVA', rotulo: 'Nativas', valor: porOrigem.NATIVA || 0 },
       { chave: 'EXOTICA', rotulo: 'Exóticas', valor: porOrigem.EXOTICA || 0 }
     ], COLORS.origem);
@@ -274,21 +328,6 @@
       });
 
       map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'arvores',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': '{point_count_abbreviated}',
-          'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-          'text-size': 12
-        },
-        paint: {
-          'text-color': '#ffffff'
-        }
-      });
-
-      map.addLayer({
         id: 'unclustered',
         type: 'circle',
         source: 'arvores',
@@ -303,10 +342,58 @@
 
       refreshMap();
 
+      map.on('click', 'areas-fill', function (e) {
+        if (!e.features || !e.features.length) return;
+        var p = e.features[0].properties;
+        new maplibregl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML('<strong>' + p.nome + '</strong><br/>Tipo: ' + p.tipo + '<br/>Status: ' + (p.status || '—'))
+          .addTo(map);
+      });
+
+      map.on('click', 'areas-border', function (e) {
+        if (!e.features || !e.features.length) return;
+        var p = e.features[0].properties;
+        new maplibregl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML('<strong>' + p.nome + '</strong><br/>Tipo: ' + p.tipo + '<br/>Status: ' + (p.status || '—'))
+          .addTo(map);
+      });
+
+      map.on('click', 'unclustered', function (e) {
+        if (!e.features || !e.features.length) return;
+        var p = e.features[0].properties;
+        function abrir(arvore) {
+          if (window.abrirTelaArvore) abrirTelaArvore(arvore, p);
+          else if (window.montarPainelArvore) montarPainelArvore(arvore, p);
+        }
+        fetch('/api/arvores/' + p.id, { credentials: 'same-origin' })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(abrir)
+          .catch(function () { abrir(null); });
+      });
+
+      map.on('click', 'clusters', function (e) {
+        var features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+        if (!features || !features.length) return;
+        var clusterId = features[0].properties.cluster_id;
+        var source = map.getSource('arvores');
+        source.getClusterExpansionZoom(clusterId, function (err, zoom) {
+          if (err) return;
+          map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+        });
+      });
+
+      map.on('mouseenter', 'clusters', function () { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'clusters', function () { map.getCanvas().style.cursor = ''; });
+      map.on('mouseenter', 'unclustered', function () { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'unclustered', function () { map.getCanvas().style.cursor = ''; });
+      map.on('mouseenter', 'areas-fill', function () { map.getCanvas().style.cursor = 'pointer'; });
+      map.on('mouseleave', 'areas-fill', function () { map.getCanvas().style.cursor = ''; });
+
       document.getElementById('camadaArvores').addEventListener('change', function (e) {
         var vis = e.target.checked ? 'visible' : 'none';
         map.setLayoutProperty('clusters', 'visibility', vis);
-        map.setLayoutProperty('cluster-count', 'visibility', vis);
         map.setLayoutProperty('unclustered', 'visibility', vis);
       });
 
@@ -364,7 +451,7 @@
             nome: a.nome || 'Árvore #' + a.id,
             especie: a.especieNomePopular || 'Não informada',
             porte: a.porte,
-            status: a.status
+            fotoUrl: a.fotoUrl || ''
           }
         });
       }
@@ -373,11 +460,18 @@
   }
 
   function refreshMap() {
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map) return;
     var src = map.getSource('arvores');
-    if (src) src.setData(arvoreToFeatures(arvoresData));
     var srcA = map.getSource('areas');
-    if (srcA) srcA.setData(areaToFeatures(areasData));
+    if (!src || !srcA) return;
+    var arvoreFeatures = arvoreToFeatures(arvoresData);
+    var areaFeatures = areaToFeatures(areasData);
+    src.setData(arvoreFeatures);
+    srcA.setData(areaFeatures);
+    console.log('[MAP] Areas raw:', areasData.length, 'Arvores raw:', arvoresData.length);
+    console.log('[MAP] Area features:', areaFeatures.features.length, 'Arvore features:', arvoreFeatures.features.length);
+    if (areaFeatures.features.length > 0) console.log('[MAP] First area feature:', JSON.stringify(areaFeatures.features[0].geometry));
+    else if (areasData.length > 0) console.log('[MAP] First area data:', JSON.stringify(areasData[0]));
   }
 
   function renderRecentTrees() {
@@ -488,6 +582,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     carregarDados().then(function () {
       renderKPIs();
+      renderTasks();
       renderCharts();
       renderRecentTrees();
       renderActivityFeed();

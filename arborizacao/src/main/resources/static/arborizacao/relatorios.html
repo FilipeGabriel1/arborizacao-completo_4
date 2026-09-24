@@ -32,6 +32,7 @@
         <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
         <a href="./plantios.html" class="sidebar-link"><span class="icon">🌿</span><span>Plantios</span></a>
         <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
+        <a href="./doacoes.html" class="sidebar-link"><span class="icon">🎁</span><span>Doações</span></a>
 
         <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
         <a href="./relatorios.html" class="sidebar-link active"><span class="icon">📋</span><span>Relatórios</span></a>
@@ -128,18 +129,11 @@
     </section>
 
     <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
-
       <!-- Distribuição por Porte -->
       <section class="card">
         <header class="card-header"><h2>Distribuição por Porte</h2></header>
         <div class="card-content">
-          <div class="chart-container">
-            <div class="donut-wrap">
-              <svg viewBox="0 0 100 100" id="chartPorte"></svg>
-              <div class="donut-center"><span class="donut-valor" id="chartPorteTotal">0</span><span class="donut-label">Total</span></div>
-            </div>
-            <div id="chartPorteLegend" class="chart-legend"></div>
-          </div>
+          <div class="pie-chart" id="chartPorte"></div>
         </div>
       </section>
 
@@ -147,13 +141,7 @@
       <section class="card">
         <header class="card-header"><h2>Distribuição por Origem</h2></header>
         <div class="card-content">
-          <div class="chart-container">
-            <div class="donut-wrap">
-              <svg viewBox="0 0 100 100" id="chartOrigem"></svg>
-              <div class="donut-center"><span class="donut-valor" id="chartOrigemTotal">0</span><span class="donut-label">Total</span></div>
-            </div>
-            <div id="chartOrigemLegend" class="chart-legend"></div>
-          </div>
+          <div class="pie-chart" id="chartOrigem"></div>
         </div>
       </section>
 
@@ -161,13 +149,7 @@
       <section class="card">
         <header class="card-header"><h2>Condição Fitossanitária</h2></header>
         <div class="card-content">
-          <div class="chart-container">
-            <div class="donut-wrap">
-              <svg viewBox="0 0 100 100" id="chartCondicao"></svg>
-              <div class="donut-center"><span class="donut-valor" id="chartCondicaoTotal">0</span><span class="donut-label">Total</span></div>
-            </div>
-            <div id="chartCondicaoLegend" class="chart-legend"></div>
-          </div>
+          <div class="pie-chart" id="chartCondicao"></div>
         </div>
       </section>
 
@@ -175,13 +157,7 @@
       <section class="card">
         <header class="card-header"><h2>Status dos Plantios</h2></header>
         <div class="card-content">
-          <div class="chart-container">
-            <div class="donut-wrap">
-              <svg viewBox="0 0 100 100" id="chartPlantios"></svg>
-              <div class="donut-center"><span class="donut-valor" id="chartPlantiosTotal">0</span><span class="donut-label">Total</span></div>
-            </div>
-            <div id="chartPlantiosLegend" class="chart-legend"></div>
-          </div>
+          <div class="pie-chart" id="chartPlantios"></div>
         </div>
       </section>
 

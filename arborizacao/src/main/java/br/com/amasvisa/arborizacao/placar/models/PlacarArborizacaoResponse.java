@@ -8,6 +8,7 @@ public record PlacarArborizacaoResponse(
         long totalArvores,
         long totalDoadas,
         long totalDoacoes,
+        long totalMudasDoadas,
         long totalAreas,
         long totalEspecies,
         Map<String, Long> arvoresPorPorte,

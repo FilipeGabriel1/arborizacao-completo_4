@@ -391,7 +391,6 @@ areaForm.addEventListener('submit', async (event) => {
 
   if (!areaForm.reportValidity()) return;
 
-  const payload = buildPayload();
   const method = editingId ? 'PUT' : 'POST';
   const url = editingId ? `${apiBase}/${editingId}` : apiBase;
 
@@ -399,6 +398,7 @@ areaForm.addEventListener('submit', async (event) => {
   saveBtn.textContent = editingId ? 'Atualizando...' : 'Salvando...';
 
   try {
+    const payload = buildPayload();
     const response = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
@@ -615,6 +615,23 @@ function emptyFeatureCollection() {
   return { type: 'FeatureCollection', features: [] };
 }
 
+function calcularAreaPoligonoM2(vertices) {
+  const n = vertices.length;
+  if (n < 3) return 0;
+  const latMedia = vertices.reduce((soma, v) => soma + v[1], 0) / n;
+  const metrosPorGrauLat = 111320;
+  const metrosPorGrauLng = 111320 * Math.cos((latMedia * Math.PI) / 180);
+  let area = 0;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = vertices[i][0] * metrosPorGrauLng;
+    const yi = vertices[i][1] * metrosPorGrauLat;
+    const xj = vertices[j][0] * metrosPorGrauLng;
+    const yj = vertices[j][1] * metrosPorGrauLat;
+    area += xj * yi - xi * yj;
+  }
+  return Math.abs(area / 2);
+}
+
 function buildPayload() {
   const fotosValidas = getFotosValidas().map(obterUrlImagem);
   const base = {
@@ -631,6 +648,12 @@ function buildPayload() {
   };
 
   if (currentMode === 'polygon') {
+    if (polygonVertices.length < 3) {
+      throw new Error('O polígono precisa de pelo menos 3 vértices para ser salvo.');
+    }
+    if (base.areaTotalM2 == null) {
+      base.areaTotalM2 = Math.round(calcularAreaPoligonoM2(polygonVertices) * 100) / 100;
+    }
     return {
       ...base,
       latitude: null,

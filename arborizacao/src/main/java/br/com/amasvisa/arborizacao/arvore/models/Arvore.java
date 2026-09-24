@@ -122,10 +122,9 @@ public class Arvore {
     @Column(name = "sinais_apodrecimento", length = 500)
     private String sinaisApodrecimento;
 
-    // Conflitos com infraestrutura
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_conflito", length = 30)
-    private TipoConflito tipoConflito;
+    // Conflitos com infraestrutura (CSV: REDE_ELETRICA,CALCADA,...)
+    @Column(name = "tipo_conflito", length = 255)
+    private String tipoConflito;
 
     // Manejo
     @Enumerated(EnumType.STRING)
@@ -323,8 +322,8 @@ public class Arvore {
     public void setSinaisApodrecimento(String sinaisApodrecimento) { this.sinaisApodrecimento = sinaisApodrecimento; }
 
     // Conflitos
-    public TipoConflito getTipoConflito() { return tipoConflito; }
-    public void setTipoConflito(TipoConflito tipoConflito) { this.tipoConflito = tipoConflito; }
+    public String getTipoConflito() { return tipoConflito; }
+    public void setTipoConflito(String tipoConflito) { this.tipoConflito = tipoConflito; }
 
     // Manejo
     public TipoManejo getTipoManejo() { return tipoManejo; }

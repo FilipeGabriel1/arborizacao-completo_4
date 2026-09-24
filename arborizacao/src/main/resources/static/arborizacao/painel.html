@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./dashboard.css" />
 </head>
-<body>
+<body style="background:#080e0b;">
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
@@ -48,6 +48,10 @@
         <a href="./manejo.html" class="sidebar-link">
           <span class="icon">🔧</span>
           <span>Manejo / Ordens de Serviço</span>
+        </a>
+        <a href="./doacoes.html" class="sidebar-link">
+          <span class="icon">🎁</span>
+          <span>Doações</span>
         </a>
 
         <a href="./especies.html" class="sidebar-link">
@@ -138,12 +142,6 @@
         <span class="kpi-card-change positive" id="kpiEspeciesChange">+ 0 este mês</span>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card-icon orange">🔍</div>
-        <div class="kpi-card-value" id="kpiInspecao">0</div>
-        <div class="kpi-card-label">Árvores para inspeção</div>
-        <a href="#" class="kpi-card-link">Ver lista</a>
-      </div>
-      <div class="kpi-card">
         <div class="kpi-card-icon red">🔧</div>
         <div class="kpi-card-value" id="kpiManejo">0</div>
         <div class="kpi-card-label">Manejos pendentes</div>
@@ -165,13 +163,7 @@
           <h3>Árvores por porte</h3>
         </div>
         <div class="dashboard-card-body">
-          <div class="chart-container">
-            <div class="donut-wrap">
-              <div id="chartPorte"></div>
-              <div class="donut-center"><span class="donut-valor" id="chartPorteTotal">0</span><span class="donut-label">Total</span></div>
-            </div>
-            <div class="chart-legend" id="legendPorte"></div>
-          </div>
+          <div class="pie-chart" id="chartPorte"></div>
         </div>
       </div>
 
@@ -180,13 +172,7 @@
           <h3>Árvores por origem</h3>
         </div>
         <div class="dashboard-card-body">
-          <div class="chart-container">
-            <div class="donut-wrap">
-              <div id="chartOrigem"></div>
-              <div class="donut-center"><span class="donut-valor" id="chartOrigemTotal">0</span><span class="donut-label">Total</span></div>
-            </div>
-            <div class="chart-legend" id="legendOrigem"></div>
-          </div>
+          <div class="pie-chart" id="chartOrigem"></div>
         </div>
       </div>
 
@@ -194,13 +180,19 @@
       <div class="dashboard-card" style="grid-column: 1 / -1;">
         <div class="dashboard-card-header">
           <h3>Mapa da arborização</h3>
-          <div style="display:flex;gap:10px;align-items:center;">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);cursor:pointer;">
               <input type="checkbox" id="camadaArvores" checked /> Árvores
             </label>
             <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);cursor:pointer;">
               <input type="checkbox" id="camadaAreas" checked /> Áreas verdes
             </label>
+            <span style="width:1px;height:20px;background:var(--border);margin:0 4px;"></span>
+            <button onclick="exportarKml('arvores')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;">⬇ Árvores KML</button>
+            <button onclick="exportarKml('areas')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;">⬇ Áreas KML</button>
+            <button onclick="exportarKml('tudo')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;">⬇ Tudo KML</button>
+            <button onclick="document.getElementById('kmlFileInput').click()" style="font-size:0.75rem;padding:4px 10px;border:1px solid #49a970;border-radius:6px;background:#49a970;color:#fff;cursor:pointer;">⬆ Importar KML</button>
+            <input type="file" id="kmlFileInput" accept=".kml" style="display:none" onchange="previewKml(this)" />
           </div>
         </div>
         <div id="map" class="dashboard-map"></div>
@@ -250,38 +242,24 @@
           <div class="tasks-list" id="tasksList">
             <div class="task-item">
               <div class="task-item-left">
-                <span class="task-item-icon">📅</span>
-                <span class="task-item-label">Inspeções agendadas</span>
-              </div>
-              <span class="task-item-count">18</span>
-            </div>
-            <div class="task-item">
-              <div class="task-item-left">
                 <span class="task-item-icon">🔧</span>
                 <span class="task-item-label">Manejos pendentes</span>
               </div>
-              <span class="task-item-count">72</span>
+              <span class="task-item-count" id="taskManejos">0</span>
             </div>
             <div class="task-item">
               <div class="task-item-left">
                 <span class="task-item-icon">🔴</span>
                 <span class="task-item-label">Árvores críticas</span>
               </div>
-              <span class="task-item-count danger">25</span>
+              <span class="task-item-count danger" id="taskCriticas">0</span>
             </div>
             <div class="task-item">
               <div class="task-item-left">
                 <span class="task-item-icon">📋</span>
-                <span class="task-item-label">Inventário em andamento</span>
+                <span class="task-item-label">Áreas em andamento</span>
               </div>
-              <span class="task-item-count">6</span>
-            </div>
-            <div class="task-item">
-              <div class="task-item-left">
-                <span class="task-item-icon">⏰</span>
-                <span class="task-item-label">Atualizações atrasadas</span>
-              </div>
-              <span class="task-item-count danger">14</span>
+              <span class="task-item-count" id="taskInventario">0</span>
             </div>
           </div>
 
@@ -375,10 +353,29 @@
     </div>
   </main>
 
+  <!-- KML Import Modal -->
+  <div id="kmlModal" style="display:none;position:fixed;inset:0;z-index:1000;background:#000;align-items:center;justify-content:center;" onclick="if(event.target===this)fecharKmlModal()">
+    <div style="background:#0d1a13;border:1px solid var(--border);border-radius:12px;padding:24px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="margin:0;">Importar KML</h3>
+        <button onclick="fecharKmlModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);">&times;</button>
+      </div>
+      <div id="kmlPreview" style="margin-bottom:16px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select id="kmlAreaSelect" style="flex:1;min-width:200px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:#0a1510;color:var(--text);font-size:0.85rem;">
+          <option value="">Sem área (somente coordenadas)</option>
+        </select>
+        <button id="kmlImportBtn" onclick="importarKml()" disabled style="padding:8px 16px;border:none;border-radius:8px;background:#49a970;color:#fff;cursor:pointer;font-weight:600;">Importar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
   <script src="./csrf.js"></script>
   <script src="./auth.js"></script>
   <script src="./toasts.js"></script>
+  <script src="./kml.js?v=20260924-3"></script>
+  <script src="./painel-arvore.js?v=20260924-2"></script>
   <script src="./dashboard.js"></script>
 </body>
 </html>

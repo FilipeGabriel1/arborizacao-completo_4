@@ -15,7 +15,6 @@ public record DoacaoArvoreRequest(
         String cpf,
         String rg
 ) {
-    @AssertTrue(message = "CPF inválido")
     public boolean isCpfValido() {
         if (cpf == null || cpf.isBlank()) {
             return true;
