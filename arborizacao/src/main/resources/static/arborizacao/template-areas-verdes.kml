@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Template — Áreas Verdes</name>
+    <description>Modelo de KML para importar áreas verdes no sistema de Arborização.
+Cada Placemark representa uma área. Use &lt;Point&gt; para ponto único ou &lt;Polygon&gt; para polígono (mínimo 3 vértices).
+Os campos ExtendedData alimentam o cadastro. Campos ausentes usam os padrões do formulário de importação.</description>
+
+    <!-- Exemplo 1: PONTO ÚNICO com todos os campos -->
+    <Placemark>
+      <name>Praça Central (exemplo ponto)</name>
+      <description>Área de exemplo importada por KML (ponto).</description>
+      <ExtendedData>
+        <Data name="nome"><value>Praça Central</value></Data>
+        <Data name="descricao"><value>Praça com calçadão e Coreto</value></Data>
+        <Data name="fotoUrl"><value>https://example.com/praca.jpg</value></Data>
+        <Data name="tipo"><value>PRACA</value></Data>
+        <Data name="status"><value>ATIVA</value></Data>
+        <Data name="bairro"><value>Matriz</value></Data>
+        <Data name="logradouro"><value>Rua da Praça, 123</value></Data>
+        <Data name="areaTotalM2"><value>1500</value></Data>
+        <Data name="responsavelManutencao"><value>PREFEITURA</value></Data>
+        <Data name="situacaoInventario"><value>CONCLUIDO</value></Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>-40.844000,-8.110000,0</coordinates>
+      </Point>
+    </Placemark>
+
+    <!-- Exemplo 2: POLÍGONO com todos os campos -->
+    <Placemark>
+      <name>Parque do Lago (exemplo polígono)</name>
+      <description>Parque com perímetro em polígono fechado.</description>
+      <ExtendedData>
+        <Data name="nome"><value>Parque do Lago</value></Data>
+        <Data name="descricao"><value>Parque linear com lago artificial</value></Data>
+        <Data name="fotoUrl"><value></value></Data>
+        <Data name="tipo"><value>PARQUE</value></Data>
+        <Data name="status"><value>ATIVA</value></Data>
+        <Data name="bairro"><value>Nova Aurora</value></Data>
+        <Data name="logradouro"><value>Av. Beira-Mar, s/n</value></Data>
+        <Data name="areaTotalM2"><value>12000</value></Data>
+        <Data name="responsavelManutencao"><value>COMUNIDADE</value></Data>
+        <Data name="situacaoInventario"><value>EM_ANDAMENTO</value></Data>
+      </ExtendedData>
+      <Polygon>
+        <tessellate>1</tessellate>
+        <outerBoundaryIs>
+          <LinearRing>
+            <coordinates>
+              -40.845000,-8.111000,0
+              -40.843000,-8.111000,0
+              -40.843000,-8.109000,0
+              -40.845000,-8.109000,0
+              -40.845000,-8.111000,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>

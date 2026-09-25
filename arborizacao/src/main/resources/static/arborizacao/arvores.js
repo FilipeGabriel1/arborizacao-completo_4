@@ -165,21 +165,21 @@ if (gpsBtn) {
       showToast('Geolocalização não suportada pelo navegador.', 'erro');
       return;
     }
-    gpsBtn.textContent = '📍 Obtendo localização...';
+    gpsBtn.innerHTML = '<img class="ico" src="./img/icones/map-pin.png" alt=""> Obtendo localização...';
     gpsBtn.disabled = true;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         latitudeInput.value = pos.coords.latitude.toFixed(6);
         longitudeInput.value = pos.coords.longitude.toFixed(6);
         georreferenciadaInput.checked = true;
-        gpsBtn.textContent = '📍 Usar minha localização';
+        gpsBtn.innerHTML = '<img class="ico" src="./img/icones/map-pin.png" alt=""> Usar minha localização';
         gpsBtn.disabled = false;
         showToast('Localização obtida com sucesso!', 'sucesso');
       },
       (err) => {
         console.error(err);
         showToast('Não foi possível obter a localização: ' + err.message, 'erro');
-        gpsBtn.textContent = '📍 Usar minha localização';
+        gpsBtn.innerHTML = '<img class="ico" src="./img/icones/map-pin.png" alt=""> Usar minha localização';
         gpsBtn.disabled = false;
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -223,7 +223,10 @@ if (geoBtn) {
 
 let editingId = null;
 let doacoesCache = [];
+let areasCache = [];
 let arvores = [];
+let mapaInv = null;
+let popupMapaAtual = null;
 
 function normalizarTexto(texto) {
   return (texto || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -368,12 +371,15 @@ async function carregarSelects() {
   });
 
   doacoesCache = doacoes ?? [];
+  areasCache = areas ?? [];
+  atualizarMapa();
 }
 
 async function carregarArvores() {
   const itens = await buscarTudo(apiBase);
   if (itens === null) return;
   arvores = itens;
+  atualizarMapa();
 
   let importIds = obterFilaKml();
   if (!importIds.length && filaKmlIds.length) {
@@ -502,10 +508,10 @@ function renderizar(arvores) {
         ${emFila ? (completo ? '<span class="tree-card-tag" style="background:#1a3d2a;">✓ completa</span>' : '<span class="tree-card-tag" style="background:#4a3a1a;">… pendente</span>') : ''}
       </div>
       <div class="tree-card-info">
-        <span class="tree-card-tag" title="${especie}">🍃 ${especie}</span>
-        <span class="tree-card-tag" title="${area}">🏞️ ${area}</span>
+        <span class="tree-card-tag" title="${especie}"><img class="ico" src="./img/icones/leaf.png" alt=""> ${especie}</span>
+        <span class="tree-card-tag" title="${area}"><img class="ico" src="./img/icones/map-2.png" alt=""> ${area}</span>
         <span class="tree-card-tag">${arvore.tipoArvore || ''} • ${arvore.porte || ''}${cap}</span>
-        ${temFoto ? '<span class="tree-card-tag">📷 fotos</span>' : '<span class="tree-card-tag">📷 sem foto</span>'}
+        ${temFoto ? '<span class="tree-card-tag"><img class="ico" src="./img/icones/camera.png" alt=""> fotos</span>' : '<span class="tree-card-tag"><img class="ico" src="./img/icones/camera.png" alt=""> sem foto</span>'}
       </div>
       <div class="tree-card-actions">
         <button type="button" data-action="editar" class="tree-card-btn">${emFila && !completo ? 'Preencher' : 'Editar'}</button>
@@ -515,6 +521,7 @@ function renderizar(arvores) {
     item.querySelector('[data-action="editar"]').addEventListener('click', () => {
       iniciarEdicao(arvore);
       if (emFila) exibirBotaoProxima(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     item.querySelector('[data-action="remover"]').addEventListener('click', () => remover(arvore));
     arvoresList.appendChild(item);
@@ -811,4 +818,210 @@ document.addEventListener('change', (e) => {
   if (!algum.length && sem) sem.checked = true;
 });
 
-carregarSelects().then(carregarArvores).then(abrirPorQueryParam);
+function emptyFCInv() {
+  return { type: 'FeatureCollection', features: [] };
+}
+
+function areasParaFeatures(areas) {
+  const features = [];
+  (areas || []).forEach((area) => {
+    if (area.pontos && area.pontos.length > 0) {
+      if (area.pontos.length === 1) {
+        features.push({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [area.pontos[0].longitude, area.pontos[0].latitude] },
+          properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+        });
+      } else {
+        const coords = area.pontos.map((p) => [p.longitude, p.latitude]);
+        if (coords.length > 2) coords.push(coords[0]);
+        features.push({
+          type: 'Feature',
+          geometry: { type: 'Polygon', coordinates: [coords] },
+          properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+        });
+      }
+    } else if (area.latitude && area.longitude) {
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [area.longitude, area.latitude] },
+        properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+      });
+    }
+  });
+  return { type: 'FeatureCollection', features };
+}
+
+function arvoresParaFeatures(lista) {
+  const features = [];
+  (lista || []).forEach((a) => {
+    if (a.latitude && a.longitude) {
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [a.longitude, a.latitude] },
+        properties: {
+          id: a.id,
+          nome: a.nome || 'Árvore #' + a.id,
+          especie: a.especieNomePopular || 'Não informada',
+          porte: a.porte || ''
+        }
+      });
+    }
+  });
+  return { type: 'FeatureCollection', features };
+}
+
+function atualizarMapa() {
+  if (!mapaInv) return;
+  const srcArv = mapaInv.getSource('arvores');
+  const srcArea = mapaInv.getSource('areas');
+  if (!srcArv || !srcArea) return;
+  srcArv.setData(arvoresParaFeatures(arvores));
+  srcArea.setData(areasParaFeatures(areasCache));
+}
+
+function fecharPopupMapa() {
+  if (!popupMapaAtual) return;
+  try { popupMapaAtual.remove(); } catch (e) {}
+  popupMapaAtual = null;
+}
+
+function editarDoMapa(id) {
+  fecharPopupMapa();
+  fetch(`${apiBase}/${id}`)
+    .then((r) => (r.ok ? r.json() : null))
+    .then((a) => {
+      if (!a) return;
+      iniciarEdicao(a);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch(() => {});
+}
+
+function initMapaInventario() {
+  if (typeof maplibregl === 'undefined' || mapaInv) return;
+  const el = document.getElementById('mapInv');
+  if (!el) return;
+
+  mapaInv = new maplibregl.Map({
+    container: 'mapInv',
+    style: {
+      version: 8,
+      sources: {
+        osm: {
+          type: 'raster',
+          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tileSize: 256,
+          attribution: '&copy; OpenStreetMap contributors'
+        }
+      },
+      layers: [{ id: 'osm', type: 'raster', source: 'osm' }]
+    },
+    center: [-35.291, -8.119],
+    zoom: 13
+  });
+
+  mapaInv.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+  mapaInv.on('load', () => {
+    mapaInv.addSource('arvores', {
+      type: 'geojson',
+      data: emptyFCInv(),
+      cluster: true,
+      clusterMaxZoom: 16,
+      clusterRadius: 50
+    });
+    mapaInv.addSource('areas', { type: 'geojson', data: emptyFCInv() });
+
+    mapaInv.addLayer({
+      id: 'inv-areas-fill',
+      type: 'fill',
+      source: 'areas',
+      paint: { 'fill-color': 'rgba(69, 176, 109, 0.2)', 'fill-outline-color': 'rgba(69, 176, 109, 0.6)' }
+    });
+    mapaInv.addLayer({
+      id: 'inv-areas-border',
+      type: 'line',
+      source: 'areas',
+      paint: { 'line-color': 'rgba(69, 176, 109, 0.6)', 'line-width': 2 }
+    });
+    mapaInv.addLayer({
+      id: 'inv-clusters',
+      type: 'circle',
+      source: 'arvores',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': [
+          'step', ['get', 'point_count'],
+          'rgba(69, 176, 109, 0.6)', 10, 'rgba(69, 176, 109, 0.7)',
+          30, 'rgba(47, 158, 91, 0.8)', 60, 'rgba(26, 122, 62, 0.9)'
+        ],
+        'circle-radius': ['step', ['get', 'point_count'], 16, 10, 22, 30, 28, 60, 34],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#fff'
+      }
+    });
+    mapaInv.addLayer({
+      id: 'inv-unclustered',
+      type: 'circle',
+      source: 'arvores',
+      filter: ['!', ['has', 'point_count']],
+      paint: { 'circle-color': '#49a970', 'circle-radius': 7, 'circle-stroke-width': 2, 'circle-stroke-color': '#fff' }
+    });
+
+    atualizarMapa();
+
+    mapaInv.on('click', 'inv-areas-fill', (e) => {
+      if (!e.features || !e.features.length) return;
+      const p = e.features[0].properties;
+      fecharPopupMapa();
+      popupMapaAtual = new maplibregl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML('<strong>' + p.nome + '</strong><br/>Tipo: ' + (p.tipo || '—') + '<br/>Status: ' + (p.status || '—'))
+        .addTo(mapaInv);
+    });
+
+    mapaInv.on('click', 'inv-unclustered', (e) => {
+      if (!e.features || !e.features.length) return;
+      const p = e.features[0].properties;
+      fecharPopupMapa();
+      popupMapaAtual = new maplibregl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(
+          '<strong>' + p.nome + '</strong><br/>' + p.especie +
+          (p.porte ? '<br/>Porte: ' + p.porte : '') +
+          '<br/><button onclick="editarDoMapa(' + p.id + ')" style="margin-top:8px;padding:5px 12px;border:none;border-radius:6px;background:#49a970;color:#fff;cursor:pointer;font-weight:600;">Editar</button>'
+        )
+        .addTo(mapaInv);
+    });
+
+    mapaInv.on('click', 'inv-clusters', (e) => {
+      const features = mapaInv.queryRenderedFeatures(e.point, { layers: ['inv-clusters'] });
+      if (!features || !features.length) return;
+      const clusterId = features[0].properties.cluster_id;
+      mapaInv.getSource('arvores').getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) return;
+        mapaInv.easeTo({ center: features[0].geometry.coordinates, zoom });
+      });
+    });
+
+    ['inv-clusters', 'inv-unclustered', 'inv-areas-fill'].forEach((layer) => {
+      mapaInv.on('mouseenter', layer, () => { mapaInv.getCanvas().style.cursor = 'pointer'; });
+      mapaInv.on('mouseleave', layer, () => { mapaInv.getCanvas().style.cursor = ''; });
+    });
+
+    document.getElementById('mapaCbArvores')?.addEventListener('change', (e) => {
+      const vis = e.target.checked ? 'visible' : 'none';
+      mapaInv.setLayoutProperty('inv-clusters', 'visibility', vis);
+      mapaInv.setLayoutProperty('inv-unclustered', 'visibility', vis);
+    });
+
+    document.getElementById('mapaCbAreas')?.addEventListener('change', (e) => {
+      const vis = e.target.checked ? 'visible' : 'none';
+      mapaInv.setLayoutProperty('inv-areas-fill', 'visibility', vis);
+      mapaInv.setLayoutProperty('inv-areas-border', 'visibility', vis);
+    });
+  });
+}
+
+carregarSelects().then(carregarArvores).then(abrirPorQueryParam).then(initMapaInventario);

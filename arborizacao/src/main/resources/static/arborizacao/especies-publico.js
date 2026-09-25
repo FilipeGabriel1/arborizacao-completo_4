@@ -2,6 +2,7 @@ const apiBase = '/api/especies';
 
 const buscaForm = document.getElementById('buscaForm');
 const buscaTermoInput = document.getElementById('buscaTermo');
+const buscaResultado = document.getElementById('buscaResultado');
 const especiesList = document.getElementById('especiesList');
 const especiesVazio = document.getElementById('especiesVazio');
 const totalEspeciesEl = document.getElementById('totalEspecies');
@@ -190,6 +191,42 @@ function filtrarLista() {
   });
 }
 
+function renderizarResultadosBusca() {
+  const termo = buscaTermoInput.value.trim();
+  if (!termo) {
+    buscaResultado.innerHTML = '';
+    return;
+  }
+
+  const encontradas = filtrarLista();
+  if (!encontradas.length) {
+    buscaResultado.innerHTML = '<p class="area-description">Nenhuma espécie encontrada.</p>';
+    return;
+  }
+
+  buscaResultado.innerHTML = '';
+  encontradas.forEach((especie) => {
+    const link = document.createElement('a');
+    link.href = './especie-det.html?id=' + especie.id;
+    link.className = 'area-item';
+    link.style.textDecoration = 'none';
+    link.style.color = 'inherit';
+    link.style.display = 'block';
+    const fotoHtml = especie.fotoUrl
+      ? `<div class="area-foto"><img src="${obterUrlImagem(especie.fotoUrl)}" alt="${especie.nomePopular || 'Foto da espécie'}" onerror="this.remove();" loading="lazy" /></div>`
+      : '';
+    link.innerHTML = `
+      ${fotoHtml}
+      <header>
+        <h3>${especie.nomePopular}</h3>
+        <span class="pill">${rotulosPorte[especie.portePadrao] || especie.portePadrao || ''}</span>
+      </header>
+      <p class="area-description"><em>${especie.nomeCientifico || 'Nome científico não informado'}</em>${especie.familia ? ' • Família: ' + especie.familia : ''}</p>
+    `;
+    buscaResultado.appendChild(link);
+  });
+}
+
 function renderizarFiltrosPorte() {
   const container = document.getElementById('filtrosPorte');
   const ordem = ['PEQUENO', 'MEDIO', 'GRANDE'];
@@ -212,6 +249,7 @@ function renderizarFiltrosPorte() {
       renderizar(lista);
       manterSelecao(lista);
       renderizarFiltrosPorte();
+      renderizarResultadosBusca();
     });
     container.appendChild(chip);
   };
@@ -253,12 +291,14 @@ buscaForm.addEventListener('submit', (event) => {
   const encontradas = filtrarLista();
   renderizar(encontradas);
   manterSelecao(encontradas);
+  renderizarResultadosBusca();
 });
 
 buscaTermoInput.addEventListener('input', () => {
   const encontradas = filtrarLista();
   renderizar(encontradas);
   manterSelecao(encontradas);
+  renderizarResultadosBusca();
 });
 
 carregar();

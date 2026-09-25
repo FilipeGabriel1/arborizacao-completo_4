@@ -276,13 +276,21 @@ border-bottom: 1px solid rgba(74, 222, 128, 0.15);
       .navbar-btn { padding: 8px 14px; font-size: 0.78rem; }
       .page-content { padding: 100px 16px 40px; }
     }
+
+    img.ico {
+      height: 1em;
+      width: 1em;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: -0.15em;
+    }
   </style>
 </head>
 <body>
 
   <nav class="navbar">
     <div class="navbar-left">
-      <button class="navbar-hamburger" onclick="document.getElementById('navbarDropdown').classList.toggle('open')" aria-label="Menu">☰</button>
+      <button class="navbar-hamburger" onclick="document.getElementById('navbarDropdown').classList.toggle('open')" aria-label="Menu"><img class="ico" src="./img/icones/menu-2.png" alt=""></button>
       <a href="./entrar.html" class="navbar-brand">
         <span class="navbar-brand-img">
           <img src="./img/logo-prefeitura.png" alt="Logo AMASVISA" />
@@ -400,7 +408,7 @@ border-bottom: 1px solid rgba(74, 222, 128, 0.15);
           <div class="timeline-item ${item.tipo}">
             <div class="timeline-header">
               <span class="timeline-tipo ${item.tipo === 'plantio' ? 'tipo-plantio' : 'tipo-doacao'}">
-                ${item.tipo === 'plantio' ? '🌱 Plantio' : '🎁 Doação'}
+                ${item.tipo === 'plantio' ? '<img class="ico" src="./img/icones/seedling.png" alt=""> Plantio' : '<img class="ico" src="./img/icones/gift.png" alt=""> Doação'}
               </span>
               <span class="timeline-data">${formatarData(item.data)}</span>
             </div>

@@ -16,7 +16,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-icon"><img class="ico ico-brand" src="./img/icones/tree.png" alt=""></div>
       <div class="sidebar-brand-text">
         <strong>ARBORIZAÇÃO</strong>
         <small>Área Técnica</small>
@@ -26,40 +26,40 @@
     <nav class="sidebar-nav">
       <div class="sidebar-section">
         <a href="./painel.html" class="sidebar-link active">
-          <span class="icon">📊</span>
+          <span class="icon"><img class="ico" src="./img/icones/chart-bar.png" alt=""></span>
           <span>Painel</span>
         </a>
         <a href="./arvores.html" class="sidebar-link">
-          <span class="icon">🌲</span>
+          <span class="icon"><img class="ico" src="./img/icones/tree.png" alt=""></span>
           <span>Inventário Arbóreo</span>
         </a>
         <a href="./cadastro-areas.html" class="sidebar-link">
-          <span class="icon">🏞️</span>
+          <span class="icon"><img class="ico" src="./img/icones/map-2.png" alt=""></span>
           <span>Áreas Verdes</span>
         </a>
         <a href="./sementeira.html" class="sidebar-link">
-          <span class="icon">🌱</span>
+          <span class="icon"><img class="ico" src="./img/icones/seedling.png" alt=""></span>
           <span>Sementeira Municipal</span>
         </a>
         <a href="./plantios.html" class="sidebar-link">
-          <span class="icon">🌿</span>
+          <span class="icon"><img class="ico" src="./img/icones/plant.png" alt=""></span>
           <span>Plantios</span>
         </a>
         <a href="./manejo.html" class="sidebar-link">
-          <span class="icon">🔧</span>
+          <span class="icon"><img class="ico" src="./img/icones/tool.png" alt=""></span>
           <span>Manejo / Ordens de Serviço</span>
         </a>
         <a href="./doacoes.html" class="sidebar-link">
-          <span class="icon">🎁</span>
+          <span class="icon"><img class="ico" src="./img/icones/gift.png" alt=""></span>
           <span>Doações</span>
         </a>
 
         <a href="./especies.html" class="sidebar-link">
-          <span class="icon">🍃</span>
+          <span class="icon"><img class="ico" src="./img/icones/leaf.png" alt=""></span>
           <span>Espécies</span>
         </a>
         <a href="./relatorios.html" class="sidebar-link">
-          <span class="icon">📋</span>
+          <span class="icon"><img class="ico" src="./img/icones/clipboard-list.png" alt=""></span>
           <span>Relatórios</span>
         </a>
       </div>
@@ -67,11 +67,11 @@
       <div class="sidebar-section">
         <div class="sidebar-section-label">Administração</div>
         <a href="./usuarios.html" class="sidebar-link" data-admin hidden>
-          <span class="icon">👥</span>
+          <span class="icon"><img class="ico" src="./img/icones/users.png" alt=""></span>
           <span>Usuários</span>
         </a>
         <a href="./historico.html" class="sidebar-link" data-admin hidden>
-          <span class="icon">📜</span>
+          <span class="icon"><img class="ico" src="./img/icones/history.png" alt=""></span>
           <span>Histórico de Alterações</span>
         </a>
       </div>
@@ -94,18 +94,18 @@
   <main class="main-content">
     <!-- TOP BAR -->
     <header class="topbar">
-      <button class="hamburger-btn" aria-label="Menu">☰</button>
+      <button class="hamburger-btn" aria-label="Menu"><img class="ico" src="./img/icones/menu-2.png" alt=""></button>
       <div class="topbar-greeting">
         <h1>Olá, <span id="userName">Técnico(a)</span>!</h1>
         <p>Bem-vindo(a) à área técnica da Arborização Urbana.</p>
       </div>
       <div class="topbar-search">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><img class="ico" src="./img/icones/search.png" alt=""></span>
         <input type="text" id="globalSearch" placeholder="Buscar árvore, área, espécie..." />
       </div>
       <div class="topbar-actions">
         <button class="topbar-notif" type="button">
-          🔔
+          <img class="ico" src="./img/icones/bell.png" alt="">
           <span class="notif-badge" id="notifCount">8</span>
         </button>
         <div class="topbar-user">
@@ -124,31 +124,31 @@
     <!-- KPI CARDS -->
     <section class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-card-icon green">🌲</div>
+        <div class="kpi-card-icon green"><img class="ico" src="./img/icones/tree.png" alt=""></div>
         <div class="kpi-card-value" id="kpiIndividuos">0</div>
         <div class="kpi-card-label">Árvores inventariadas</div>
         <span class="kpi-card-change positive" id="kpiIndividuosChange">↑ 0 este mês</span>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card-icon blue">🏞️</div>
+        <div class="kpi-card-icon blue"><img class="ico" src="./img/icones/map-2.png" alt=""></div>
         <div class="kpi-card-value" id="kpiAreas">0</div>
         <div class="kpi-card-label">Áreas verdes arborizadas</div>
         <span class="kpi-card-change positive" id="kpiAreasChange">+ 0 este mês</span>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card-icon teal">🍃</div>
+        <div class="kpi-card-icon teal"><img class="ico" src="./img/icones/leaf.png" alt=""></div>
         <div class="kpi-card-value" id="kpiEspecies">0</div>
         <div class="kpi-card-label">Espécies identificadas</div>
         <span class="kpi-card-change positive" id="kpiEspeciesChange">+ 0 este mês</span>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card-icon red">🔧</div>
+        <div class="kpi-card-icon red"><img class="ico" src="./img/icones/tool.png" alt=""></div>
         <div class="kpi-card-value" id="kpiManejo">0</div>
         <div class="kpi-card-label">Manejos pendentes</div>
-        <a href="#" class="kpi-card-link">Ver ordens</a>
+        <a href="./manejo.html" class="kpi-card-link">Ver ordens</a>
       </div>
       <div class="kpi-card">
-        <div class="kpi-card-icon gold">🌱</div>
+        <div class="kpi-card-icon gold"><img class="ico" src="./img/icones/seedling.png" alt=""></div>
         <div class="kpi-card-value" id="kpiMudas">0</div>
         <div class="kpi-card-label">Mudas disponíveis</div>
         <a href="./sementeira.html" class="kpi-card-link">Ver estoque</a>
@@ -176,6 +176,16 @@
         </div>
       </div>
 
+      <div class="dashboard-card">
+        <div class="dashboard-card-header">
+          <h3>Espécies mais presentes</h3>
+          <a href="./especies.html" class="see-all">Ver espécies</a>
+        </div>
+        <div class="dashboard-card-body">
+          <div class="top-especies" id="topEspecies"></div>
+        </div>
+      </div>
+
       <!-- MAP -->
       <div class="dashboard-card" style="grid-column: 1 / -1;">
         <div class="dashboard-card-header">
@@ -188,10 +198,10 @@
               <input type="checkbox" id="camadaAreas" checked /> Áreas verdes
             </label>
             <span style="width:1px;height:20px;background:var(--border);margin:0 4px;"></span>
-            <button onclick="exportarKml('arvores')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;">⬇ Árvores KML</button>
-            <button onclick="exportarKml('areas')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;">⬇ Áreas KML</button>
-            <button onclick="exportarKml('tudo')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;">⬇ Tudo KML</button>
-            <button onclick="document.getElementById('kmlFileInput').click()" style="font-size:0.75rem;padding:4px 10px;border:1px solid #49a970;border-radius:6px;background:#49a970;color:#fff;cursor:pointer;">⬆ Importar KML</button>
+            <button onclick="exportarKml('arvores')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;"><img class="ico" src="./img/icones/download.png" alt=""> Árvores KML</button>
+            <button onclick="exportarKml('areas')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;"><img class="ico" src="./img/icones/download.png" alt=""> Áreas KML</button>
+            <button onclick="exportarKml('tudo')" style="font-size:0.75rem;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);cursor:pointer;"><img class="ico" src="./img/icones/download.png" alt=""> Tudo KML</button>
+            <button onclick="document.getElementById('kmlFileInput').click()" style="font-size:0.75rem;padding:4px 10px;border:1px solid #49a970;border-radius:6px;background:#49a970;color:#fff;cursor:pointer;"><img class="ico" src="./img/icones/upload.png" alt=""> Importar KML</button>
             <input type="file" id="kmlFileInput" accept=".kml" style="display:none" onchange="previewKml(this)" />
           </div>
         </div>
@@ -242,21 +252,21 @@
           <div class="tasks-list" id="tasksList">
             <div class="task-item">
               <div class="task-item-left">
-                <span class="task-item-icon">🔧</span>
+                <span class="task-item-icon"><img class="ico" src="./img/icones/tool.png" alt=""></span>
                 <span class="task-item-label">Manejos pendentes</span>
               </div>
               <span class="task-item-count" id="taskManejos">0</span>
             </div>
             <div class="task-item">
               <div class="task-item-left">
-                <span class="task-item-icon">🔴</span>
+                <span class="task-item-icon"><img class="ico" src="./img/icones/circle-fill.png" alt=""></span>
                 <span class="task-item-label">Árvores críticas</span>
               </div>
               <span class="task-item-count danger" id="taskCriticas">0</span>
             </div>
             <div class="task-item">
               <div class="task-item-left">
-                <span class="task-item-icon">📋</span>
+                <span class="task-item-icon"><img class="ico" src="./img/icones/clipboard-list.png" alt=""></span>
                 <span class="task-item-label">Áreas em andamento</span>
               </div>
               <span class="task-item-count" id="taskInventario">0</span>
@@ -283,7 +293,7 @@
                 Registrar doação de mudas
               </a>
               <a href="./relatorios.html" class="quick-action-btn">
-                <span class="plus">📄</span>
+                <span class="plus"><img class="ico" src="./img/icones/file-text.png" alt=""></span>
                 Gerar relatório
               </a>
             </div>

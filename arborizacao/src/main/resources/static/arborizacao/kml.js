@@ -35,8 +35,11 @@
       return r.json();
     })
     .then(function (data) {
-      kmlPlacemarks = data;
-      renderKmlPreview(data);
+      var lista = Array.isArray(data)
+        ? data.filter(function (pm) { return pm.geometria !== 'POLYGON'; })
+        : [];
+      kmlPlacemarks = lista;
+      renderKmlPreview(lista);
       document.getElementById('kmlModal').style.display = 'flex';
       loadAreaOptions();
       loadEspecieOptions();

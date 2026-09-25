@@ -826,6 +826,12 @@ button:hover {
   margin: 14px 0;
 }
 
+#buscaResultado {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
 .busca-form input {
   flex: 1;
   min-width: 120px;
@@ -1812,12 +1818,24 @@ button:hover {
   grid-template-columns: 380px minmax(0, 1fr);
 }
 
+.doacoes-col-direita {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-width: 0;
+}
+
 .extrato-painel {
-  grid-column: 1 / -1;
+  min-width: 0;
 }
 
 .extrato-painel .extrato-tabela {
   font-size: 0.95rem;
+}
+
+.extrato-tabela .item-actions button {
+  min-width: 82px;
+  text-align: center;
 }
 
 .extrato-resumo {
@@ -3536,4 +3554,26 @@ button:hover {
   font-size: 0.7rem;
   font-weight: 600;
   vertical-align: middle;
+}
+
+/* Ícones Tabler (PNG) */
+img.ico {
+  height: 1em;
+  width: 1em;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: -0.15em;
+}
+
+img.ico.ico-brand {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+#arvoresList {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#arvoresList .tree-card {
+  min-width: 0;
 }

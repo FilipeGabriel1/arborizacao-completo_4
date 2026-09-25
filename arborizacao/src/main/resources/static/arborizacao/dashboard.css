@@ -305,7 +305,7 @@
 /* ===== KPI CARDS ===== */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin: 24px 0;
 }
@@ -569,6 +569,121 @@
   height: 12px;
   border-radius: 3px;
   flex-shrink: 0;
+}
+
+/* Donut com detalhamento lateral */
+.donut-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+}
+
+.donut-breakdown {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.donut-break-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.donut-break-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.donut-break-nome {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donut-break-valor {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.donut-break-bar {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.donut-break-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* Top espécies */
+.top-especies {
+  display: grid;
+  gap: 14px;
+}
+
+.top-especie-item {
+  display: grid;
+  gap: 5px;
+}
+
+.top-especie-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.top-especie-nome {
+  color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-especie-valor {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.top-especie-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.top-especie-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #49a970, #6bcf8f);
+}
+
+.top-especies .empty-mini {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .donut-row { flex-direction: column; }
 }
 
 .chart-legend-dot {

@@ -23,7 +23,7 @@
           <small>Meio Ambiente • Arborização Urbana • AMASVISA</small>
         </div>
       </div>
-      <button class="pub-hamburger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menu">☰</button>
+      <button class="pub-hamburger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menu"><img class="ico" src="./img/icones/menu-2.png" alt=""></button>
       <nav class="user-bar">
         <span>Consulta pública</span>
         <a href="./especies-publico.html" class="ghost-button">Espécies</a>
@@ -53,7 +53,7 @@
 
 <div class="numeros-section">
       <div class="numeros-header">
-        <span class="numeros-icon">🌿</span>
+        <span class="numeros-icon"><img class="ico" src="./img/icones/plant.png" alt=""></span>
         <h2>ARBORIZAÇÃO EM NÚMEROS</h2>
         <p>Dados atualizados em tempo real</p>
       </div>
@@ -146,7 +146,7 @@
       </div>
     </div>
 
-    <section class="explore-mapa-section">
+    <section class="explore-mapa-section" id="mapa">
       <div class="explore-mapa-texto">
         <h2>EXPLORE O MAPA<br>DA ARBORIZAÇÃO</h2>
         <p>Consulte no mapa as áreas verdes e as árvores cadastradas por espécie, porte e origem.</p>
@@ -211,7 +211,7 @@
     <section class="conheca-section" id="areas">
       <div class="conheca-header">
         <div class="conheca-titulo">
-          <span class="conheca-icon">🌿</span>
+          <span class="conheca-icon"><img class="ico" src="./img/icones/plant.png" alt=""></span>
           <h2>CONHEÇA NOSSAS ÁREAS VERDES E ARBORIZADAS</h2>
         </div>
         <a href="./areas-publico.html" class="conheca-link">Ver todas as áreas →</a>
@@ -231,7 +231,7 @@
     <section class="conheca-section">
       <div class="conheca-header">
         <div class="conheca-titulo">
-          <span class="conheca-icon">🌳</span>
+          <span class="conheca-icon"><img class="ico" src="./img/icones/tree.png" alt=""></span>
           <h2>CONHEÇA AS ESPÉCIES DA NOSSA CIDADE</h2>
         </div>
         <a href="./especies-publico.html" class="conheca-link">Ver todas as espécies →</a>
@@ -251,7 +251,7 @@
     <section class="conheca-section" id="sementeira">
       <div class="conheca-header">
         <div class="conheca-titulo">
-          <span class="conheca-icon">🌱</span>
+          <span class="conheca-icon"><img class="ico" src="./img/icones/seedling.png" alt=""></span>
           <h2>SEMENTEIRA MUNICIPAL</h2>
         </div>
       </div>
@@ -433,6 +433,31 @@
       var modal = document.getElementById('relatorioModal');
       if (modal) modal.classList.add('hidden');
     };
+
+    // #mapa: centraliza a seção do mapa na viewport (em vez de colar no topo)
+    (function () {
+      if (location.hash !== '#mapa') return;
+      var inicio = Date.now();
+      function centralizar(suave) {
+        var secao = document.getElementById('mapa');
+        if (secao) secao.scrollIntoView({ block: 'center', behavior: suave ? 'smooth' : 'auto' });
+      }
+      centralizar(true);
+      document.addEventListener('DOMContentLoaded', function () { centralizar(true); });
+      window.addEventListener('load', function () {
+        setTimeout(function () { centralizar(false); }, 300);
+      });
+      // corrige o centro quando o layout acima muda após dados/carregamento tardio
+      if (window.ResizeObserver) {
+        var t = null;
+        new ResizeObserver(function () {
+          if (Date.now() - inicio > 8000) return;
+          clearTimeout(t);
+          t = setTimeout(function () { centralizar(false); }, 200);
+        }).observe(document.body);
+      }
+      window.addEventListener('hashchange', function () { centralizar(true); });
+    })();
   </script>
 
   <!-- VLibras - Acessibilidade para surdos/mudos -->

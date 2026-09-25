@@ -3,10 +3,14 @@ package br.com.amasvisa.arborizacao.kml;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,6 +27,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import br.com.amasvisa.arborizacao.area.models.AreaArborizada;
+import br.com.amasvisa.arborizacao.area.models.AreaStatus;
+import br.com.amasvisa.arborizacao.area.models.SituacaoInventario;
+import br.com.amasvisa.arborizacao.area.models.TipoArea;
 import br.com.amasvisa.arborizacao.area.repository.AreaArborizadaRepository;
 import br.com.amasvisa.arborizacao.area.service.PoligonoUtils;
 import br.com.amasvisa.arborizacao.arvore.models.Arvore;
@@ -306,10 +313,15 @@ public class KmlService {
                 String desc = getTagText(pm, "description");
                 if (desc == null) desc = getTagTextNS(pm, "description");
                 placemark.setDescricao(desc);
+                extrairExtendedData(pm, placemark);
+                if (desc != null) {
+                    extrairCamposDaDescricao(desc, placemark);
+                }
 
                 Element pointEl = getFirstChildElement(pm, "Point");
                 if (pointEl == null) pointEl = getFirstChildElementNS(pm, "Point");
 
+                boolean temGeometria = false;
                 if (pointEl != null) {
                     String coords = getTagText(pointEl, "coordinates");
                     if (coords == null) coords = getTagTextNS(pointEl, "coordinates");
@@ -319,11 +331,26 @@ public class KmlService {
                         if (parts.length >= 2) {
                             placemark.setLongitude(Double.parseDouble(parts[0]));
                             placemark.setLatitude(Double.parseDouble(parts[1]));
+                            placemark.setGeometria("POINT");
+                            temGeometria = true;
+                        }
+                    }
+                } else {
+                    Element polygonEl = getFirstChildElement(pm, "Polygon");
+                    if (polygonEl == null) polygonEl = getFirstChildElementNS(pm, "Polygon");
+                    if (polygonEl != null) {
+                        List<double[]> anel = extrairAanelPoligono(polygonEl);
+                        if (anel.size() >= 3) {
+                            placemark.setGeometria("POLYGON");
+                            placemark.setPontos(anel);
+                            placemark.setLatitude(media(anel, 0));
+                            placemark.setLongitude(media(anel, 1));
+                            temGeometria = true;
                         }
                     }
                 }
 
-                if (placemark.getLatitude() != null && placemark.getLongitude() != null) {
+                if (temGeometria) {
                     placemarks.add(placemark);
                 }
             }
@@ -372,6 +399,12 @@ public class KmlService {
 
         List<Arvore> criadas = new ArrayList<>();
         for (KmlPlacemark pm : placemarks) {
+            if ("POLYGON".equalsIgnoreCase(pm.getGeometria())) {
+                continue;
+            }
+            if (pm.getLatitude() == null || pm.getLongitude() == null) {
+                continue;
+            }
             Arvore arvore = new Arvore();
             arvore.setNome(pm.getNome());
             arvore.setLatitude(pm.getLatitude());
@@ -437,6 +470,209 @@ public class KmlService {
         }
 
         return criadas;
+    }
+
+    public List<AreaArborizada> importarAreas(String kmlContent, String defaultsJson, String indicesCsv) {
+        List<KmlPlacemark> placemarks = parsearKml(kmlContent);
+        placemarks = filtrarPorIndices(placemarks, indicesCsv);
+        JsonNode d = parseDefaults(defaultsJson);
+
+        List<AreaArborizada> criadas = new ArrayList<>();
+        for (KmlPlacemark pm : placemarks) {
+            boolean poligono = "POLYGON".equalsIgnoreCase(pm.getGeometria())
+                    && pm.getPontos() != null && pm.getPontos().size() >= 3;
+            boolean ponto = !poligono && pm.getLatitude() != null && pm.getLongitude() != null;
+            if (!poligono && !ponto) {
+                continue;
+            }
+
+            AreaArborizada area = new AreaArborizada();
+            String nome = campoArea(pm, d, "nome");
+            area.setNome(nome != null && !nome.isBlank() ? nome.trim() : pm.getNome());
+            area.setDescricao(nullIfBlank(campoArea(pm, d, "descricao")));
+            area.setFotoUrl(nullIfBlank(campoArea(pm, d, "fotoUrl")));
+            area.setTipo(enumOrDefault(campoArea(pm, d, "tipo"), TipoArea.class, TipoArea.OUTRA));
+            area.setStatus(enumOrDefault(campoArea(pm, d, "status"), AreaStatus.class, AreaStatus.ATIVA));
+            area.setBairro(nullIfBlank(campoArea(pm, d, "bairro")));
+            area.setLogradouro(nullIfBlank(campoArea(pm, d, "logradouro")));
+            area.setResponsavelManutencao(nullIfBlank(campoArea(pm, d, "responsavelManutencao")));
+            area.setSituacaoInventario(enumOrDefault(campoArea(pm, d, "situacaoInventario"),
+                    SituacaoInventario.class, SituacaoInventario.NAO_INICIADO));
+
+            Double areaM2 = doubleOrNull(campoArea(pm, d, "areaTotalM2"));
+            area.setAreaTotalM2(areaM2);
+
+            if (poligono) {
+                area.setLatitude(null);
+                area.setLongitude(null);
+                for (double[] p : pm.getPontos()) {
+                    area.getPontos().add(new PontoGeografico(p[0], p[1]));
+                }
+                if (area.getAreaTotalM2() == null) {
+                    area.setAreaTotalM2(Math.round(calcularAreaPoligonoM2(pm.getPontos()) * 100.0) / 100.0);
+                }
+            } else {
+                area.setLatitude(pm.getLatitude());
+                area.setLongitude(pm.getLongitude());
+            }
+
+            area.prepararPersistencia();
+            criadas.add(areaRepository.save(area));
+        }
+        return criadas;
+    }
+
+    private String campoArea(KmlPlacemark pm, JsonNode d, String campo) {
+        String campoNorm = normalizarChave(campo);
+        Map<String, String> ed = pm.getExtendedData();
+        if (ed != null) {
+            String direto = ed.get(campo);
+            if (direto != null && !direto.isBlank()) return direto.trim();
+            String peloNorm = ed.get(campoNorm);
+            if (peloNorm != null && !peloNorm.isBlank()) return peloNorm.trim();
+            for (Map.Entry<String, String> e : ed.entrySet()) {
+                if (normalizarChave(e.getKey()).equals(campoNorm)
+                        && e.getValue() != null && !e.getValue().isBlank()) {
+                    return e.getValue().trim();
+                }
+            }
+        }
+        if (d != null && hasNonEmpty(d, campo)) {
+            return d.get(campo).asText().trim();
+        }
+        return null;
+    }
+
+    private void extrairExtendedData(Element pm, KmlPlacemark placemark) {
+        NodeList dataNodes = pm.getElementsByTagName("Data");
+        if (dataNodes.getLength() == 0) {
+            dataNodes = pm.getElementsByTagNameNS("http://www.opengis.net/kml/2.2", "Data");
+        }
+        for (int i = 0; i < dataNodes.getLength(); i++) {
+            if (!(dataNodes.item(i) instanceof Element dataEl)) continue;
+            String name = dataEl.getAttribute("name");
+            if (name == null || name.isBlank()) continue;
+            String value = null;
+            NodeList values = dataEl.getElementsByTagName("value");
+            if (values.getLength() == 0) {
+                values = dataEl.getElementsByTagNameNS("http://www.opengis.net/kml/2.2", "value");
+            }
+            if (values.getLength() > 0) {
+                value = values.item(0).getTextContent();
+            }
+            if (value != null && !value.isBlank()) {
+                placemark.getExtendedData().put(name.trim(), value.trim());
+            }
+        }
+    }
+
+    private void extrairCamposDaDescricao(String desc, KmlPlacemark placemark) {
+        for (String linha : desc.split("\\r?\\n")) {
+            int idx = linha.indexOf(':');
+            if (idx <= 0) continue;
+            String chave = linha.substring(0, idx).trim();
+            String valor = linha.substring(idx + 1).trim();
+            if (chave.isEmpty() || valor.isEmpty() || "—".equals(valor)) continue;
+            String normalizada = normalizarChave(chave);
+            boolean conhecida = List.of("nome", "descricao", "fotourl", "tipo", "status",
+                    "bairro", "logradouro", "areatotalm2", "responsavelmanutencao",
+                    "situacaoinventario").contains(normalizada);
+            if (conhecida && !placemark.getExtendedData().containsKey(normalizada)) {
+                placemark.getExtendedData().put(normalizada, valor);
+            }
+        }
+    }
+
+    private String normalizarChave(String chave) {
+        if (chave == null) return "";
+        String semAcento = Normalizer.normalize(chave, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return semAcento.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+    }
+
+    private List<double[]> extrairAanelPoligono(Element polygonEl) {
+        Element outer = getFirstChildElement(polygonEl, "outerBoundaryIs");
+        if (outer == null) outer = getFirstChildElementNS(polygonEl, "outerBoundaryIs");
+        if (outer == null) return List.of();
+        Element ring = getFirstChildElement(outer, "LinearRing");
+        if (ring == null) ring = getFirstChildElementNS(outer, "LinearRing");
+        if (ring == null) return List.of();
+        String coords = getTagText(ring, "coordinates");
+        if (coords == null) coords = getTagTextNS(ring, "coordinates");
+        if (coords == null) return List.of();
+
+        List<double[]> pontos = new ArrayList<>();
+        for (String parte : coords.trim().split("\\s+")) {
+            if (parte.isBlank()) continue;
+            String[] parts = parte.split(",");
+            if (parts.length < 2) continue;
+            try {
+                double lng = Double.parseDouble(parts[0]);
+                double lat = Double.parseDouble(parts[1]);
+                pontos.add(new double[] { lat, lng });
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        if (pontos.size() >= 4) {
+            double[] first = pontos.get(0);
+            double[] last = pontos.get(pontos.size() - 1);
+            if (Math.abs(first[0] - last[0]) < 1e-12 && Math.abs(first[1] - last[1]) < 1e-12) {
+                pontos.remove(pontos.size() - 1);
+            }
+        }
+        return pontos;
+    }
+
+    private double media(List<double[]> pontos, int idx) {
+        double soma = 0;
+        for (double[] p : pontos) soma += p[idx];
+        return soma / pontos.size();
+    }
+
+    private double calcularAreaPoligonoM2(List<double[]> pontos) {
+        int n = pontos.size();
+        if (n < 3) return 0;
+        double latMedia = 0;
+        for (double[] p : pontos) latMedia += p[0];
+        latMedia /= n;
+        double metrosPorGrauLat = 111320;
+        double metrosPorGrauLng = 111320 * Math.cos(Math.toRadians(latMedia));
+        double area = 0;
+        for (int i = 0, j = n - 1; i < n; j = i++) {
+            double xi = pontos.get(i)[1] * metrosPorGrauLng;
+            double yi = pontos.get(i)[0] * metrosPorGrauLat;
+            double xj = pontos.get(j)[1] * metrosPorGrauLng;
+            double yj = pontos.get(j)[0] * metrosPorGrauLat;
+            area += xj * yi - xi * yj;
+        }
+        return Math.abs(area / 2);
+    }
+
+    private String nullIfBlank(String valor) {
+        return valor == null || valor.isBlank() ? null : valor.trim();
+    }
+
+    private Double doubleOrNull(String valor) {
+        if (valor == null || valor.isBlank()) return null;
+        try {
+            return Double.parseDouble(valor.replace(",", "."));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private <E extends Enum<E>> E enumOrDefault(String valor, Class<E> type, E fallback) {
+        if (valor == null || valor.isBlank()) return fallback;
+        String normalizado = Normalizer.normalize(valor, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .trim()
+                .toUpperCase(Locale.ROOT)
+                .replaceAll("[\\s\\-]+", "_");
+        try {
+            return Enum.valueOf(type, normalizado);
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
     }
 
     private List<KmlPlacemark> filtrarPorIndices(List<KmlPlacemark> placemarks, String indicesCsv) {

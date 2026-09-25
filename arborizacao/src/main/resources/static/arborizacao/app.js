@@ -20,6 +20,11 @@ const mapStyle = {
 
 const apiBase = '/api/areas';
 const areaForm = document.getElementById('areaForm');
+const areaFormPanel = document.getElementById('areaFormPanel');
+const areaFormHost = areaFormPanel?.parentElement;
+const areaEditModal = document.getElementById('areaEditModal');
+const areaEditModalBody = document.getElementById('areaEditModalBody');
+const areaEditModalTitle = document.getElementById('areaEditModalTitle');
 const areaIdInput = document.getElementById('areaId');
 const nomeInput = document.getElementById('nome');
 const descricaoInput = document.getElementById('descricao');
@@ -96,6 +101,12 @@ map.on('click', (event) => {
     return;
   }
 
+  const areaClicada = encontrarAreaClicada(event);
+  if (areaClicada) {
+    abrirAreaParaEdicao(areaClicada.properties.id);
+    return;
+  }
+
   const { lng, lat } = event.lngLat;
 
   if (currentMode === 'point') {
@@ -117,24 +128,49 @@ map.on('click', (event) => {
   refreshMap();
 });
 
-map.on('click', 'areas-fill', (event) => {
-  const feature = event.features?.[0];
-  if (feature?.properties?.id) {
-    openAreaDetails(feature.properties.id);
-  }
-});
-
-map.on('click', 'areas-circle', (event) => {
-  const feature = event.features?.[0];
-  if (feature?.properties?.id) {
-    openAreaDetails(feature.properties.id);
-  }
-});
-
 map.on('mouseenter', 'areas-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseenter', 'areas-circle', () => { map.getCanvas().style.cursor = 'pointer'; });
+map.on('mouseenter', 'areas-line', () => { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'areas-fill', () => { map.getCanvas().style.cursor = ''; });
 map.on('mouseleave', 'areas-circle', () => { map.getCanvas().style.cursor = ''; });
+map.on('mouseleave', 'areas-line', () => { map.getCanvas().style.cursor = ''; });
+
+function encontrarAreaClicada(event) {
+  const layerIds = ['areas-fill', 'areas-circle', 'areas-line'].filter((id) => map.getLayer(id));
+  if (!layerIds.length) return null;
+  const hits = map.queryRenderedFeatures(event.point, { layers: layerIds });
+  return hits.find((feature) => feature.properties?.id) || null;
+}
+
+function abrirAreaParaEdicao(areaId) {
+  const area = areas.find((item) => String(item.id) === String(areaId));
+  if (!area) return;
+  abrirAreaEditModal(area);
+}
+
+function abrirAreaEditModal(area) {
+  if (!area || !areaEditModal || !areaFormPanel || !areaEditModalBody) return;
+  if (areaEditModalBody !== areaFormPanel.parentElement) {
+    areaEditModalBody.appendChild(areaFormPanel);
+  }
+  areaEditModalTitle.textContent = `Editar: ${area.nome || 'área'}`;
+  areaEditModal.style.display = 'flex';
+  loadAreaInForm(area);
+  focusArea(area);
+}
+
+function fecharAreaEditModal() {
+  if (!areaEditModal) return;
+  areaEditModal.style.display = 'none';
+  if (areaFormHost && areaFormPanel && areaFormHost !== areaFormPanel.parentElement) {
+    areaFormHost.insertBefore(areaFormPanel, areaFormHost.firstChild);
+  }
+  if (editingId) resetForm();
+}
+
+function areaEditModalAberto() {
+  return !!areaEditModal && areaEditModal.style.display === 'flex';
+}
 
 drawModeInput.addEventListener('change', () => {
   currentMode = drawModeInput.value;
@@ -315,7 +351,13 @@ clearVerticesBtn.addEventListener('click', () => {
   refreshMap();
 });
 
-cancelEditBtn.addEventListener('click', () => resetForm());
+cancelEditBtn.addEventListener('click', () => {
+  if (areaEditModalAberto()) {
+    fecharAreaEditModal();
+    return;
+  }
+  resetForm();
+});
 reloadBtn.addEventListener('click', loadAreas);
 
 const buscaForm = document.getElementById('buscaForm');
@@ -379,8 +421,7 @@ function renderizarAreasEncontradas(lista, container) {
       </div>
     `;
     item.querySelector('[data-action="editar"]').addEventListener('click', () => {
-      loadAreaInForm(area);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      abrirAreaEditModal(area);
     });
     container.appendChild(item);
   });
@@ -410,12 +451,17 @@ areaForm.addEventListener('submit', async (event) => {
       throw new Error(erro.message || `Falha ao salvar área: ${response.status}`);
     }
 
+    const salva = await response.json().catch(() => null);
     const wasEditing = !!editingId;
     resetForm();
+    if (areaEditModalAberto()) {
+      fecharAreaEditModal();
+    }
     showToast(wasEditing ? 'Área atualizada com sucesso!' : 'Área criada com sucesso!', 'sucesso');
 
     try {
       await loadAreas();
+      if (salva) focusArea(salva);
     } catch (_) {
       location.reload();
     }
@@ -742,8 +788,11 @@ function renderAreaList() {
         </div>
       `;
 
-      item.querySelector('.view-btn').addEventListener('click', () => openAreaDetails(area.id));
-      item.querySelector('.edit-btn').addEventListener('click', () => loadAreaInForm(area));
+      item.querySelector('.view-btn').addEventListener('click', () => {
+        irParaMapa();
+        focusArea(area);
+      });
+      item.querySelector('.edit-btn').addEventListener('click', () => abrirAreaEditModal(area));
       item.querySelector('.delete-btn').addEventListener('click', async () => {
         if (!confirm(`Excluir a área "${area.nome}"?`)) return;
         await fetch(`${apiBase}/${area.id}`, { method: 'DELETE' });
@@ -761,6 +810,15 @@ function renderAreaList() {
 function updateCounters() {
   if (totalAreas) totalAreas.textContent = String(areas.length);
   if (totalVertices) totalVertices.textContent = String(areas.reduce((acc, area) => acc + (area.pontos?.length ?? 0), 0));
+}
+
+function irParaMapa() {
+  const mapEl = document.getElementById('map');
+  if (mapEl) {
+    mapEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 function focusArea(area) {
@@ -1057,7 +1115,9 @@ function loadAreaInForm(area) {
 
   renderVerticesList();
   refreshMap();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!areaEditModalAberto()) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 function resetForm() {
@@ -1085,5 +1145,203 @@ function resetForm() {
   refreshMap();
 }
 
+let areaKmlFile = null;
+let areaKmlPlacemarks = [];
+let areaKmlSelectedIndices = [];
+
+function fecharAreaKmlModal() {
+  const modal = document.getElementById('areaKmlModal');
+  if (modal) modal.style.display = 'none';
+  areaKmlFile = null;
+}
+
+function previewAreaKml(input) {
+  if (!input.files || !input.files.length) return;
+  areaKmlFile = input.files[0];
+  areaKmlSelectedIndices = [];
+
+  const formData = new FormData();
+  formData.append('file', areaKmlFile);
+
+  fetch('/api/kml/import/preview', {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: formData
+  })
+    .then((r) => {
+      if (!r.ok) throw new Error('Erro ao ler KML');
+      return r.json();
+    })
+    .then((data) => {
+      areaKmlPlacemarks = Array.isArray(data) ? data : [];
+      renderAreaKmlPreview(areaKmlPlacemarks);
+      document.getElementById('areaKmlModal').style.display = 'flex';
+      updateAreaKmlImportBtn();
+    })
+    .catch((err) => {
+      if (typeof showToast === 'function') {
+        showToast('Erro: ' + err.message, 'error');
+      }
+    });
+
+  input.value = '';
+}
+
+function renderAreaKmlPreview(placemarks) {
+  const preview = document.getElementById('areaKmlPreview');
+  if (!placemarks.length) {
+    preview.innerHTML = '<p style="color:var(--muted);">Nenhum ponto ou polígono encontrado no KML.</p>';
+    return;
+  }
+
+  let html = '<p style="margin:0 0 8px;font-size:0.85rem;color:var(--muted);">' +
+    placemarks.length + ' geometria(s) — marque as que quer importar:</p>';
+  html += '<div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;">';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:0.8rem;">';
+  html += '<thead><tr style="background:var(--bg);position:sticky;top:0;">' +
+    '<th style="padding:8px;text-align:left;"><input type="checkbox" id="areaKmlCheckAll" checked title="Marcar todas" /></th>' +
+    '<th style="padding:8px;text-align:left;">#</th>' +
+    '<th style="padding:8px;text-align:left;">Nome</th>' +
+    '<th style="padding:8px;text-align:left;">Geometria</th>' +
+    '<th style="padding:8px;text-align:left;">Tipo</th>' +
+    '<th style="padding:8px;text-align:left;">Bairro</th></tr></thead>';
+  html += '<tbody>';
+
+  placemarks.forEach((pm, i) => {
+    const isPoly = (pm.geometria || 'POINT') === 'POLYGON';
+    const ed = pm.extendedData || {};
+    const tipo = ed.tipo || ed.Tipo || '—';
+    const bairro = ed.bairro || ed.Bairro || '—';
+    html += '<tr class="area-kml-pm-row" data-index="' + i + '" style="border-top:1px solid var(--border);cursor:pointer;">';
+    html += '<td style="padding:6px 8px;"><input type="checkbox" class="area-kml-pm-check" data-index="' + i + '" checked /></td>';
+    html += '<td style="padding:6px 8px;">' + (i + 1) + '</td>';
+    html += '<td style="padding:6px 8px;">' + escapeHtml(pm.nome || '—') + '</td>';
+    html += '<td style="padding:6px 8px;">' + (isPoly ? 'Polígono (' + ((pm.pontos || []).length) + ' v.)' : 'Ponto') + '</td>';
+    html += '<td style="padding:6px 8px;">' + escapeHtml(String(tipo)) + '</td>';
+    html += '<td style="padding:6px 8px;">' + escapeHtml(String(bairro)) + '</td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  preview.innerHTML = html;
+
+  function syncSelection() {
+    areaKmlSelectedIndices = Array.from(preview.querySelectorAll('.area-kml-pm-check:checked'))
+      .map((c) => parseInt(c.getAttribute('data-index'), 10))
+      .sort((a, b) => a - b);
+    preview.querySelectorAll('.area-kml-pm-row').forEach((row) => {
+      const idx = parseInt(row.getAttribute('data-index'), 10);
+      const on = areaKmlSelectedIndices.indexOf(idx) !== -1;
+      row.style.background = on ? 'rgba(47,111,237,0.18)' : '';
+      row.style.outline = on ? '1px solid #2f6fed' : '';
+    });
+    const all = preview.querySelector('#areaKmlCheckAll');
+    if (all) {
+      all.checked = areaKmlSelectedIndices.length === placemarks.length && placemarks.length > 0;
+    }
+    updateAreaKmlImportBtn();
+  }
+
+  preview.querySelectorAll('.area-kml-pm-check').forEach((check) => {
+    check.addEventListener('change', syncSelection);
+  });
+  const rowClick = (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    const row = e.target.closest('.area-kml-pm-row');
+    if (!row) return;
+    const check = row.querySelector('.area-kml-pm-check');
+    check.checked = !check.checked;
+    syncSelection();
+  };
+  preview.querySelectorAll('.area-kml-pm-row').forEach((row) => {
+    row.addEventListener('click', rowClick);
+  });
+  const checkAll = preview.querySelector('#areaKmlCheckAll');
+  if (checkAll) {
+    checkAll.addEventListener('change', () => {
+      preview.querySelectorAll('.area-kml-pm-check').forEach((c) => {
+        c.checked = checkAll.checked;
+      });
+      syncSelection();
+    });
+  }
+  syncSelection();
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function updateAreaKmlImportBtn() {
+  const btn = document.getElementById('areaKmlImportBtn');
+  if (btn) btn.disabled = !areaKmlFile || areaKmlSelectedIndices.length === 0;
+}
+
+function importarAreaKml() {
+  if (!areaKmlFile || !areaKmlSelectedIndices.length) return;
+
+  const defaults = {};
+  const tipo = document.getElementById('areaKmlTipo')?.value;
+  const status = document.getElementById('areaKmlStatus')?.value;
+  const situacao = document.getElementById('areaKmlSituacao')?.value;
+  const responsavel = document.getElementById('areaKmlResponsavel')?.value;
+  const bairro = document.getElementById('areaKmlBairro')?.value?.trim();
+  if (tipo) defaults.tipo = tipo;
+  if (status) defaults.status = status;
+  if (situacao) defaults.situacaoInventario = situacao;
+  if (responsavel) defaults.responsavelManutencao = responsavel;
+  if (bairro) defaults.bairro = bairro;
+
+  const formData = new FormData();
+  formData.append('file', areaKmlFile);
+  if (Object.keys(defaults).length) {
+    formData.append('defaults', JSON.stringify(defaults));
+  }
+  formData.append('indices', areaKmlSelectedIndices.join(','));
+
+  const btn = document.getElementById('areaKmlImportBtn');
+  if (btn) btn.disabled = true;
+
+  fetch('/api/kml/import/areas', {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: formData
+  })
+    .then(async (r) => {
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.erro || 'Erro ao importar');
+      return data;
+    })
+    .then((data) => {
+      showToast(data.mensagem || (data.total + ' área(s) importada(s)'), 'success');
+      fecharAreaKmlModal();
+      loadAreas();
+    })
+    .catch((err) => {
+      showToast('Erro: ' + err.message, 'error');
+      if (btn) btn.disabled = false;
+    });
+}
+
+async function abrirAreaEditavelDaUrl() {
+  const id = new URLSearchParams(window.location.search).get('editar');
+  if (!id) return;
+
+  try {
+    const res = await fetch(`${apiBase}/${encodeURIComponent(id)}`);
+    if (!res.ok) throw new Error('Área não encontrada');
+    const area = await res.json();
+    abrirAreaEditModal(area);
+    showToast(`Editando área "${area.nome}"`, 'sucesso');
+  } catch (error) {
+    console.error(error);
+    showToast('Não foi possível carregar a área para edição.', 'erro');
+  }
+}
+
 renderFotoInputs();
-loadAreas();
+loadAreas().then(abrirAreaEditavelDaUrl);

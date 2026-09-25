@@ -204,15 +204,19 @@
       angle += slice;
     });
 
-    var legend = itens.map(function (d) {
+    var breakdown = itens.map(function (d) {
       var cor = cores[d.chave] || '#999';
       var pct = Math.round((d.valor / total) * 100);
-      return '<span><i style="background:' + cor + ';"></i>' +
-        d.rotulo + ' (' + d.valor + ' • ' + pct + '%)</span>';
+      return '<div class="donut-break-item">' +
+        '<span class="donut-break-dot" style="background:' + cor + ';"></span>' +
+        '<span class="donut-break-nome">' + d.rotulo + '</span>' +
+        '<span class="donut-break-valor">' + d.valor + ' • ' + pct + '%</span>' +
+        '<span class="donut-break-bar"><i style="width:' + pct + '%;background:' + cor + ';"></i></span>' +
+        '</div>';
     }).join('');
 
     container.innerHTML =
-      '<div class="donut-wrap">' +
+      '<div class="donut-wrap donut-row">' +
       '<div class="donut-svg-box">' +
       '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de rosca">' + paths + '</svg>' +
       '<div class="donut-center">' +
@@ -220,7 +224,7 @@
       '<span class="donut-label">Total</span>' +
       '</div>' +
       '</div>' +
-      '<div class="chart-legend">' + legend + '</div>' +
+      '<div class="donut-breakdown">' + breakdown + '</div>' +
       '</div>';
   }
 
@@ -246,6 +250,40 @@
       { chave: 'NATIVA', rotulo: 'Nativas', valor: porOrigem.NATIVA || 0 },
       { chave: 'EXOTICA', rotulo: 'Exóticas', valor: porOrigem.EXOTICA || 0 }
     ], COLORS.origem);
+  }
+
+  function renderTopEspecies() {
+    var box = document.getElementById('topEspecies');
+    if (!box) return;
+
+    var contagem = {};
+    arvoresData.forEach(function (a) {
+      var nome = a.especieNomePopular || 'Não informada';
+      contagem[nome] = (contagem[nome] || 0) + 1;
+    });
+
+    var top = Object.keys(contagem).map(function (k) {
+      return { nome: k, valor: contagem[k] };
+    }).sort(function (a, b) {
+      return b.valor - a.valor;
+    }).slice(0, 5);
+
+    if (top.length === 0) {
+      box.innerHTML = '<p class="empty-mini">Sem dados</p>';
+      return;
+    }
+
+    var max = top[0].valor;
+    box.innerHTML = top.map(function (t) {
+      var pct = Math.round((t.valor / max) * 100);
+      return '<div class="top-especie-item">' +
+        '<div class="top-especie-head">' +
+        '<span class="top-especie-nome">' + t.nome + '</span>' +
+        '<span class="top-especie-valor">' + t.valor + (t.valor === 1 ? ' árvore' : ' árvores') + '</span>' +
+        '</div>' +
+        '<div class="top-especie-bar"><i style="width:' + pct + '%;"></i></div>' +
+        '</div>';
+    }).join('');
   }
 
   function initMap() {
@@ -507,7 +545,7 @@
         tipo: 'tree',
         titulo: 'Cadastro de árvore: ' + (a.nome || 'ARB-' + String(a.id).padStart(6, '0')),
         detalhe: formatarDataHora(a.criadoEm),
-        icone: '🌱'
+        icone: '<img class="ico" src="./img/icones/seedling.png" alt="">'
       });
     });
 
@@ -518,7 +556,7 @@
         tipo: 'create',
         titulo: 'Cadastro de nova área: ' + a.nome,
         detalhe: formatarDataHora(a.criadoEm),
-        icone: '🏞️'
+        icone: '<img class="ico" src="./img/icones/map-2.png" alt="">'
       });
     });
 
@@ -584,6 +622,7 @@
       renderKPIs();
       renderTasks();
       renderCharts();
+      renderTopEspecies();
       renderRecentTrees();
       renderActivityFeed();
       initMap();

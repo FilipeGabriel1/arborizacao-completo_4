@@ -145,8 +145,10 @@ function renderizar(filtrados) {
       doacao.destinacao,
       doacao.descricao
     ].filter(Boolean).join(' • ');
-    const identificacao = [doacao.solicitante, doacao.cpf ? mascararCpf(doacao.cpf) : '']
-      .filter(Boolean).join(' • ') || 'Solicitante não informado';
+    const nomeSolicitante = doacao.solicitante || 'Solicitante não informado';
+    const identificacao = doacao.cpf
+      ? `${nomeSolicitante} - CPF: ${mascararCpf(doacao.cpf)}`
+      : nomeSolicitante;
 
     tr.innerHTML = `
       <td class="extrato-data">${formatarData(doacao.dataDoacao)}</td>

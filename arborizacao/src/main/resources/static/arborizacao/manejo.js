@@ -60,9 +60,9 @@ async function carregarManutencoes() {
 }
 
 const tipoIcons = {
-  PODA_LIMPEZA: '✂️', PODA_FORMACAO: '🌳', PODA_RENOVACAO: '🔄',
-  MONITORAMENTO: '👁️', COMBATE_PRAGAS: '💊', TRANSPLANTE: '🪴',
-  EXTRACAO: '🪓', REPOUSO: '😴'
+  PODA_LIMPEZA: '<img class="ico" src="./img/icones/scissors.png" alt="">', PODA_FORMACAO: '<img class="ico" src="./img/icones/tree.png" alt="">', PODA_RENOVACAO: '<img class="ico" src="./img/icones/refresh.png" alt="">',
+  MONITORAMENTO: '<img class="ico" src="./img/icones/eye.png" alt="">', COMBATE_PRAGAS: '<img class="ico" src="./img/icones/pill.png" alt="">', TRANSPLANTE: '<img class="ico" src="./img/icones/plant-2.png" alt="">',
+  EXTRACAO: '<img class="ico" src="./img/icones/axe.png" alt="">', REPOUSO: '<img class="ico" src="./img/icones/zzz.png" alt="">'
 };
 const tipoLabels = {
   PODA_LIMPEZA: 'Poda Limpeza', PODA_FORMACAO: 'Poda Formação', PODA_RENOVACAO: 'Poda Renovação',
@@ -80,7 +80,7 @@ function renderizar(manutencoes) {
     const item = document.createElement('article');
     item.className = 'os-card';
     const idLabel = 'OS-' + String(m.id).padStart(5, '0');
-    const icon = tipoIcons[m.tipo] || '🔧';
+    const icon = tipoIcons[m.tipo] || '<img class="ico" src="./img/icones/tool.png" alt="">';
     const tipoLabel = tipoLabels[m.tipo] || m.tipo || '—';
     const prioClass = m.prioridade === 'URGENTE' ? 'urgente' : m.prioridade === 'ALTA' ? 'alta' : m.prioridade === 'MEDIA' ? 'media' : 'baixa';
     const statusClass = m.status === 'CONCLUIDA' ? 'concluida' : m.status === 'EM_EXECUCAO' ? 'execucao' : m.status === 'CANCELADA' ? 'cancelada' : 'pendente';
@@ -94,8 +94,8 @@ function renderizar(manutencoes) {
         <div class="os-card-tree">${icon} ${m.endereco || 'Endereço não informado'}</div>
         <div class="os-card-tipo">${tipoLabel}</div>
         <div class="os-card-meta">
-          ${m.dataAgendada ? '📅 ' + new Date(m.dataAgendada).toLocaleDateString('pt-BR') : ''}
-          ${m.responsavelExecucao ? ' • 👤 ' + m.responsavelExecucao : ''}
+          ${m.dataAgendada ? '<img class="ico" src="./img/icones/calendar.png" alt=""> ' + new Date(m.dataAgendada).toLocaleDateString('pt-BR') : ''}
+          ${m.responsavelExecucao ? ' • <img class="ico" src="./img/icones/user.png" alt=""> ' + m.responsavelExecucao : ''}
         </div>
       </div>
       <div class="os-card-footer">

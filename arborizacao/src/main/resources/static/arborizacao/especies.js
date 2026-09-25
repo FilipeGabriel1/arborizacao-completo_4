@@ -25,20 +25,28 @@ function normalizarTexto(texto) {
   return (texto || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-buscaForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const termo = buscaTermoInput.value.trim();
-  if (!termo) return;
+let buscaTimer = null;
+let buscaSequencia = 0;
 
+async function executarBusca() {
+  const termo = buscaTermoInput.value.trim();
+  if (!termo) {
+    buscaResultado.innerHTML = '';
+    return;
+  }
+
+  const sequencia = ++buscaSequencia;
   buscaResultado.innerHTML = '<p class="area-description">Buscando...</p>';
 
   if (/^\d+$/.test(termo)) {
     const res = await fetch(`${apiBase}/${termo}`);
+    if (sequencia !== buscaSequencia) return;
     if (!res.ok) {
       buscaResultado.innerHTML = `<div class="login-message erro">Nenhuma espécie encontrada com o ID ${termo}.</div>`;
       return;
     }
     const especie = await res.json();
+    if (sequencia !== buscaSequencia) return;
     renderizarCardsEncontrados([especie], buscaResultado);
     return;
   }
@@ -52,7 +60,20 @@ buscaForm.addEventListener('submit', async (event) => {
     return;
   }
   renderizarCardsEncontrados(encontradas, buscaResultado);
+}
+
+function buscarComDelay() {
+  clearTimeout(buscaTimer);
+  buscaTimer = setTimeout(executarBusca, 250);
+}
+
+buscaForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  clearTimeout(buscaTimer);
+  executarBusca();
 });
+
+buscaTermoInput.addEventListener('input', buscarComDelay);
 
 function obterUrlImagem(url) {
   const texto = (url || '').toString().trim();

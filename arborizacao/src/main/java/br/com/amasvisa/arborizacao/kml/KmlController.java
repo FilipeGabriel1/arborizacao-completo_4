@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import br.com.amasvisa.arborizacao.area.models.AreaArborizada;
 import br.com.amasvisa.arborizacao.arvore.models.Arvore;
 
 @RestController
@@ -83,6 +84,27 @@ public class KmlController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
                     "erro", e.getMessage() != null ? e.getMessage() : "Erro ao importar"
+            ));
+        }
+    }
+
+    @PostMapping("/import/areas")
+    public ResponseEntity<Map<String, Object>> importarAreas(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "defaults", required = false) String defaults,
+            @RequestParam(value = "indices", required = false) String indices) {
+        try {
+            String content = new String(file.getBytes(), StandardCharsets.UTF_8);
+            List<AreaArborizada> criadas = kmlService.importarAreas(content, defaults, indices);
+            List<Long> ids = criadas.stream().map(AreaArborizada::getId).toList();
+            return ResponseEntity.ok(Map.of(
+                    "total", criadas.size(),
+                    "ids", ids,
+                    "mensagem", criadas.size() + " área(s) importada(s) com sucesso"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "erro", e.getMessage() != null ? e.getMessage() : "Erro ao importar áreas"
             ));
         }
     }

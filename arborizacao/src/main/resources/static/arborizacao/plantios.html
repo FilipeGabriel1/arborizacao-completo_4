@@ -15,7 +15,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-icon"><img class="ico ico-brand" src="./img/icones/tree.png" alt=""></div>
       <div class="sidebar-brand-text">
         <strong>ARBORIZAÇÃO</strong>
         <small>Área Técnica</small>
@@ -23,21 +23,21 @@
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
-        <a href="./painel.html" class="sidebar-link"><span class="icon">📊</span><span>Painel</span></a>
-        <a href="./arvores.html" class="sidebar-link"><span class="icon">🌲</span><span>Inventário Arbóreo</span></a>
-        <a href="./cadastro-areas.html" class="sidebar-link"><span class="icon">🏞️</span><span>Áreas Verdes</span></a>
-        <a href="./sementeira.html" class="sidebar-link"><span class="icon">🌱</span><span>Sementeira Municipal</span></a>
-        <a href="./plantios.html" class="sidebar-link active"><span class="icon">🌿</span><span>Plantios</span></a>
-        <a href="./manejo.html" class="sidebar-link"><span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span></a>
-        <a href="./doacoes.html" class="sidebar-link"><span class="icon">🎁</span><span>Doações</span></a>
+        <a href="./painel.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/chart-bar.png" alt=""></span><span>Painel</span></a>
+        <a href="./arvores.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/tree.png" alt=""></span><span>Inventário Arbóreo</span></a>
+        <a href="./cadastro-areas.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/map-2.png" alt=""></span><span>Áreas Verdes</span></a>
+        <a href="./sementeira.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/seedling.png" alt=""></span><span>Sementeira Municipal</span></a>
+        <a href="./plantios.html" class="sidebar-link active"><span class="icon"><img class="ico" src="./img/icones/plant.png" alt=""></span><span>Plantios</span></a>
+        <a href="./manejo.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/tool.png" alt=""></span><span>Manejo / Ordens de Serviço</span></a>
+        <a href="./doacoes.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/gift.png" alt=""></span><span>Doações</span></a>
 
-        <a href="./especies.html" class="sidebar-link"><span class="icon">🍃</span><span>Espécies</span></a>
-        <a href="./relatorios.html" class="sidebar-link"><span class="icon">📋</span><span>Relatórios</span></a>
+        <a href="./especies.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/leaf.png" alt=""></span><span>Espécies</span></a>
+        <a href="./relatorios.html" class="sidebar-link"><span class="icon"><img class="ico" src="./img/icones/clipboard-list.png" alt=""></span><span>Relatórios</span></a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-label">Administração</div>
-        <a href="./usuarios.html" class="sidebar-link" data-admin hidden><span class="icon">👥</span><span>Usuários</span></a>
-        <a href="./historico.html" class="sidebar-link" data-admin hidden><span class="icon">📜</span><span>Histórico de Alterações</span></a>
+        <a href="./usuarios.html" class="sidebar-link" data-admin hidden><span class="icon"><img class="ico" src="./img/icones/users.png" alt=""></span><span>Usuários</span></a>
+        <a href="./historico.html" class="sidebar-link" data-admin hidden><span class="icon"><img class="ico" src="./img/icones/history.png" alt=""></span><span>Histórico de Alterações</span></a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -49,7 +49,7 @@
   <!-- MAIN CONTENT -->
   <main class="main-content">
     <header class="topbar">
-      <button class="hamburger-btn" aria-label="Menu">☰</button>
+      <button class="hamburger-btn" aria-label="Menu"><img class="ico" src="./img/icones/menu-2.png" alt=""></button>
       <div class="topbar-greeting">
         <h1>Plantios</h1>
         <p>Registro e acompanhamento de plantios de árvores em áreas verdes.</p>
@@ -66,7 +66,7 @@
     <section class="section-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
       <article class="card card-metric" data-metric="total">
         <div class="card-content">
-          <span class="card-metric-icon" style="font-size:1.8rem;">📋</span>
+          <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/clipboard-list.png" alt=""></span>
           <div class="card-metric-body">
             <span class="card-metric-value" id="kpiTotal">0</span>
             <span class="card-metric-label">Total de Plantios</span>
@@ -75,7 +75,7 @@
       </article>
       <article class="card card-metric" data-metric="mudas">
         <div class="card-content">
-          <span class="card-metric-icon" style="font-size:1.8rem;">🌱</span>
+          <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/seedling.png" alt=""></span>
           <div class="card-metric-body">
             <span class="card-metric-value" id="kpiMudas">0</span>
             <span class="card-metric-label">Total de Mudas</span>
@@ -84,7 +84,7 @@
       </article>
       <article class="card card-metric" data-metric="planejados">
         <div class="card-content">
-          <span class="card-metric-icon" style="font-size:1.8rem;">📅</span>
+          <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/calendar.png" alt=""></span>
           <div class="card-metric-body">
             <span class="card-metric-value" id="kpiPlanejados">0</span>
             <span class="card-metric-label">Planejados</span>
@@ -93,7 +93,7 @@
       </article>
       <article class="card card-metric" data-metric="execucao">
         <div class="card-content">
-          <span class="card-metric-icon" style="font-size:1.8rem;">⚡</span>
+          <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/bolt.png" alt=""></span>
           <div class="card-metric-body">
             <span class="card-metric-value" id="kpiExecucao">0</span>
             <span class="card-metric-label">Em Execução</span>
@@ -102,7 +102,7 @@
       </article>
       <article class="card card-metric" data-metric="concluidos">
         <div class="card-content">
-          <span class="card-metric-icon" style="font-size:1.8rem;">✅</span>
+          <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/circle-check.png" alt=""></span>
           <div class="card-metric-body">
             <span class="card-metric-value" id="kpiConcluidos">0</span>
             <span class="card-metric-label">Concluídos</span>

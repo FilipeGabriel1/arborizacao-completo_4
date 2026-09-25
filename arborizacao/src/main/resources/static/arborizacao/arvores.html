@@ -8,14 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20260925-1" />
   <link rel="stylesheet" href="./dashboard.css" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
 </head>
 <body>
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">🌳</div>
+      <div class="sidebar-brand-icon"><img class="ico ico-brand" src="./img/icones/tree.png" alt=""></div>
       <div class="sidebar-brand-text">
         <strong>ARBORIZAÇÃO</strong>
         <small>Área Técnica</small>
@@ -24,41 +25,41 @@
     <nav class="sidebar-nav">
       <div class="sidebar-section">
         <a href="./painel.html" class="sidebar-link">
-          <span class="icon">📊</span><span>Painel</span>
+          <span class="icon"><img class="ico" src="./img/icones/chart-bar.png" alt=""></span><span>Painel</span>
         </a>
         <a href="./arvores.html" class="sidebar-link active">
-          <span class="icon">🌲</span><span>Inventário Arbóreo</span>
+          <span class="icon"><img class="ico" src="./img/icones/tree.png" alt=""></span><span>Inventário Arbóreo</span>
         </a>
         <a href="./cadastro-areas.html" class="sidebar-link">
-          <span class="icon">🏞️</span><span>Áreas Verdes</span>
+          <span class="icon"><img class="ico" src="./img/icones/map-2.png" alt=""></span><span>Áreas Verdes</span>
         </a>
         <a href="./sementeira.html" class="sidebar-link">
-          <span class="icon">🌱</span><span>Sementeira Municipal</span>
+          <span class="icon"><img class="ico" src="./img/icones/seedling.png" alt=""></span><span>Sementeira Municipal</span>
         </a>
         <a href="./plantios.html" class="sidebar-link">
-          <span class="icon">🌿</span><span>Plantios</span>
+          <span class="icon"><img class="ico" src="./img/icones/plant.png" alt=""></span><span>Plantios</span>
         </a>
         <a href="./manejo.html" class="sidebar-link">
-          <span class="icon">🔧</span><span>Manejo / Ordens de Serviço</span>
+          <span class="icon"><img class="ico" src="./img/icones/tool.png" alt=""></span><span>Manejo / Ordens de Serviço</span>
         </a>
         <a href="./doacoes.html" class="sidebar-link">
-          <span class="icon">🎁</span><span>Doações</span>
+          <span class="icon"><img class="ico" src="./img/icones/gift.png" alt=""></span><span>Doações</span>
         </a>
 
         <a href="./especies.html" class="sidebar-link">
-          <span class="icon">🍃</span><span>Espécies</span>
+          <span class="icon"><img class="ico" src="./img/icones/leaf.png" alt=""></span><span>Espécies</span>
         </a>
         <a href="./relatorios.html" class="sidebar-link">
-          <span class="icon">📋</span><span>Relatórios</span>
+          <span class="icon"><img class="ico" src="./img/icones/clipboard-list.png" alt=""></span><span>Relatórios</span>
         </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-label">Administração</div>
         <a href="./usuarios.html" class="sidebar-link" data-admin hidden>
-          <span class="icon">👥</span><span>Usuários</span>
+          <span class="icon"><img class="ico" src="./img/icones/users.png" alt=""></span><span>Usuários</span>
         </a>
         <a href="./historico.html" class="sidebar-link" data-admin hidden>
-          <span class="icon">📜</span><span>Histórico de Alterações</span>
+          <span class="icon"><img class="ico" src="./img/icones/history.png" alt=""></span><span>Histórico de Alterações</span>
         </a>
       </div>
     </nav>
@@ -78,17 +79,17 @@
   <!-- MAIN CONTENT -->
   <main class="main-content">
     <header class="topbar">
-      <button class="hamburger-btn" aria-label="Menu">☰</button>
+      <button class="hamburger-btn" aria-label="Menu"><img class="ico" src="./img/icones/menu-2.png" alt=""></button>
       <div class="topbar-greeting">
         <h1>Inventário Arbóreo</h1>
         <p>Cadastro e acompanhamento das árvores do município.</p>
       </div>
       <div class="topbar-search">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon"><img class="ico" src="./img/icones/search.png" alt=""></span>
         <input type="text" id="globalSearch" placeholder="Buscar por ID, nome, espécie..." />
       </div>
       <div class="topbar-actions">
-        <button type="button" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;white-space:nowrap;" onclick="document.getElementById('kmlFileInput').click()">⬆ Importar KML</button>
+        <button type="button" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;white-space:nowrap;" onclick="document.getElementById('kmlFileInput').click()"><img class="ico" src="./img/icones/upload.png" alt=""> Importar KML</button>
         <input type="file" id="kmlFileInput" accept=".kml" style="display:none" onchange="previewKml(this)" />
         <div class="topbar-user">
           <div class="topbar-user-avatar" id="userAvatar">TS</div>
@@ -103,7 +104,19 @@
       </div>
     </header>
 
-    <section class="workspace" style="grid-template-columns: 420px 1fr 360px;">
+    <section class="panel" style="margin-bottom:16px;">
+      <div class="panel-header" style="align-items:center;flex-wrap:wrap;gap:12px;">
+        <h2>Buscar árvore</h2>
+        <form id="buscaForm" class="busca-form compacta">
+          <input type="text" id="buscaTermo" placeholder="Digite o nome, espécie ou ID da árvore..." />
+          <button type="submit" class="primary-button">Buscar</button>
+        </form>
+        <p class="area-description" style="margin:0;font-size:0.82rem;">Você pode digitar o nome, a espécie ou o ID (ex.: ARB-000001).</p>
+      </div>
+      <div id="buscaResultado"></div>
+    </section>
+
+    <section class="workspace" style="grid-template-columns: 420px 1fr 300px;">
       <aside class="panel" style="max-height: calc(100vh - 100px); overflow-y: auto;">
         <div class="panel-header">
           <h2 id="formTitle">Novo cadastro de árvore</h2>
@@ -212,9 +225,9 @@
                 <input type="number" step="any" id="longitude" />
               </label>
             </div>
-            <button type="button" class="primary-button" id="gpsBtn" style="width:100%;margin-top:8px;">📍 Usar minha localização</button>
+            <button type="button" class="primary-button" id="gpsBtn" style="width:100%;margin-top:8px;"><img class="ico" src="./img/icones/map-pin.png" alt=""> Usar minha localização</button>
             <div class="hint-box" style="margin-top:8px;">
-              <strong>📍 Usar minha localização</strong>
+              <strong><img class="ico" src="./img/icones/map-pin.png" alt=""> Usar minha localização</strong>
               <p>Use o GPS do dispositivo para preencher automaticamente as coordenadas durante o inventário em campo.</p>
             </div>
           </div>
@@ -232,7 +245,7 @@
               </label>
             </div>
             <div class="hint-box" style="margin-bottom:12px;">
-              <strong>ℹ️ Cálculo automático</strong>
+              <strong><img class="ico" src="./img/icones/info-circle.png" alt=""> Cálculo automático</strong>
               <p>DAP = CAP ÷ π (3,14159). O DAP é calculado automaticamente a partir do CAP informado.</p>
             </div>
             <div class="two-columns">
@@ -308,69 +321,69 @@
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="SEM_CONFLITO" checked />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">✅</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/circle-check.png" alt=""></span>
                   <span class="manejo-option-label">Sem conflito</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="REDE_ELETRICA" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">⚡</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/bolt.png" alt=""></span>
                   <span class="manejo-option-label">Rede elétrica</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="ILUMINACAO" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">💡</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/bulb.png" alt=""></span>
                   <span class="manejo-option-label">Iluminação</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="EDIFICACAO" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">🏠</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/home.png" alt=""></span>
                   <span class="manejo-option-label">Edificação</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="CALCADA" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">🧱</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/wall.png" alt=""></span>
                   <span class="manejo-option-label">Calçada</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="SINALIZACAO" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">🪧</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/direction-sign.png" alt=""></span>
                   <span class="manejo-option-label">Sinalização</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="REDE_SUBTERRANEA" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">🔌</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/plug.png" alt=""></span>
                   <span class="manejo-option-label">Rede subterrânea</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="ACESSIBILIDADE" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">♿</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/wheelchair.png" alt=""></span>
                   <span class="manejo-option-label">Acessibilidade</span>
                 </div>
               </label>
               <label class="manejo-option">
                 <input type="checkbox" name="tipoConflito" value="TRANSITO" />
                 <div class="manejo-option-card">
-                  <span class="manejo-option-icon">🚗</span>
+                  <span class="manejo-option-icon"><img class="ico" src="./img/icones/car.png" alt=""></span>
                   <span class="manejo-option-label">Trânsito</span>
                 </div>
               </label>
             </div>
             <div class="hint-box">
-              <strong>ℹ️ Conflitos com infraestrutura</strong>
+              <strong><img class="ico" src="./img/icones/info-circle.png" alt=""> Conflitos com infraestrutura</strong>
               <p>Marque todos os conflitos identificados. Essa informação permite gerar mapas de árvores em conflito com rede elétrica, calçada, etc.</p>
             </div>
           </div>
@@ -383,70 +396,70 @@
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="NENHUM" checked />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🚫</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/ban.png" alt=""></span>
                     <span class="manejo-option-label">Nenhuma</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="MONITORAMENTO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">👁️</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/eye.png" alt=""></span>
                     <span class="manejo-option-label">Monitoramento</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="PODA_LIMPEZA" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">✂️</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/scissors.png" alt=""></span>
                     <span class="manejo-option-label">Poda Limpeza</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="PODA_FORMACAO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🌳</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/tree.png" alt=""></span>
                     <span class="manejo-option-label">Poda Formação</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="PODA_ADEQUACAO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🔧</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/tool.png" alt=""></span>
                     <span class="manejo-option-label">Poda Adequação</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="TRATAMENTO_FITOSANITARIO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">💊</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/pill.png" alt=""></span>
                     <span class="manejo-option-label">Tratamento</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="AMPLIACAO_CANTEIRO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🌱</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/seedling.png" alt=""></span>
                     <span class="manejo-option-label">Ampliar Canteiro</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="TUTORAMENTO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🪵</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/wood.png" alt=""></span>
                     <span class="manejo-option-label">Tutoramento</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="AVALIACAO_TRANSPLANTE" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🔄</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/refresh.png" alt=""></span>
                     <span class="manejo-option-label">Transplante</span>
                   </div>
                 </label>
                 <label class="manejo-option">
                   <input type="radio" name="tipoManejoRadio" value="AVALIACAO_SUPRESSAO" />
                   <div class="manejo-option-card">
-                    <span class="manejo-option-icon">🪓</span>
+                    <span class="manejo-option-icon"><img class="ico" src="./img/icones/axe.png" alt=""></span>
                     <span class="manejo-option-label">Supressão</span>
                   </div>
                 </label>
@@ -497,7 +510,7 @@
             </div>
 
             <div class="hint-box" style="margin-top:8px;">
-              <strong>ℹ️ Sobre o manejo</strong>
+              <strong><img class="ico" src="./img/icones/info-circle.png" alt=""> Sobre o manejo</strong>
               <p>Defina o tipo de intervenção e a prioridade. Essas informações alimentam a lista de Ordens de Serviço para a equipe de campo.</p>
             </div>
           </div>
@@ -511,16 +524,19 @@
         </form>
       </aside>
 
-      <section class="panel">
-        <div class="panel-header">
-          <h2>Buscar árvore</h2>
+      <section class="panel" style="display:flex;flex-direction:column;min-height:420px;">
+        <div class="panel-header" style="flex-wrap:wrap;gap:10px;">
+          <h2>Mapa da arborização</h2>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);cursor:pointer;">
+              <input type="checkbox" id="mapaCbArvores" checked /> Árvores
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:var(--muted);cursor:pointer;">
+              <input type="checkbox" id="mapaCbAreas" checked /> Áreas verdes
+            </label>
+          </div>
         </div>
-        <form id="buscaForm" class="busca-form">
-          <input type="text" id="buscaTermo" placeholder="Digite o nome, espécie ou ID da árvore..." />
-          <button type="submit" class="primary-button">Buscar</button>
-        </form>
-        <p class="area-description">Você pode digitar o nome, a espécie ou o ID (ex.: ARB-000001).</p>
-        <div id="buscaResultado"></div>
+        <div id="mapInv" style="flex:1;min-height:380px;"></div>
       </section>
 
       <section class="panel">
@@ -714,6 +730,7 @@
   <script src="./auth.js"></script>
   <script src="./toasts.js"></script>
   <script src="./kml.js?v=20260924-3"></script>
-  <script src="./arvores.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+  <script src="./arvores.js?v=20260925-1"></script>
 </body>
 </html>

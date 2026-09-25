@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20260825-8" />
+  <link rel="stylesheet" href="./styles.css?v=20260925-1" />
 </head>
 <body>
   <main class="app-shell">
@@ -22,7 +22,7 @@
           <small>Meio Ambiente • Arborização Urbana • AMASVISA</small>
         </div>
       </div>
-      <button class="pub-hamburger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menu">☰</button>
+      <button class="pub-hamburger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menu"><img class="ico" src="./img/icones/menu-2.png" alt=""></button>
       <nav class="user-bar">
         <span>Consulta pública</span>
         <a href="./index.html" class="ghost-button">← Mapa</a>
@@ -56,11 +56,12 @@
           <input type="text" id="buscaTermo" placeholder="Nome popular ou científico..." />
           <button type="submit" class="primary-button">Buscar</button>
         </form>
+        <div id="buscaResultado"></div>
         <p class="area-description">Digite o nome popular ou científico da espécie para filtrar a lista. Clique em uma espécie para ver as fotos.</p>
         <div id="filtrosPorte" class="filtros-porte"></div>
         <aside class="curiosidade-card">
           <div class="curiosidade-topo">
-            <span class="curiosidade-icone">🌿</span>
+            <span class="curiosidade-icone"><img class="ico" src="./img/icones/plant.png" alt=""></span>
             <p class="curiosidade-titulo">Você sabia?</p>
           </div>
           <p id="curiosidadeTexto" class="curiosidade-texto"></p>
@@ -95,7 +96,7 @@
     </section>
   </main>
 
-  <script src="./especies-publico.js"></script>
+  <script src="./especies-publico.js?v=20260925-1"></script>
 
   <!-- VLibras - Acessibilidade para surdos/mudos -->
   <div vw class="enabled">

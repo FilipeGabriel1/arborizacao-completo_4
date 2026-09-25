@@ -308,7 +308,7 @@ function renderizarFeed(placar) {
     elemento.style.animationDelay = `${indice * 90}ms`;
 
     elemento.innerHTML = `
-      <div class="placar-feed-icone">${item.tipo === 'plantio' ? '🌱' : '🎁'}</div>
+      <div class="placar-feed-icone">${item.tipo === 'plantio' ? '<img class="ico" src="./img/icones/seedling.png" alt="">' : '<img class="ico" src="./img/icones/gift.png" alt="">'}</div>
       <div class="placar-feed-texto">
         <strong>${item.titulo}</strong>
         <span>${item.detalhe}</span>
