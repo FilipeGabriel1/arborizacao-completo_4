@@ -856,6 +856,7 @@ function arvoresParaFeatures(lista) {
   const features = [];
   (lista || []).forEach((a) => {
     if (a.latitude && a.longitude) {
+      const fotoUrl = obterUrlImagem(a.fotoUrl || (a.fotos && a.fotos.length ? a.fotos[0].url : '')) || '';
       features.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [a.longitude, a.latitude] },
@@ -863,7 +864,8 @@ function arvoresParaFeatures(lista) {
           id: a.id,
           nome: a.nome || 'Árvore #' + a.id,
           especie: a.especieNomePopular || 'Não informada',
-          porte: a.porte || ''
+          porte: a.porte || '',
+          foto: fotoUrl
         }
       });
     }
@@ -985,9 +987,13 @@ function initMapaInventario() {
       if (!e.features || !e.features.length) return;
       const p = e.features[0].properties;
       fecharPopupMapa();
+      const fotoHtml = p.foto
+        ? '<img src="' + p.foto + '" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:#0a1510;" onerror="this.style.display=\'none\'">'
+        : '';
       popupMapaAtual = new maplibregl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(
+          fotoHtml +
           '<strong>' + p.nome + '</strong><br/>' + p.especie +
           (p.porte ? '<br/>Porte: ' + p.porte : '') +
           '<br/><button onclick="editarDoMapa(' + p.id + ')" style="margin-top:8px;padding:5px 12px;border:none;border-radius:6px;background:#49a970;color:#fff;cursor:pointer;font-weight:600;">Editar</button>'
