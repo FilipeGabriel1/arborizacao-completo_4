@@ -37,7 +37,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, LoginAttemptService tentativas,
+            LoginRateLimitFilter loginRateLimitFilter) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 // Área pública: tela inicial de entrada, página do mapa,
@@ -88,6 +89,20 @@ public class SecurityConfig {
                         "/api/sementeira/**",
                         "/api/kml/export/**"
                 ).permitAll()
+                // --- Autorização por perfil (validada no servidor, não só no front) ---
+                // Perfil ORDENS: somente ordens de serviço (leitura + criação/atualização);
+                // não pode apagar ordens nem tocar em cadastros.
+                .requestMatchers(HttpMethod.POST, "/api/manutencoes/**")
+                        .hasAnyRole("FUNCIONARIO", "ADMIN", "ORDENS")
+                .requestMatchers(HttpMethod.PUT, "/api/manutencoes/**")
+                        .hasAnyRole("FUNCIONARIO", "ADMIN", "ORDENS")
+                // Qualquer outra escrita (POST/PUT/PATCH/DELETE) exige funcionário ou admin.
+                .requestMatchers(HttpMethod.POST, "/api/**").hasAnyRole("FUNCIONARIO", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/**").hasAnyRole("FUNCIONARIO", "ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/**").hasAnyRole("FUNCIONARIO", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/**").hasAnyRole("FUNCIONARIO", "ADMIN")
+                // Doações contêm CPF/RG de cidadãos: perfil ORDENS não acessa.
+                .requestMatchers("/api/doacoes/**").hasAnyRole("FUNCIONARIO", "ADMIN")
                 .requestMatchers("/api/auth/me").authenticated()
                 .anyRequest().authenticated()
             )
@@ -96,8 +111,19 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")
                 .usernameParameter("email")
                 .passwordParameter("senha")
-                .defaultSuccessUrl("/arborizacao/painel.html", true)
-                .failureUrl("/arborizacao/login.html?erro=1")
+                // Falha: conta falha no contador do rate limit e redireciona
+                // para a página de login com a mensagem de erro.
+                .failureHandler((request, response, exception) -> {
+                    tentativas.registraFalha(
+                            LoginAttemptService.chave(request.getRemoteAddr(), request.getParameter("email")));
+                    response.sendRedirect("/arborizacao/login.html?erro=1");
+                })
+                // Sucesso: zera o contador e vai para o painel.
+                .successHandler((request, response, authentication) -> {
+                    tentativas.limpa(
+                            LoginAttemptService.chave(request.getRemoteAddr(), request.getParameter("email")));
+                    response.sendRedirect("/arborizacao/painel.html");
+                })
                 .permitAll()
             )
             .logout(logout -> logout
@@ -126,6 +152,18 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 .maximumSessions(3)
+            )
+            // Rate limit de login: corta POST /login antes da autenticação
+            // quando o par IP + e-mail está bloqueado (429).
+            .addFilterBefore(loginRateLimitFilter,
+                    org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+            // Cabeçalhos de segurança: HSTS (efetivo quando atrás de HTTPS)
+            // e Referrer-Policy para não vazar a URL completa em links externos.
+            .headers(headers -> headers
+                .httpStrictTransportSecurity(hsts -> hsts.maxAgeInSeconds(15552000))
+                .referrerPolicy(referrer -> referrer
+                        .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
+                                .ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
             );
 
         return http.build();

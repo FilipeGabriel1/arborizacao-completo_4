@@ -1,0 +1,11 @@
+# Credenciais e config local (NUNCA versionar)
+config/
+config/*.properties.bak
+
+# Bancos locais (SQLite) — em produção usa MySQL/TiDB via config local
+*.db
+*.db-journal
+*.sqlite
+
+# Logs do servidor
+*.log

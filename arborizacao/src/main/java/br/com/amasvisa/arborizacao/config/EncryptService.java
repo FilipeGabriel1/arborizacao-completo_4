@@ -34,7 +34,11 @@ public class EncryptService {
     public void init() throws Exception {
         String key = encryptionKey;
         if (key == null || key.isBlank()) {
-            key = "L3zuBicPZj7f4QPuixzLkP7ygbDMtJRpeg0z5a0sbKY";
+            // Falha rápida: chave não pode ficar hardcoded no código-fonte.
+            // Defina a variável de ambiente ENCRYPTION_KEY (mínimo 16 caracteres).
+            throw new IllegalStateException(
+                    "ENCRYPTION_KEY não configurada. Defina a variável de ambiente "
+                    + "ENCRYPTION_KEY (mínimo 16 caracteres) antes de iniciar a aplicação.");
         }
         byte[] keyBytes = MessageDigest.getInstance("SHA-256")
                 .digest(key.getBytes(StandardCharsets.UTF_8));
