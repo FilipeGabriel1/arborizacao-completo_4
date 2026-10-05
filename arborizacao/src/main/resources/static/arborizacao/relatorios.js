@@ -74,19 +74,22 @@ function polarToCartesian(cx, cy, r, angleDeg) {
   return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
 }
 
-function fatiaPie(cx, cy, r, startAngle, endAngle) {
-  if (endAngle - startAngle >= 359.99) {
-    return 'M ' + cx + ' ' + (cy - r) +
-      ' A ' + r + ' ' + r + ' 0 0 1 ' + cx + ' ' + (cy + r) +
-      ' A ' + r + ' ' + r + ' 0 0 1 ' + cx + ' ' + (cy - r) + ' Z';
-  }
-  const start = polarToCartesian(cx, cy, r, endAngle);
-  const end = polarToCartesian(cx, cy, r, startAngle);
-  const large = endAngle - startAngle <= 180 ? 0 : 1;
-  return 'M ' + cx + ' ' + cy +
-    ' L ' + start.x + ' ' + start.y +
-    ' A ' + r + ' ' + r + ' 0 ' + large + ' 0 ' + end.x + ' ' + end.y +
-    ' Z';
+function donutSegment(cx, cy, rOuter, rInner, startAngle, endAngle) {
+  const sweep = endAngle - startAngle;
+  if (sweep <= 0) return null;
+  if (sweep >= 359.99) return { full: true, mid: (rOuter + rInner) / 2, thick: rOuter - rInner };
+  const large = sweep > 180 ? 1 : 0;
+  const o1 = polarToCartesian(cx, cy, rOuter, startAngle);
+  const o2 = polarToCartesian(cx, cy, rOuter, endAngle);
+  const i1 = polarToCartesian(cx, cy, rInner, endAngle);
+  const i2 = polarToCartesian(cx, cy, rInner, startAngle);
+  return {
+    d: 'M ' + o1.x + ' ' + o1.y +
+      ' A ' + rOuter + ' ' + rOuter + ' 0 ' + large + ' 1 ' + o2.x + ' ' + o2.y +
+      ' L ' + i1.x + ' ' + i1.y +
+      ' A ' + rInner + ' ' + rInner + ' 0 ' + large + ' 0 ' + i2.x + ' ' + i2.y +
+      ' Z'
+  };
 }
 
 function renderPieChart(containerId, dados, cores, rotulos) {
@@ -98,38 +101,45 @@ function renderPieChart(containerId, dados, cores, rotulos) {
     return;
   }
   const total = itens.reduce((s, [, v]) => s + v, 0);
-  const cx = 100, cy = 100, r = 80;
+  const cx = 100, cy = 100, rOuter = 90, rInner = 58;
   let paths = '';
-  if (itens.length === 1) {
-    const [chave, valor] = itens[0];
+  let angle = 0;
+  itens.forEach(([chave, valor]) => {
+    const slice = (valor / total) * 360;
     const cor = cores[chave] || '#22c55e';
     const nome = (rotulos && rotulos[chave]) || chave;
-    paths = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r +
-      '" fill="' + cor + '" stroke="#0f172a" stroke-width="2">' +
-      '<title>' + nome + ': ' + valor + '</title></circle>';
-  } else {
-    let angle = 0;
-    itens.forEach(([chave, valor]) => {
-      const slice = (valor / total) * 360;
-      const cor = cores[chave] || '#22c55e';
-      const nome = (rotulos && rotulos[chave]) || chave;
-      paths += '<path d="' + fatiaPie(cx, cy, r, angle, angle + slice) +
-        '" fill="' + cor + '" stroke="#0f172a" stroke-width="2">' +
+    const seg = donutSegment(cx, cy, rOuter, rInner, angle, angle + slice);
+    if (seg && seg.full) {
+      paths += '<circle cx="' + cx + '" cy="' + cy + '" r="' + seg.mid +
+        '" fill="none" stroke="' + cor + '" stroke-width="' + seg.thick +
+        '"><title>' + nome + ': ' + valor + '</title></circle>';
+    } else if (seg && seg.d) {
+      paths += '<path d="' + seg.d + '" fill="' + cor + '" stroke="#080e0b" stroke-width="1.5">' +
         '<title>' + nome + ': ' + valor + '</title></path>';
-      angle += slice;
-    });
-  }
-  const legend = itens.map(([chave, valor]) => {
+    }
+    angle += slice;
+  });
+  const breakdown = itens.map(([chave, valor]) => {
     const cor = cores[chave] || '#22c55e';
     const nome = (rotulos && rotulos[chave]) || chave;
     const pct = Math.round((valor / total) * 100);
-    return '<span><i style="background:' + cor + ';"></i>' +
-      nome + ' (' + valor + ' • ' + pct + '%)</span>';
+    return '<div class="donut-break-item">' +
+      '<span class="donut-break-dot" style="background:' + cor + ';"></span>' +
+      '<span class="donut-break-nome">' + nome + '</span>' +
+      '<span class="donut-break-valor">' + valor + ' • ' + pct + '%</span>' +
+      '<span class="donut-break-bar"><i style="width:' + pct + '%;background:' + cor + ';"></i></span>' +
+      '</div>';
   }).join('');
   el.innerHTML =
-    '<div class="pie-wrap">' +
-    '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de pizza">' + paths + '</svg>' +
-    '<div class="chart-legend">' + legend + '</div>' +
+    '<div class="donut-wrap donut-row">' +
+    '<div class="donut-svg-box">' +
+    '<svg viewBox="0 0 200 200" role="img" aria-label="Gráfico de rosca">' + paths + '</svg>' +
+    '<div class="donut-center">' +
+    '<span class="donut-valor">' + total + '</span>' +
+    '<span class="donut-label">Total</span>' +
+    '</div>' +
+    '</div>' +
+    '<div class="donut-breakdown">' + breakdown + '</div>' +
     '</div>';
 }
 
