@@ -34,8 +34,28 @@
       const userAvatarEl = document.getElementById('userAvatar');
       if (userNameEl) userNameEl.textContent = nomeCurto;
       if (userFullNameEl) userFullNameEl.textContent = nome;
-      if (userProfileEl) userProfileEl.textContent = usuario.admin ? 'Perfil: Administrador' : 'Perfil: Técnico';
+      if (userProfileEl) userProfileEl.textContent =
+        usuario.perfil === 'ORDENS' ? 'Perfil: Ordens de Serviço'
+          : usuario.admin ? 'Perfil: Administrador' : 'Perfil: Técnico';
       if (userAvatarEl) userAvatarEl.textContent = initials;
+
+      // Perfil ORDENS: acesso exclusivo às Ordens de Serviço
+      if (usuario.perfil === 'ORDENS') {
+        const paginaAtual = (location.pathname.split('/').pop() || '').toLowerCase();
+        if (paginaAtual && paginaAtual !== 'manejo.html') {
+          location.replace('./manejo.html');
+          return;
+        }
+        document.querySelectorAll('.sidebar-link').forEach((el) => {
+          const href = (el.getAttribute('href') || '').toLowerCase();
+          el.hidden = !href.includes('manejo.html');
+        });
+        document.querySelectorAll('.sidebar-section').forEach((sec) => {
+          const temVisivel = [...sec.querySelectorAll('.sidebar-link')].some((l) => !l.hidden);
+          sec.hidden = !temVisivel;
+        });
+      }
+
       if (usuario.admin) {
         document.querySelectorAll('[data-admin]').forEach((el) => {
           el.hidden = false;
@@ -59,23 +79,79 @@
   const observer = new MutationObserver(aplicarTooltips);
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // Contagem de notificações (manejos pendentes)
+  // Notificações (ordens de serviço em aberto)
   const notifBadge = document.getElementById('notifCount');
   const notifBtn = document.querySelector('.topbar-notif');
+  let notifItens = [];
+  const notifPrioOrder = { URGENTE: 0, ALTA: 1, MEDIA: 2, BAIXA: 3 };
+  const notifTipoLabels = {
+    PODA_LIMPEZA: 'Poda Limpeza', PODA_FORMACAO: 'Poda Formação', PODA_RENOVACAO: 'Poda Renovação',
+    MONITORAMENTO: 'Monitoramento', COMBATE_PRAGAS: 'Combate a Pragas', TRANSPLANTE: 'Transplante',
+    EXTRACAO: 'Extração', REPOUSO: 'Reposo'
+  };
   if (notifBadge) {
     fetch('/api/manutencoes?page=0&size=200', { credentials: 'same-origin' })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const itens = data?.value || data || [];
-        const pendentes = itens.filter(m => m.status === 'PENDENTE').length;
-        notifBadge.textContent = pendentes;
-        notifBadge.style.display = pendentes > 0 ? 'grid' : 'none';
+        notifItens = itens.filter(m => m.status === 'PENDENTE' || m.status === 'EM_EXECUCAO');
+        notifBadge.textContent = notifItens.length;
+        notifBadge.style.display = notifItens.length > 0 ? 'grid' : 'none';
       })
       .catch(() => {});
   }
   if (notifBtn) {
-    notifBtn.addEventListener('click', () => {
-      window.location.href = './manejo.html';
+    const wrap = document.createElement('div');
+    wrap.className = 'notif-wrap';
+    notifBtn.parentElement.insertBefore(wrap, notifBtn);
+    wrap.appendChild(notifBtn);
+
+    const dd = document.createElement('div');
+    dd.className = 'notif-dropdown';
+    dd.style.display = 'none';
+    wrap.appendChild(dd);
+
+    const renderNotifs = () => {
+      if (!notifItens.length) {
+        dd.innerHTML = '<div class="notif-vazio">Nenhuma ordem de serviço pendente.</div>' +
+          '<a class="notif-ver-todas" href="./manejo.html">Ver ordens de serviço →</a>';
+        return;
+      }
+      const lista = notifItens.slice().sort((a, b) =>
+        (notifPrioOrder[a.prioridade] ?? 9) - (notifPrioOrder[b.prioridade] ?? 9)
+      ).slice(0, 6);
+      dd.innerHTML =
+        '<div class="notif-header">Notificações <span>' + notifItens.length + ' em aberto</span></div>' +
+        lista.map(m => {
+          const idLabel = 'OS-' + String(m.id).padStart(5, '0');
+          const tipo = notifTipoLabels[m.tipo] || m.tipo || 'Ordem de serviço';
+          const prio = (m.prioridade || 'MEDIA').toLowerCase();
+          return '<div class="notif-item" role="button" tabindex="0">' +
+            '<span class="notif-prio ' + prio + '">' + (m.prioridade || '—') + '</span>' +
+            '<div class="notif-corpo"><strong>' + tipo + ' — ' + idLabel + '</strong>' +
+            '<small>' + (m.endereco || 'Endereço não informado') + '</small></div>' +
+            '</div>';
+        }).join('') +
+        (notifItens.length > 6 ? '<div class="notif-resto">+ ' + (notifItens.length - 6) + ' outra(s)</div>' : '') +
+        '<a class="notif-ver-todas" href="./manejo.html">Ver todas as ordens de serviço →</a>';
+      dd.querySelectorAll('.notif-item').forEach(el => {
+        const ir = () => { window.location.href = './manejo.html'; };
+        el.addEventListener('click', ir);
+        el.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') ir(); });
+      });
+    };
+
+    notifBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const abrir = dd.style.display === 'none';
+      if (abrir) renderNotifs();
+      dd.style.display = abrir ? 'block' : 'none';
+    });
+    document.addEventListener('click', (e) => {
+      if (dd.style.display !== 'none' && !dd.contains(e.target)) dd.style.display = 'none';
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') dd.style.display = 'none';
     });
   }
 

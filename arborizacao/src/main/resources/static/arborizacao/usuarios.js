@@ -33,7 +33,7 @@ function renderizarLista(usuarios) {
     item.innerHTML = `
       <header>
         <h3>${usuario.nome}</h3>
-        <span>${usuario.perfil === 'ADMIN' ? 'Administrador' : 'Funcionário'}</span>
+        <span>${usuario.perfil === 'ADMIN' ? 'Administrador' : usuario.perfil === 'ORDENS' ? 'Ordens de Serviço' : 'Funcionário'}</span>
       </header>
       <p>${usuario.email}</p>
       <div class="item-actions">

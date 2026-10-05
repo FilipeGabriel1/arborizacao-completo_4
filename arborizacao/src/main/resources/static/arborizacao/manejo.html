@@ -55,7 +55,13 @@
         <p>Registro e acompanhamento de manutenções e ordens de serviço em endereços.</p>
       </div>
       <div class="topbar-actions">
-        <span id="userEmail" style="font-size:0.82rem;color:var(--muted);"></span>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar" id="userAvatar">DU</div>
+          <div class="topbar-user-info">
+            <strong id="userFullName">Técnico(a)</strong>
+            <small id="userProfile">Perfil: Técnico</small>
+          </div>
+        </div>
         <form action="/logout" method="post" class="logout-form">
           <button type="submit" class="ghost-button" style="font-size:0.78rem;padding:8px 12px;">Sair</button>
         </form>
