@@ -6,8 +6,11 @@
   const originalFetch = window.fetch;
 
   window.fetch = function (...args) {
+    const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url) || '';
     return originalFetch.apply(this, args).then((response) => {
-      if (response.status === 401) {
+      // /api/auth/me devolve 401 em páginas públicas (visitante sem login):
+      // isso não é sessão expirada, então não manda para o login.
+      if (response.status === 401 && !url.includes('/api/auth/me')) {
         window.location.href = '/arborizacao/login.html?expirou=1';
       }
       return response;
@@ -20,6 +23,10 @@
       if (!usuario) {
         return;
       }
+      // Expõe o perfil para as telas esconderem ações que o servidor já
+      // nega (ex.: perfil ORDENS não pode apagar ordens de serviço).
+      window.usuarioPerfil = usuario.perfil;
+      document.dispatchEvent(new CustomEvent('usuario-carregado', { detail: usuario }));
       const emailEl = document.getElementById('userEmail');
       if (emailEl) {
         emailEl.textContent = usuario.email;

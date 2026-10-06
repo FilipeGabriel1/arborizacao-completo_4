@@ -59,6 +59,10 @@ public class SecurityConfig {
                         "/arborizacao/painel-arvore.js",
                         "/arborizacao/styles.css",
                         "/arborizacao/csrf.js",
+                        "/arborizacao/auth.js",
+                        "/arborizacao/toasts.js",
+                        "/arborizacao/sementeira.js",
+                        "/arborizacao/dashboard.css",
                         "/arborizacao/acessibilidade.js",
                         "/arborizacao/cookie-consent.js",
                         "/arborizacao/kml.js",
@@ -157,13 +161,34 @@ public class SecurityConfig {
             // quando o par IP + e-mail está bloqueado (429).
             .addFilterBefore(loginRateLimitFilter,
                     org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
-            // Cabeçalhos de segurança: HSTS (efetivo quando atrás de HTTPS)
-            // e Referrer-Policy para não vazar a URL completa em links externos.
+            // Cabeçalhos de segurança: HSTS (efetivo quando atrás de HTTPS),
+            // Referrer-Policy para não vazar a URL completa em links externos
+            // e Content-Security-Policy limitando de onde a página pode carregar
+            // scripts, estilos, imagens e conexões.
             .headers(headers -> headers
                 .httpStrictTransportSecurity(hsts -> hsts.maxAgeInSeconds(15552000))
                 .referrerPolicy(referrer -> referrer
                         .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
                                 .ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                        "default-src 'self'; " +
+                        // 'unsafe-inline': a interface usa onclick/<script> inline;
+                        // os domínios abaixo são os CDNs que o sistema realmente usa.
+                        // o VLibras carrega o plugin via redirect p/ cdn.jsdelivr.net
+                        "script-src 'self' 'unsafe-inline' https://unpkg.com https://vlibras.gov.br https://cdn.jsdelivr.net; " +
+                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://vlibras.gov.br; " +
+                        "font-src 'self' data: https://fonts.gstatic.com https://vlibras.gov.br; " +
+                        // fotos: acervo local + imagens de place (googleusercontent) e OSM
+                        "img-src 'self' data: blob: https:; " +
+                        // tiles do mapa, glifos (demotiles) e tradução do VLibras
+                        "connect-src 'self' https://tile.openstreetmap.org https://demotiles.maplibre.org https://vlibras.gov.br; " +
+                        "worker-src 'self' blob:; " +
+                        "frame-src https://vlibras.gov.br; " +
+                        "media-src 'self' data: blob:; " +
+                        "frame-ancestors 'self'; " +
+                        "form-action 'self'; " +
+                        "base-uri 'self'; " +
+                        "object-src 'none'"))
             );
 
         return http.build();

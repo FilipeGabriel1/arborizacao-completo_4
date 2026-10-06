@@ -102,15 +102,27 @@ function renderizar(manutencoes) {
         <span class="os-card-status ${statusClass}">${statusLabels[m.status] || m.status}</span>
         <div class="os-card-actions">
           <button type="button" data-action="editar" class="os-card-btn">Editar</button>
-          <button type="button" data-action="remover" class="os-card-btn danger">Remover</button>
+          ${window.usuarioPerfil === 'ORDENS' ? '' : '<button type="button" data-action="remover" class="os-card-btn danger">Remover</button>'}
         </div>
       </div>
     `;
     item.querySelector('[data-action="editar"]').addEventListener('click', () => iniciarEdicao(m));
-    item.querySelector('[data-action="remover"]').addEventListener('click', () => remover(m));
+    const btnRemover = item.querySelector('[data-action="remover"]');
+    if (btnRemover) {
+      btnRemover.addEventListener('click', () => remover(m));
+    }
     manutencoesList.appendChild(item);
   });
 }
+
+// Perfil ORDENS: o servidor nega DELETE (403), então escondemos o botão.
+// Os cards podem ser renderizados antes do /api/auth/me responder — por isso
+// também removemos os botões quando o perfil chega no evento.
+document.addEventListener('usuario-carregado', (ev) => {
+  if (ev.detail && ev.detail.perfil === 'ORDENS') {
+    document.querySelectorAll('[data-action="remover"]').forEach(btn => btn.remove());
+  }
+});
 
 function iniciarEdicao(m) {
   editingId = m.id;
@@ -143,6 +155,7 @@ function cancelarEdicao() {
 }
 
 async function remover(m) {
+  if (window.usuarioPerfil === 'ORDENS') return;
   if (!confirm(`Remover a OS-${String(m.id).padStart(5, '0')}?`)) return;
   await fetch(`${apiBase}/${m.id}`, { method: 'DELETE' });
   showToast('OS removida com sucesso!', 'sucesso');

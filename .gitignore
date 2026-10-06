@@ -1,5 +1,7 @@
 # Credenciais e config local (NUNCA versionar)
-config/
+# Atenção: sem a barra, "config/" casaria com o PACOTE Java src/.../config/
+/config/
+arborizacao/config/
 config/*.properties.bak
 
 # Bancos locais (SQLite) — em produção usa MySQL/TiDB via config local
