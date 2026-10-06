@@ -9,7 +9,9 @@ import br.com.amasvisa.arborizacao.doacao.models.DoacaoArvore;
 
 public interface DoacaoArvoreRepository extends JpaRepository<DoacaoArvore, Long> {
 
-    List<DoacaoArvore> findByCpf(String cpf);
+    // Observação: NÃO existe findByCpf — o CPF é cifrado com IV aleatório,
+    // então cada registro tem bytes diferentes; a filtragem por CPF decifra
+    // em memória (ver DoacaoArvoreService.extratoDoador).
 
     List<DoacaoArvore> findBySolicitanteContainingIgnoreCase(String solicitante);
 

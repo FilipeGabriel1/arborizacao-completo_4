@@ -88,8 +88,16 @@ public class DoacaoArvoreService {
     public ExtratoDoadorResponse extratoDoador(String cpf, String nome) {
         List<DoacaoArvore> doacoes;
         if (cpf != null && !cpf.isBlank()) {
-            String cpfCriptografado = encryptService.encrypt(cpf.replaceAll("\\D", ""));
-            doacoes = repository.findByCpf(cpfCriptografado);
+            // O CPF é cifrado com IV aleatório: cada cifragem gera bytes
+            // diferentes, então não existe "cpfCifrado" fixo para comparar
+            // no banco (por isso a busca antiga nunca achava nada).
+            // Decifra e compara em memória — a tabela é pequena e o endpoint
+            // é interno.
+            String cpfLimpo = cpf.replaceAll("\\D", "");
+            doacoes = repository.findAll().stream()
+                    .filter(d -> d.getCpf() != null
+                            && cpfLimpo.equals(encryptService.decrypt(d.getCpf())))
+                    .toList();
         } else {
             String termo = nome == null ? "" : nome.trim();
             doacoes = termo.isBlank() ? repository.findAll()
