@@ -12,8 +12,11 @@ const carouselPrev = document.getElementById('carouselPrev');
 const carouselNext = document.getElementById('carouselNext');
 const carouselNome = document.getElementById('carouselNome');
 const carouselInfo = document.getElementById('carouselInfo');
+const carouselThumbs = document.getElementById('carouselThumbs');
+const carouselCaption = document.getElementById('carouselLegenda');
 
 let especies = [];
+let especieSelecionada = null;
 let carouselFotos = [];
 let carouselIndex = 0;
 let filtroPorte = null;
@@ -56,23 +59,57 @@ function montarListaFotos(especie) {
 }
 
 function selecionarEspecie(especie) {
+  especieSelecionada = especie || null;
   carouselFotos = especie ? montarListaFotos(especie) : [];
   carouselIndex = 0;
-  renderizarCarrossel(especie);
+  renderizarCarrossel();
 }
 
-function renderizarCarrossel(especie) {
+function renderizarMiniaturas() {
+  carouselThumbs.innerHTML = '';
+  carouselThumbs.classList.toggle('hidden', carouselFotos.length === 0);
+
+  carouselFotos.forEach((foto, indice) => {
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'carousel-thumb' + (indice === carouselIndex ? ' ativo' : '');
+    botao.setAttribute('aria-label', `Ver foto ${indice + 1} de ${carouselFotos.length}`);
+    botao.setAttribute('aria-pressed', indice === carouselIndex ? 'true' : 'false');
+
+    const img = document.createElement('img');
+    img.src = obterUrlImagem(foto.url);
+    img.alt = '';
+    img.loading = 'lazy';
+    img.addEventListener('error', () => botao.remove());
+    botao.appendChild(img);
+
+    botao.addEventListener('click', () => {
+      carouselIndex = indice;
+      renderizarCarrossel();
+    });
+    carouselThumbs.appendChild(botao);
+  });
+
+  const ativo = carouselThumbs.children[carouselIndex];
+  if (ativo && ativo.scrollIntoView) {
+    ativo.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+}
+
+function renderizarCarrossel() {
+  const especie = especieSelecionada;
   const temFotos = carouselFotos.length > 0;
-  const foto = carouselFotos[carouselIndex];
+  const foto = temFotos ? carouselFotos[carouselIndex] : null;
 
   carouselImg.style.display = temFotos ? 'block' : 'none';
-  carouselImg.src = temFotos ? obterUrlImagem(foto.url) : '';
-  carouselImg.alt = especie ? `${especie.nomePopular} — foto` : 'Foto da espécie';
+  carouselImg.src = foto ? obterUrlImagem(foto.url) : '';
+  carouselImg.alt = especie ? `${especie.nomePopular} — foto ${carouselIndex + 1}` : 'Foto da espécie';
   carouselVazio.classList.toggle('hidden', temFotos);
   carouselPrev.disabled = !temFotos || carouselIndex === 0;
   carouselNext.disabled = !temFotos || carouselIndex === carouselFotos.length - 1;
 
   carouselNome.textContent = especie ? especie.nomePopular : '';
+  renderizarMiniaturas();
 
   const detalhesEl = document.getElementById('carouselDetalhes');
   if (!especie) {
@@ -94,12 +131,14 @@ function renderizarCarrossel(especie) {
   }
 
   if (!temFotos) {
-    carouselInfo.textContent = 'Nenhuma foto cadastrada para esta espécie.';
+    carouselInfo.classList.add('hidden');
+    carouselCaption.textContent = especie ? 'Nenhuma foto cadastrada para esta espécie.' : '';
     return;
   }
 
-  const legenda = foto.descricao ? ` — ${foto.descricao}` : '';
-  carouselInfo.textContent = `Foto ${carouselIndex + 1} de ${carouselFotos.length}${legenda}`;
+  carouselInfo.classList.remove('hidden');
+  carouselInfo.textContent = `${carouselIndex + 1} / ${carouselFotos.length}`;
+  carouselCaption.textContent = foto.descricao || '';
 }
 
 function navegarCarrossel(delta) {
@@ -107,8 +146,7 @@ function navegarCarrossel(delta) {
   const novoIndice = carouselIndex + delta;
   if (novoIndice < 0 || novoIndice >= carouselFotos.length) return;
   carouselIndex = novoIndice;
-  const especie = especies.find((e) => e.id === carouselFotos[0]?.id) || null;
-  renderizarCarrossel(especie);
+  renderizarCarrossel();
 }
 
 carouselPrev.addEventListener('click', () => navegarCarrossel(-1));
@@ -181,10 +219,18 @@ function manterSelecao(lista) {
   }
 }
 
+const CHAVE_SEM_PORTE = '__sem_porte__';
+const ORDEM_PORTES = ['pequeno', 'pequeno/medio', 'medio', 'medio/grande', 'grande', 'muito grande', 'arbusto', 'palmeira'];
+
+function chavePorte(especie) {
+  const bruto = (especie.portePadrao || '').toString().trim();
+  return bruto ? normalizarTexto(bruto) : CHAVE_SEM_PORTE;
+}
+
 function filtrarLista() {
   const termoNorm = normalizarTexto(buscaTermoInput.value.trim());
   return especies.filter((especie) => {
-    if (filtroPorte && (especie.portePadrao || '') !== filtroPorte) return false;
+    if (filtroPorte && chavePorte(especie) !== filtroPorte) return false;
     if (!termoNorm) return true;
     return normalizarTexto(especie.nomePopular).includes(termoNorm)
       || normalizarTexto(especie.nomeCientifico).includes(termoNorm);
@@ -229,22 +275,49 @@ function renderizarResultadosBusca() {
 
 function renderizarFiltrosPorte() {
   const container = document.getElementById('filtrosPorte');
-  const ordem = ['PEQUENO', 'MEDIO', 'GRANDE'];
-  const contagens = {};
+  const grupos = new Map();
+
   especies.forEach((especie) => {
-    const porte = especie.portePadrao || '';
-    contagens[porte] = (contagens[porte] || 0) + 1;
+    const bruto = (especie.portePadrao || '').toString().trim();
+    const chave = bruto ? normalizarTexto(bruto) : CHAVE_SEM_PORTE;
+    let grupo = grupos.get(chave);
+    if (!grupo) {
+      grupo = { total: 0, rotulos: new Map() };
+      grupos.set(chave, grupo);
+    }
+    grupo.total++;
+    if (bruto) {
+      grupo.rotulos.set(bruto, (grupo.rotulos.get(bruto) || 0) + 1);
+    }
+  });
+
+  const rotuloDe = (chave) => {
+    if (chave === CHAVE_SEM_PORTE) return 'Não informado';
+    const rotulos = [...grupos.get(chave).rotulos.entries()].sort((a, b) => b[1] - a[1]);
+    const melhor = rotulos[0][0];
+    return melhor.charAt(0).toUpperCase() + melhor.slice(1);
+  };
+
+  const chaves = [...grupos.keys()].sort((a, b) => {
+    if (a === CHAVE_SEM_PORTE) return 1;
+    if (b === CHAVE_SEM_PORTE) return -1;
+    const ia = ORDEM_PORTES.indexOf(a);
+    const ib = ORDEM_PORTES.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
   });
 
   container.innerHTML = '';
 
-  const criarChip = (porte, rotulo, total) => {
+  const criarChip = (chave, rotulo, total) => {
     const chip = document.createElement('button');
     chip.type = 'button';
-    chip.className = 'chip-porte' + (filtroPorte === porte ? ' ativo' : '');
+    chip.className = 'chip-porte' + (filtroPorte === chave ? ' ativo' : '');
     chip.innerHTML = `${rotulo} <span>${total}</span>`;
     chip.addEventListener('click', () => {
-      filtroPorte = filtroPorte === porte ? null : porte;
+      filtroPorte = filtroPorte === chave ? null : chave;
       const lista = filtrarLista();
       renderizar(lista);
       manterSelecao(lista);
@@ -255,11 +328,7 @@ function renderizarFiltrosPorte() {
   };
 
   criarChip(null, 'Todos', especies.length);
-  ordem.forEach((porte) => {
-    if (contagens[porte]) {
-      criarChip(porte, rotulosPorte[porte], contagens[porte]);
-    }
-  });
+  chaves.forEach((chave) => criarChip(chave, rotuloDe(chave), grupos.get(chave).total));
 }
 
 const curiosidades = [

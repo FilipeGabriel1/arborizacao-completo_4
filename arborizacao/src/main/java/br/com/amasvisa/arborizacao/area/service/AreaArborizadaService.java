@@ -2,7 +2,9 @@ package br.com.amasvisa.arborizacao.area.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -61,10 +63,21 @@ public class AreaArborizadaService {
     }
 
     public PaginaResponse<AreaArborizadaResponse> listar(String nome, Pageable pageable) {
+        Page<AreaArborizada> pagina;
         if (nome == null || nome.isBlank()) {
-            return PaginaResponse.of(repository.findAll(pageable).map(this::toResponse));
+            pagina = repository.findAll(pageable);
+        } else {
+            pagina = repository.findByNomeContainingIgnoreCase(nome, pageable);
         }
-        return PaginaResponse.of(repository.findByNomeContainingIgnoreCase(nome, pageable).map(this::toResponse));
+        java.util.Map<Long, Long> contagens = new java.util.HashMap<>();
+        List<Long> ids = pagina.getContent().stream().map(AreaArborizada::getId).toList();
+        if (!ids.isEmpty()) {
+            for (Object[] linha : arvoreRepository.contarPorAreaIds(ids)) {
+                contagens.put((Long) linha[0], (Long) linha[1]);
+            }
+        }
+        Map<Long, Long> mapaContagens = contagens;
+        return PaginaResponse.of(pagina.map(area -> toResponse(area, mapaContagens.getOrDefault(area.getId(), 0L))));
     }
 
     public AreaArborizadaResponse buscarPorId(Long id) {
@@ -149,6 +162,10 @@ public class AreaArborizadaService {
     }
 
     private AreaArborizadaResponse toResponse(AreaArborizada area) {
+        return toResponse(area, arvoreRepository.countByArea_Id(area.getId()));
+    }
+
+    private AreaArborizadaResponse toResponse(AreaArborizada area, long individuos) {
         List<PontoGeograficoDTO> pontos = area.getPontos().stream()
                 .map(ponto -> new PontoGeograficoDTO(ponto.getLatitude(), ponto.getLongitude()))
                 .toList();
@@ -156,8 +173,6 @@ public class AreaArborizadaService {
         List<AreaFotoResponse> fotos = area.getFotos().stream()
                 .map(foto -> new AreaFotoResponse(foto.getId(), foto.getUrl(), foto.getDescricao(), foto.getCriadoEm()))
                 .toList();
-
-        int individuos = arvoreRepository.findByArea_Id(area.getId()).size();
 
         return new AreaArborizadaResponse(
                 area.getId(),
@@ -170,7 +185,7 @@ public class AreaArborizadaService {
                 area.getAreaTotalM2(),
                 area.getResponsavelManutencao(),
                 area.getSituacaoInventario(),
-                individuos,
+                (int) individuos,
                 area.getUltimaAtualizacaoInventario(),
                 area.getLatitude(),
                 area.getLongitude(),

@@ -293,6 +293,7 @@
       container: 'map',
       style: {
         version: 8,
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
         sources: {
           'osm': {
             type: 'raster',
@@ -314,8 +315,8 @@
         type: 'geojson',
         data: emptyFC(),
         cluster: true,
-        clusterMaxZoom: 16,
-        clusterRadius: 50
+        clusterMaxZoom: 10,
+        clusterRadius: 30
       });
 
       map.addSource('areas', {
@@ -349,19 +350,25 @@
         source: 'arvores',
         filter: ['has', 'point_count'],
         paint: {
-          'circle-color': [
-            'step', ['get', 'point_count'],
-            'rgba(69, 176, 109, 0.6)',
-            10, 'rgba(69, 176, 109, 0.7)',
-            30, 'rgba(47, 158, 91, 0.8)',
-            60, 'rgba(26, 122, 62, 0.9)'
-          ],
-          'circle-radius': [
-            'step', ['get', 'point_count'],
-            16, 10, 22, 30, 28, 60, 34
-          ],
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff'
+          'circle-radius': ['step', ['get', 'point_count'], 20, 10, 30, 50, 40],
+          'circle-color': '#22c55e',
+          'circle-stroke-width': 3,
+          'circle-stroke-color': 'rgba(255,255,255,0.3)'
+        }
+      });
+
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'arvores',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': '{point_count_abbreviated}',
+          'text-font': ['Open Sans Bold'],
+          'text-size': 14
+        },
+        paint: {
+          'text-color': '#ffffff'
         }
       });
 
@@ -371,10 +378,10 @@
         source: 'arvores',
         filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-color': '#49a970',
-          'circle-radius': 7,
+          'circle-radius': 6,
+          'circle-color': '#c1a969',
           'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff'
+          'circle-stroke-color': '#fff6df'
         }
       });
 
@@ -385,7 +392,7 @@
         var p = e.features[0].properties;
         new maplibregl.Popup()
           .setLngLat(e.lngLat)
-          .setHTML('<strong>' + p.nome + '</strong><br/>Tipo: ' + p.tipo + '<br/>Status: ' + (p.status || '—'))
+          .setHTML(areaPopupHtml(p))
           .addTo(map);
       });
 
@@ -394,7 +401,7 @@
         var p = e.features[0].properties;
         new maplibregl.Popup()
           .setLngLat(e.lngLat)
-          .setHTML('<strong>' + p.nome + '</strong><br/>Tipo: ' + p.tipo + '<br/>Status: ' + (p.status || '—'))
+          .setHTML(areaPopupHtml(p))
           .addTo(map);
       });
 
@@ -431,8 +438,9 @@
 
       document.getElementById('camadaArvores').addEventListener('change', function (e) {
         var vis = e.target.checked ? 'visible' : 'none';
-        map.setLayoutProperty('clusters', 'visibility', vis);
-        map.setLayoutProperty('unclustered', 'visibility', vis);
+            map.setLayoutProperty('clusters', 'visibility', vis);
+            map.setLayoutProperty('cluster-count', 'visibility', vis);
+            map.setLayoutProperty('unclustered', 'visibility', vis);
       });
 
       document.getElementById('camadaAreas').addEventListener('change', function (e) {
@@ -447,6 +455,24 @@
     return { type: 'FeatureCollection', features: [] };
   }
 
+  function obterUrlImagem(url) {
+    var texto = (url || '').toString().trim();
+    if (!texto || !/drive\.google\.com/.test(texto)) {
+      return texto;
+    }
+    var m1 = texto.match(/\/file\/d\/([^/?#]+)/);
+    var m2 = texto.match(/[?&]id=([^&#]+)/);
+    var fid = (m1 && m1[1]) || (m2 && m2[1]);
+    return fid ? 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(fid) + '=w2000' : texto;
+  }
+
+  function areaPopupHtml(p) {
+    var foto = p.fotoUrl
+      ? '<img src="' + obterUrlImagem(p.fotoUrl) + '" alt="" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block" onerror="this.remove()">'
+      : '';
+    return '<strong>' + p.nome + '</strong><br/>Tipo: ' + p.tipo + foto;
+  }
+
   function areaToFeatures(areas) {
     var features = [];
     areas.forEach(function (area) {
@@ -455,7 +481,7 @@
           features.push({
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [area.pontos[0].longitude, area.pontos[0].latitude] },
-            properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+            properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: area.fotoUrl || '' }
           });
         } else {
           var coords = area.pontos.map(function (p) { return [p.longitude, p.latitude]; });
@@ -463,14 +489,14 @@
           features.push({
             type: 'Feature',
             geometry: { type: 'Polygon', coordinates: [coords] },
-            properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+            properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: area.fotoUrl || '' }
           });
         }
       } else if (area.latitude && area.longitude) {
         features.push({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [area.longitude, area.latitude] },
-          properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+          properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: area.fotoUrl || '' }
         });
       }
     });

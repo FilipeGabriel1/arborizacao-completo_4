@@ -8,7 +8,6 @@
   const detConteudo = document.getElementById('detConteudo');
 
   const rotulosTipo = { PRACA: 'Praça', BOSQUE: 'Bosque', MATA: 'Mata', PARQUE: 'Parque', OUTRO: 'Outro' };
-  const rotulosSituacao = { EM_ATUALIZACAO: 'Em atualizacao', CONCLUIDO: 'Concluido', PENDENTE: 'Pendente' };
 
   function obterUrlImagem(url) {
     const t = (url || '').toString().trim();
@@ -41,13 +40,16 @@
       document.getElementById('detLogradouro').textContent = area.logradouro || '—';
       document.getElementById('detAreaTotal').textContent = area.areaTotalM2 ? area.areaTotalM2 + ' m²' : '—';
       document.getElementById('detResponsavel').textContent = area.responsavelManutencao || '—';
-      document.getElementById('detInventario').textContent = rotulosSituacao[area.situacaoInventario] || area.situacaoInventario || '—';
       document.getElementById('detIndividuos').textContent = area.individuosCadastrados || '—';
 
       // Foto principal
       const fotoDiv = document.getElementById('detFotoPrincipal');
       if (area.fotoUrl) {
-        fotoDiv.innerHTML = '<img src="' + obterUrlImagem(area.fotoUrl) + '" alt="' + (area.nome || '') + '" />';
+        let creditoHtml = '';
+        if (String(area.fotoUrl).indexOf('wikimedia.org') !== -1) {
+          creditoHtml = '<p class="foto-credito" style="margin:6px 0 0;font-size:0.7rem;color:#9ca3af;line-height:1.5;">Foto: <a href="https://commons.wikimedia.org/wiki/File:Bairro_da_matriz,_Vit%C3%B3ria_de_Santo_Ant%C3%A3o.jpg" target="_blank" rel="noopener" style="color:#4ade80;">Luiz Eduardo / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt" target="_blank" rel="noopener" style="color:#4ade80;">CC BY-SA 4.0</a></p>';
+        }
+        fotoDiv.innerHTML = '<img src="' + obterUrlImagem(area.fotoUrl) + '" alt="' + (area.nome || '') + '" />' + creditoHtml;
       }
 
       // Galeria

@@ -11,10 +11,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.BatchSize;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "especies_arvores")
+@BatchSize(size = 100)
 public class EspecieArvore {
 
     @Id
@@ -43,6 +45,7 @@ public class EspecieArvore {
     @Column(name = "foto_url", length = 500)
     private String fotoUrl;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "especie", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EspecieFoto> fotos = new ArrayList<>();
 

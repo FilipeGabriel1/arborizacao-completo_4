@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20260921" />
+  <link rel="stylesheet" href="./styles.css?v=20261021-3" />
   <style>
     .det-hero { display:flex; gap:2rem; align-items:flex-start; flex-wrap:wrap; margin-bottom:2rem; }
     .det-fotos-col { width:100%; max-width:500px; flex-shrink:0; }
@@ -38,7 +38,8 @@
   </style>
 </head>
 <body>
-  <main class="app-shell">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <main class="app-shell" id="conteudo">
     <header class="prefeitura-bar">
       <div class="prefeitura-marca">
         <span class="prefeitura-brasao">
@@ -77,7 +78,6 @@
             <div class="det-campo"><small>Logradouro</small><p id="detLogradouro"></p></div>
             <div class="det-campo"><small>Área total</small><p id="detAreaTotal"></p></div>
             <div class="det-campo"><small>Responsável pela manutenção</small><p id="detResponsavel"></p></div>
-            <div class="det-campo"><small>Situação do inventário</small><p id="detInventario"></p></div>
             <div class="det-campo"><small>Indivíduos cadastrados</small><p id="detIndividuos"></p></div>
             <div class="det-actions">
               <a href="#" class="primary-button" id="detBtnMapa">Ver no mapa</a>
@@ -108,10 +108,17 @@
         <p>Gestão participativa das áreas arborizadas da cidade, em parceria com a Prefeitura.</p>
       </div>
       <p class="rodape-assinatura">© 2026 Prefeitura de Vitória de Santo Antão • AMASVISA — Todos os direitos reservados.</p>
+    <p class="rodape-assinatura" style="margin-top: 6px;">
+      <a href="./politica-privacidade.html" style="color: #4ade80; text-decoration: none;">Política de Privacidade</a> · 
+      <a href="./termos-de-uso.html" style="color: #4ade80; text-decoration: none;">Termos de Uso</a> · 
+      <a href="./direitos-titular.html" style="color: #4ade80; text-decoration: none;">Direitos do Titular</a> · 
+      <a href="./acessibilidade.html" style="color: #4ade80; text-decoration: none;">Acessibilidade</a> · 
+      <a href="./creditos.html" style="color: #4ade80; text-decoration: none;">Créditos</a>
+    </p>
     </footer>
   </main>
 
-  <script src="./area-det.js"></script>
+  <script src="./area-det.js?v=20261021-1"></script>
   <div vw class="enabled">
     <a href="#" vw-access-button class="active"></a>
     <vw-plugin></vw-plugin>

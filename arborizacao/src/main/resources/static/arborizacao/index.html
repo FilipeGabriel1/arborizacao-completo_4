@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -9,10 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="./styles.css?v=20260924-4" />
+  <link rel="stylesheet" href="./styles.css?v=20261021-3" />
 </head>
 <body>
-  <main class="app-shell">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <main class="app-shell" id="conteudo">
 <header class="prefeitura-bar">
       <div class="prefeitura-marca">
         <span class="prefeitura-brasao">
@@ -28,7 +29,7 @@
         <span>Consulta pública</span>
         <a href="./entrar.html" class="ghost-button"><img class="ico" src="./img/icones/home.png" alt=""> Voltar ao início</a>
         <a href="./especies-publico.html" class="ghost-button">Espécies</a>
-        <a href="./cadastro-areas.html" class="ghost-button">Área do funcionário</a>
+        <a href="./cadastro-areas.html" class="ghost-button">Área técnica</a>
       </nav>
     </header>
 
@@ -332,7 +333,9 @@
       <p class="rodape-assinatura" style="margin-top: 6px;">
         <a href="./politica-privacidade.html" style="color: #4ade80; text-decoration: none;">Política de Privacidade</a> · 
         <a href="./termos-de-uso.html" style="color: #4ade80; text-decoration: none;">Termos de Uso</a> · 
-        <a href="./direitos-titular.html" style="color: #4ade80; text-decoration: none;">Direitos do Titular</a>
+        <a href="./direitos-titular.html" style="color: #4ade80; text-decoration: none;">Direitos do Titular</a> ·
+        <a href="./acessibilidade.html" style="color: #4ade80; text-decoration: none;">Acessibilidade</a> ·
+        <a href="./creditos.html" style="color: #4ade80; text-decoration: none;">Créditos</a>
       </p>
     </footer>
   </main>
@@ -388,8 +391,8 @@
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-  <script src="./painel-arvore.js?v=20260924-2"></script>
-  <script src="./mapa-publico.js?v=20260924-5"></script>
+  <script src="./painel-arvore.js?v=20261021-1"></script>
+  <script src="./mapa-publico.js?v=20261007-2"></script>
   <script>
     (function() {
       fetch('/api/sementeira?page=0&size=500')

@@ -75,6 +75,8 @@ public class SecurityConfig {
                         "/arborizacao/politica-privacidade.html",
                         "/arborizacao/termos-de-uso.html",
                         "/arborizacao/direitos-titular.html",
+                        "/arborizacao/acessibilidade.html",
+                        "/arborizacao/creditos.html",
                         "/arborizacao/especie-det.html",
                         "/arborizacao/especie-det.js",
                         "/arborizacao/area-det.html",

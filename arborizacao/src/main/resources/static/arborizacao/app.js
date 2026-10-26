@@ -36,9 +36,6 @@ const drawModeInput = document.getElementById('drawMode');
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
 const polygonManualEntry = document.getElementById('polygonManualEntry');
-const vertexLatitudeInput = document.getElementById('vertexLatitude');
-const vertexLongitudeInput = document.getElementById('vertexLongitude');
-const addVertexBtn = document.getElementById('addVertexBtn');
 const verticesList = document.getElementById('verticesList');
 const areasList = document.getElementById('areasList');
 const saveBtn = document.getElementById('saveBtn');
@@ -118,10 +115,6 @@ map.on('click', (event) => {
   } else {
     polygonVertices.push([lng, lat]);
     selectionInfo.textContent = `Polígono com ${polygonVertices.length} vértice(s)`;
-    if (polygonVertices.length === 1) {
-      latitudeInput.value = lat.toFixed(6);
-      longitudeInput.value = lng.toFixed(6);
-    }
     renderVerticesList();
   }
 
@@ -192,43 +185,53 @@ drawModeInput.addEventListener('change', () => {
   refreshMap();
 });
 
-// Permite digitar latitude/longitude direto no campo, sem precisar clicar no mapa.
-[latitudeInput, longitudeInput].forEach((input) => {
-  input.addEventListener('change', () => {
-    if (currentMode !== 'point') return;
-    const lat = parseFloat(latitudeInput.value);
-    const lng = parseFloat(longitudeInput.value);
-    if (Number.isFinite(lat) && Number.isFinite(lng)) {
-      currentPoint = [lng, lat];
-      selectionInfo.textContent = `Ponto selecionado: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      refreshMap();
-    }
-  });
-});
+function navegarParaPonto(lng, lat, zoom = 16) {
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
+  map.flyTo({ center: [lng, lat], zoom });
+}
 
-// Adiciona um vértice do polígono digitando os valores, sem precisar clicar no mapa.
-addVertexBtn.addEventListener('click', () => {
-  const lat = parseFloat(vertexLatitudeInput.value);
-  const lng = parseFloat(vertexLongitudeInput.value);
-
+// Um único par de campos lat/lng serve os dois modos:
+// - ponto: define o ponto do mapa;
+// - polígono: cada par completo vira um vértice (ou Enter, com alerta se incompleto).
+function adicionarVerticeDigitado() {
+  const lat = parseFloat(latitudeInput.value);
+  const lng = parseFloat(longitudeInput.value);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     alert('Digite latitude e longitude válidas para adicionar o ponto.');
     return;
   }
-
   polygonVertices.push([lng, lat]);
-  vertexLatitudeInput.value = '';
-  vertexLongitudeInput.value = '';
-  vertexLatitudeInput.focus();
-
-  if (polygonVertices.length === 1) {
-    latitudeInput.value = lat.toFixed(6);
-    longitudeInput.value = lng.toFixed(6);
-  }
-
+  latitudeInput.value = '';
+  longitudeInput.value = '';
+  latitudeInput.focus();
   selectionInfo.textContent = `Polígono com ${polygonVertices.length} vértice(s)`;
   renderVerticesList();
   refreshMap();
+  navegarParaPonto(lng, lat);
+}
+
+[latitudeInput, longitudeInput].forEach((input) => {
+  input.addEventListener('change', () => {
+    const lat = parseFloat(latitudeInput.value);
+    const lng = parseFloat(longitudeInput.value);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    if (currentMode === 'point') {
+      currentPoint = [lng, lat];
+      selectionInfo.textContent = `Ponto selecionado: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      refreshMap();
+      navegarParaPonto(lng, lat);
+      return;
+    }
+
+    adicionarVerticeDigitado();
+  });
+
+  input.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' || currentMode !== 'polygon') return;
+    event.preventDefault();
+    adicionarVerticeDigitado();
+  });
 });
 
 function renderFotoInputs() {
@@ -709,7 +712,13 @@ function buildPayload() {
   }
 
   if (!currentPoint) {
-    throw new Error('Selecione um ponto no mapa antes de salvar.');
+    const lat = parseFloat(latitudeInput.value);
+    const lng = parseFloat(longitudeInput.value);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      currentPoint = [lng, lat];
+    } else {
+      throw new Error('Selecione um ponto no mapa antes de salvar.');
+    }
   }
 
   return {

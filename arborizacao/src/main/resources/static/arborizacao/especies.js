@@ -129,7 +129,7 @@ function coletarFotosExtras() {
     const url = linha.querySelector('.foto-url-input').value.trim();
     if (!url) return;
     const descricao = linha.querySelector('.foto-descricao-input').value.trim();
-    fotos.push({ url, descricao: descricao || null });
+    fotos.push({ url: obterUrlImagem(url), descricao: descricao || null });
   });
   return fotos;
 }

@@ -17,13 +17,40 @@
     return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id) + '=w1200';
   }
 
-  function fotoPrincipal(arvore) {
-    if (arvore.fotoUrl) return arvore.fotoUrl;
-    if (Array.isArray(arvore.fotos) && arvore.fotos.length) {
-      var primeira = arvore.fotos[0];
-      return typeof primeira === 'string' ? primeira : (primeira && primeira.url) || '';
+  function listarFotos(arvore) {
+    var urls = [];
+    if (arvore && arvore.fotoUrl) urls.push(arvore.fotoUrl);
+    if (arvore && Array.isArray(arvore.fotos)) {
+      arvore.fotos.forEach(function (f) {
+        var u = typeof f === 'string' ? f : (f && f.url);
+        if (u && urls.indexOf(u) === -1) urls.push(u);
+      });
     }
-    return '';
+    return urls;
+  }
+
+  function montarFotoHtml(arvore, fallback, nome) {
+    var fotos = listarFotos(arvore);
+    if (!fotos.length && fallback && fallback.fotoUrl) fotos.push(fallback.fotoUrl);
+    if (!fotos.length) {
+      return '<div class="tela-arvore-foto tela-arvore-sem-foto">Sem foto</div>';
+    }
+
+    var principal = fotos[0];
+    var thumbsHtml = '';
+    if (fotos.length > 1) {
+      thumbsHtml = '<div class="tela-arvore-thumbs">' + fotos.map(function (u, i) {
+        var src = imageUrl(u);
+        return '<button type="button" class="tela-arvore-thumb" data-src="' + escapeHtml(src) + '" style="padding:0;border:2px solid ' + (i === 0 ? '#4ade80' : 'transparent') + ';border-radius:8px;overflow:hidden;cursor:pointer;background:none;">' +
+          '<img src="' + escapeHtml(src) + '" alt="Foto ' + (i + 1) + ' da árvore" loading="lazy" style="width:52px;height:52px;object-fit:cover;display:block;" />' +
+          '</button>';
+      }).join('') + '</div>';
+    }
+
+    return '<div class="tela-arvore-foto">' +
+      '<img id="telaArvoreFotoPrincipal" src="' + escapeHtml(imageUrl(principal)) + '" alt="' + escapeHtml(nome) + '" loading="lazy" onerror="this.style.display=\'none\';" />' +
+      thumbsHtml +
+      '</div>';
   }
 
   function montarConteudoArvore(arvore, fallback) {
@@ -32,11 +59,7 @@
     var nome = a.nome || p.nome || ('Árvore #' + (a.id || p.id || ''));
     var especie = a.especieNomePopular || p.especie || '';
     var descricao = a.descricao || '';
-    var foto = fotoPrincipal(a) || p.fotoUrl || '';
-
-    var fotoHtml = foto
-      ? '<div class="tela-arvore-foto"><img src="' + escapeHtml(imageUrl(foto)) + '" alt="' + escapeHtml(nome) + '" loading="lazy" onerror="this.parentNode.style.display=\'none\';" /></div>'
-      : '<div class="tela-arvore-foto tela-arvore-sem-foto">Sem foto</div>';
+    var fotoHtml = montarFotoHtml(arvore, fallback, nome);
 
     var especieHtml = especie
       ? '<div class="tela-arvore-especie">' + escapeHtml(especie) + '</div>'
@@ -67,6 +90,19 @@
     overlay.className = 'tela-arvore-overlay';
     overlay.id = 'telaArvoreOverlay';
     overlay.innerHTML = montarConteudoArvore(arvore, fallback);
+
+    var mainImg = overlay.querySelector('#telaArvoreFotoPrincipal');
+    var thumbs = overlay.querySelectorAll('.tela-arvore-thumb');
+    thumbs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (!mainImg) return;
+        mainImg.style.display = 'block';
+        mainImg.src = btn.getAttribute('data-src');
+        thumbs.forEach(function (outro) { outro.style.borderColor = 'transparent'; });
+        btn.style.borderColor = '#4ade80';
+      });
+    });
+
     overlay.addEventListener('click', function (e) {
       if (e.target === overlay || e.target.classList.contains('tela-arvore-fechar')) {
         fecharTelaArvore();

@@ -66,13 +66,6 @@ const rotulosOrigemPlacar = {
   PLANTIO_PROPRIO: 'Plantio próprio',
   OUTRA: 'Outra'
 };
-const rotulosStatusPlacar = {
-  ATIVA: 'Ativa',
-  INATIVA: 'Inativa',
-  REMOVIDA: 'Removida',
-  EM_MANUTENCAO: 'Em manutenção'
-};
-
 const rotulosTipoArea = {
   PRACA: 'Praça',
   PARQUE: 'Parque',
@@ -231,7 +224,6 @@ function criarMediaArea(area, arvoresCount) {
         <div class="area-fatos">
           <p><strong>Tipo</strong>${tipo}</p>
           <p><strong>Árvores</strong>${formatarNumero(arvoresCount || 0)}</p>
-          <p><strong>Status</strong>${rotulosStatusPlacar[area.status] || area.status || '—'}</p>
         </div>
         ${area.descricao ? `<p class="area-description area-descricao-curta">${area.descricao}</p>` : ''}
       </div>
@@ -764,13 +756,13 @@ function refreshMap() {
             [area.pontos[0].longitude, area.pontos[0].latitude]
           ]]
         },
-        properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status, poligono: true }
+        properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: area.fotoUrl || '', poligono: true }
       });
     } else if (area.latitude != null && area.longitude != null) {
       areaFeatures.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [area.longitude, area.latitude] },
-        properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+        properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: area.fotoUrl || '' }
       });
     }
   });
@@ -802,10 +794,13 @@ function mostrarPopupArea(feature) {
 
   const ehPoligono = p.poligono === true || p.poligono === 'true' || p.poligono === 1 || p.poligono === '1';
   const selo = ehPoligono ? '<span class="badge-arborizada">Área arborizada</span>' : '';
+  const fotoHtml = p.fotoUrl
+    ? `<br/><img src="${obterUrlImagem(p.fotoUrl)}" alt="Foto de ${p.nome}" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block" onerror="this.remove()">`
+    : '';
 
   new maplibregl.Popup()
     .setLngLat(coordinates)
-    .setHTML(`<strong>${p.nome}</strong> ${selo}<br/>Tipo: ${p.tipo}<br/>Status: ${p.status}`)
+    .setHTML(`<strong>${p.nome}</strong>${selo ? '<br/>' + selo : ''}<br/>Tipo: ${p.tipo}${fotoHtml}`)
     .addTo(map);
 }
 
@@ -839,7 +834,6 @@ function renderizarLista() {
     item.innerHTML = `
       <header>
         <h3>${area.nome}</h3>
-        <span>${rotulosStatusPlacar[area.status] || area.status}</span>
       </header>
       ${fotoHtml}
       ${criarAcoesArea(area)}
@@ -887,7 +881,6 @@ buscaForm.addEventListener('submit', async (event) => {
     item.innerHTML = `
       <header>
         <h3>#${area.id} — ${area.nome}</h3>
-        <span>${rotulosStatusPlacar[area.status] || area.status}</span>
       </header>
       ${fotoHtml}
       ${criarAcoesArea(area)}

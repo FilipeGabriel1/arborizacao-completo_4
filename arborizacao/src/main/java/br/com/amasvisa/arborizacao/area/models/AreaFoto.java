@@ -10,10 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "areas_fotos")
+@Table(name = "areas_fotos", indexes = {
+        @Index(name = "idx_areas_fotos_area", columnList = "area_id")
+})
 public class AreaFoto {
 
     @Id

@@ -216,6 +216,13 @@ form.addEventListener('submit', async (event) => {
 
   if (!form.reportValidity()) return;
 
+  const consentimentoInput = document.getElementById('consentimentoLgpd');
+  const temDocumento = !!(cpfInput.value || rgInput.value);
+  if (temDocumento && consentimentoInput && !consentimentoInput.checked) {
+    formMessage.innerHTML = '<div class="login-message erro">Para registrar CPF ou RG, marque o consentimento de tratamento de dados (LGPD).</div>';
+    return;
+  }
+
   const payload = {
     arvoreId: arvoreIdInput.value,
     solicitante: solicitanteInput.value || null,

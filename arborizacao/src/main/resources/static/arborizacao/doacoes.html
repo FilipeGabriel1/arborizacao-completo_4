@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./styles.css?v=20261021-3" />
   <link rel="stylesheet" href="./dashboard.css" />
 </head>
 <body>
@@ -42,6 +42,7 @@
     </nav>
     <div class="sidebar-footer">
       <p>Sistema de Gestão da Arborização Urbana</p>
+      <p style="margin-top:6px;font-size:0.68rem;"><a href="./politica-privacidade.html" target="_blank" style="color:#4ade80;text-decoration:none;">Política de Privacidade</a></p>
     </div>
   </aside>
 
@@ -90,12 +91,16 @@
             <input type="number" id="quantidade" min="1" placeholder="Ex: 3" />
           </label>
           <label>
-            CPF
+            CPF <small style="font-weight:400;color:var(--muted);">(opcional)</small>
             <input type="text" id="cpf" placeholder="000.000.000-00" />
           </label>
           <label>
-            RG
+            RG <small style="font-weight:400;color:var(--muted);">(opcional)</small>
             <input type="text" id="rg" placeholder="00.000.000-0" />
+          </label>
+          <label style="display:flex;gap:8px;align-items:flex-start;grid-column:1/-1;font-size:0.8rem;line-height:1.5;color:var(--muted);">
+            <input type="checkbox" id="consentimentoLgpd" style="width:auto;margin-top:3px;" />
+            <span>Declaro que o titular dos dados foi informado sobre o tratamento do CPF/RG e consente, conforme a <a href="./politica-privacidade.html" target="_blank" style="color:#4ade80;">Política de Privacidade</a> (LGPD).</span>
           </label>
           <label>
             Descrição
@@ -171,6 +176,6 @@
   <script src="./csrf.js"></script>
   <script src="./auth.js"></script>
   <script src="./toasts.js"></script>
-  <script src="./doacoes.js?v=20260925-1"></script>
+  <script src="./doacoes.js?v=20261021-1"></script>
 </body>
 </html>

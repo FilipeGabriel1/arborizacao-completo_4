@@ -88,7 +88,7 @@ function coletarFotosExtras() {
     const url = linha.querySelector('.foto-url-input').value.trim();
     if (!url) return;
     const descricao = linha.querySelector('.foto-descricao-input').value.trim();
-    fotos.push({ url, descricao: descricao || null });
+    fotos.push({ url: obterUrlImagem(url), descricao: descricao || null });
   });
   return fotos;
 }
@@ -287,7 +287,10 @@ function montarCardCompleto(arvore) {
   });
 
   const fotosHtml = fotosLista.length
-    ? `<ul class="detalhe-lista">${fotosLista.map((f) => `<li><a href="${obterUrlImagem(f.url)}" target="_blank" rel="noreferrer">${f.descricao || 'Abrir foto'}</a></li>`).join('')}</ul>`
+    ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">${fotosLista.map((f) => {
+        const u = obterUrlImagem(f.url);
+        return `<a href="${u}" target="_blank" rel="noreferrer" title="${f.descricao || 'Abrir foto em tamanho cheio'}"><img src="${u}" alt="${f.descricao || 'Foto da árvore'}" loading="lazy" style="width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.12);" onerror="this.parentElement.remove();" /></a>`;
+      }).join('')}</div>`
     : '<p class="area-description">Nenhuma foto cadastrada.</p>';
 
   const doacoesHtml = doacoesDaArvore.length
@@ -830,7 +833,7 @@ function areasParaFeatures(areas) {
         features.push({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [area.pontos[0].longitude, area.pontos[0].latitude] },
-          properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+          properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: obterUrlImagem(area.fotoUrl || '') }
         });
       } else {
         const coords = area.pontos.map((p) => [p.longitude, p.latitude]);
@@ -838,14 +841,14 @@ function areasParaFeatures(areas) {
         features.push({
           type: 'Feature',
           geometry: { type: 'Polygon', coordinates: [coords] },
-          properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+          properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: obterUrlImagem(area.fotoUrl || '') }
         });
       }
     } else if (area.latitude && area.longitude) {
       features.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [area.longitude, area.latitude] },
-        properties: { id: area.id, nome: area.nome, tipo: area.tipo, status: area.status }
+        properties: { id: area.id, nome: area.nome, tipo: area.tipo, fotoUrl: obterUrlImagem(area.fotoUrl || '') }
       });
     }
   });
@@ -856,7 +859,13 @@ function arvoresParaFeatures(lista) {
   const features = [];
   (lista || []).forEach((a) => {
     if (a.latitude && a.longitude) {
-      const fotoUrl = obterUrlImagem(a.fotoUrl || (a.fotos && a.fotos.length ? a.fotos[0].url : '')) || '';
+      const fotosUrls = [];
+      if (a.fotoUrl) fotosUrls.push(a.fotoUrl);
+      (a.fotos || []).forEach((f) => {
+        const u = typeof f === 'string' ? f : (f && f.url);
+        if (u && fotosUrls.indexOf(u) === -1) fotosUrls.push(u);
+      });
+      const fotoUrl = obterUrlImagem(fotosUrls[0] || '') || '';
       features.push({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [a.longitude, a.latitude] },
@@ -865,7 +874,8 @@ function arvoresParaFeatures(lista) {
           nome: a.nome || 'Árvore #' + a.id,
           especie: a.especieNomePopular || 'Não informada',
           porte: a.porte || '',
-          foto: fotoUrl
+          foto: fotoUrl,
+          fotos: JSON.stringify(fotosUrls.map((u) => obterUrlImagem(u)))
         }
       });
     }
@@ -977,9 +987,12 @@ function initMapaInventario() {
       if (!e.features || !e.features.length) return;
       const p = e.features[0].properties;
       fecharPopupMapa();
+      const fotoAreaHtml = p.fotoUrl
+        ? '<img src="' + p.fotoUrl + '" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:#0a1510;" onerror="this.style.display=\'none\'">'
+        : '';
       popupMapaAtual = new maplibregl.Popup()
         .setLngLat(e.lngLat)
-        .setHTML('<strong>' + p.nome + '</strong><br/>Tipo: ' + (p.tipo || '—') + '<br/>Status: ' + (p.status || '—'))
+        .setHTML(fotoAreaHtml + '<strong>' + p.nome + '</strong><br/>Tipo: ' + (p.tipo || '—'))
         .addTo(mapaInv);
     });
 
@@ -987,8 +1000,10 @@ function initMapaInventario() {
       if (!e.features || !e.features.length) return;
       const p = e.features[0].properties;
       fecharPopupMapa();
-      const fotoHtml = p.foto
-        ? '<img src="' + p.foto + '" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:#0a1510;" onerror="this.style.display=\'none\'">'
+      let fotosPopup = [];
+      try { fotosPopup = JSON.parse(p.fotos || '[]'); } catch (err) { fotosPopup = []; }
+      const fotoHtml = fotosPopup.length
+        ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">' + fotosPopup.map((u) => `<img src="${u}" alt="" style="width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.12);" onerror="this.remove();" />`).join('') + '</div>'
         : '';
       popupMapaAtual = new maplibregl.Popup()
         .setLngLat(e.lngLat)

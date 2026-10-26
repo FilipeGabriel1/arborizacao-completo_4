@@ -17,10 +17,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderColumn;
+import jakarta.persistence.Index;
+import org.hibernate.annotations.BatchSize;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "areas_arborizadas")
+@Table(name = "areas_arborizadas", indexes = {
+        @Index(name = "idx_areas_nome", columnList = "nome")
+})
+@BatchSize(size = 100)
 public class AreaArborizada {
 
     @Id
@@ -37,6 +42,7 @@ public class AreaArborizada {
     @Column(name = "foto_url", length = 500)
     private String fotoUrl;
 
+    @BatchSize(size = 50)
     @OneToMany(mappedBy = "area", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AreaFoto> fotos = new ArrayList<>();
 
@@ -73,6 +79,7 @@ public class AreaArborizada {
     private Double latitude;
     private Double longitude;
 
+    @BatchSize(size = 50)
     @ElementCollection
     @CollectionTable(name = "areas_pontos", joinColumns = @JoinColumn(name = "area_id"))
     @OrderColumn(name = "ordem")
