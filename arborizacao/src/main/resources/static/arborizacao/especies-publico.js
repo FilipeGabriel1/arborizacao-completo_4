@@ -197,7 +197,7 @@ function renderizar(lista) {
     link.style.color = 'inherit';
     link.style.display = 'block';
     const fotoHtml = especie.fotoUrl
-      ? `<div class="area-foto"><img src="${obterUrlImagem(especie.fotoUrl)}" alt="${especie.nomePopular || 'Foto da espécie'}" onerror="this.remove();" loading="lazy" /></div>`
+      ? `<div class="area-foto"><img referrerpolicy="no-referrer" src="${obterUrlImagem(especie.fotoUrl)}" alt="${especie.nomePopular || 'Foto da espécie'}" onerror="this.remove();" loading="lazy" /></div>`
       : '';
     link.innerHTML = `
       ${fotoHtml}
@@ -259,7 +259,7 @@ function renderizarResultadosBusca() {
     link.style.color = 'inherit';
     link.style.display = 'block';
     const fotoHtml = especie.fotoUrl
-      ? `<div class="area-foto"><img src="${obterUrlImagem(especie.fotoUrl)}" alt="${especie.nomePopular || 'Foto da espécie'}" onerror="this.remove();" loading="lazy" /></div>`
+      ? `<div class="area-foto"><img referrerpolicy="no-referrer" src="${obterUrlImagem(especie.fotoUrl)}" alt="${especie.nomePopular || 'Foto da espécie'}" onerror="this.remove();" loading="lazy" /></div>`
       : '';
     link.innerHTML = `
       ${fotoHtml}

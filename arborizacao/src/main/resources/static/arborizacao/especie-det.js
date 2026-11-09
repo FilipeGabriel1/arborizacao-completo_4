@@ -43,7 +43,7 @@
       // Foto principal
       const fotoDiv = document.getElementById('detFotoPrincipal');
       if (esp.fotoUrl) {
-        fotoDiv.innerHTML = '<img src="' + obterUrlImagem(esp.fotoUrl) + '" alt="' + (esp.nomePopular || '') + '" />';
+        fotoDiv.innerHTML = '<img referrerpolicy="no-referrer" src="' + obterUrlImagem(esp.fotoUrl) + '" alt="' + (esp.nomePopular || '') + '" />';
       }
 
       // Galeria
@@ -53,7 +53,7 @@
       if (fotos.length > 0) {
         document.getElementById('detGaleriaSection').classList.remove('hidden');
         document.getElementById('detGaleriaGrid').innerHTML = fotos.map(u =>
-          '<img src="' + obterUrlImagem(u) + '" alt="Foto de ' + (esp.nomePopular || '') + '" loading="lazy" />'
+          '<img referrerpolicy="no-referrer" src="' + obterUrlImagem(u) + '" alt="Foto de ' + (esp.nomePopular || '') + '" loading="lazy" />'
         ).join('');
       }
 

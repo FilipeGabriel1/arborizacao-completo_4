@@ -8,12 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=20261021-3" />
-  <link rel="stylesheet" href="./dashboard.css" />
+  <link rel="stylesheet" href="./styles.css?v=20261106-2" />
+  <link rel="stylesheet" href="./dashboard.css?v=20261109-1" />
 </head>
 <body>
   <!-- SIDEBAR -->
   <aside class="sidebar">
+    <div class="sidebar-prefeitura">
+      <img src="./img/logo-prefeitura-oficial.png" alt="Prefeitura de Vitória de Santo Antão" />
+    </div>
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon"><img class="ico ico-brand" src="./img/icones/tree.png" alt=""></div>
       <div class="sidebar-brand-text">
@@ -63,7 +66,7 @@
     </header>
 
     <!-- KPIs -->
-    <section class="section-cards" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+    <section class="section-cards" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
       <article class="card card-metric" data-metric="lotes">
         <div class="card-content">
           <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/seedling.png" alt=""></span>
@@ -109,7 +112,54 @@
           </div>
         </div>
       </article>
+      <article class="card card-metric" data-metric="perdas">
+        <div class="card-content">
+          <span class="card-metric-icon" style="font-size:1.8rem;"><img class="ico" src="./img/icones/circle-x.png" alt=""></span>
+          <div class="card-metric-body">
+            <span class="card-metric-value" id="kpiPerdas">0</span>
+            <span class="card-metric-label">Perdas</span>
+          </div>
+        </div>
+      </article>
     </section>
+
+    <!-- GRÁFICOS -->
+    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+      <section class="card">
+        <header class="card-header">
+          <h2>Destino das mudas</h2>
+        </header>
+        <div class="card-content" style="padding-top:14px;">
+          <div class="pie-chart" id="chartDestino"></div>
+        </div>
+      </section>
+      <section class="card">
+        <header class="card-header">
+          <h2>Status dos lotes</h2>
+        </header>
+        <div class="card-content" style="padding-top:14px;">
+          <div class="pie-chart" id="chartStatus"></div>
+        </div>
+      </section>
+    </div>
+    <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+      <section class="card">
+        <header class="card-header">
+          <h2>Produção por espécie</h2>
+        </header>
+        <div class="card-content" style="padding-top:14px;">
+          <div class="bar-chart" id="chartEspecies"></div>
+        </div>
+      </section>
+      <section class="card">
+        <header class="card-header">
+          <h2>Produção por mês</h2>
+        </header>
+        <div class="card-content" style="padding-top:14px;">
+          <div class="bar-chart" id="chartMeses"></div>
+        </div>
+      </section>
+    </div>
 
     <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
 
@@ -186,6 +236,6 @@
   <script src="./csrf.js"></script>
   <script src="./auth.js"></script>
   <script src="./toasts.js"></script>
-  <script src="./sementeira.js"></script>
+  <script src="./sementeira.js?v=20261106-1"></script>
 </body>
 </html>

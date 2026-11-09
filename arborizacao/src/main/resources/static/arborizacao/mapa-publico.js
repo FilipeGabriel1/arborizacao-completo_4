@@ -103,7 +103,7 @@ function obterPlaceholder(nome, tipo) {
 }
 
 function criarImgCarousel(src, alt, className, placeholder) {
-  return `<img class="${className}" src="${src}" alt="${alt}" style="width:100%;height:140px;object-fit:cover;display:block;background:rgba(26,58,26,0.4);" onerror="this.onerror=null;this.style.background='linear-gradient(135deg,#0e1f12,#1a3a1a)';this.src='${placeholder}'" />`;
+  return `<img class="${className}" referrerpolicy="no-referrer" src="${src}" alt="${alt}" style="width:100%;height:140px;object-fit:cover;display:block;background:rgba(26,58,26,0.4);" onerror="this.onerror=null;this.style.background='linear-gradient(135deg,#0e1f12,#1a3a1a)';this.src='${placeholder}'" />`;
 }
 
 const THUMB_PLACEHOLDER = `
@@ -214,7 +214,7 @@ function ativarAcoesArea(item, area) {
 function criarMediaArea(area, arvoresCount) {
   const tipo = rotulosTipoArea[area.tipo] || area.tipo || '—';
   const thumb = area.fotoUrl
-    ? `<div class="area-thumb"><img src="${obterUrlImagem(area.fotoUrl)}" alt="${area.nome || 'Foto da área'}" loading="lazy" onerror="thumbErro(this)" /></div>`
+    ? `<div class="area-thumb"><img referrerpolicy="no-referrer" src="${obterUrlImagem(area.fotoUrl)}" alt="${area.nome || 'Foto da área'}" loading="lazy" onerror="thumbErro(this)" /></div>`
     : `<div class="area-thumb">${THUMB_PLACEHOLDER}</div>`;
 
   return `
@@ -795,7 +795,7 @@ function mostrarPopupArea(feature) {
   const ehPoligono = p.poligono === true || p.poligono === 'true' || p.poligono === 1 || p.poligono === '1';
   const selo = ehPoligono ? '<span class="badge-arborizada">Área arborizada</span>' : '';
   const fotoHtml = p.fotoUrl
-    ? `<br/><img src="${obterUrlImagem(p.fotoUrl)}" alt="Foto de ${p.nome}" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block" onerror="this.remove()">`
+    ? `<br/><img referrerpolicy="no-referrer" src="${obterUrlImagem(p.fotoUrl)}" alt="Foto de ${p.nome}" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block" onerror="this.remove()">`
     : '';
 
   new maplibregl.Popup()
@@ -1067,7 +1067,7 @@ async function abrirRelatorioSementeira() {
       const fotoUrl = esp.fotoUrl ? obterUrlImagem(esp.fotoUrl) : null;
       const fallback = obterPlaceholderEspecie(esp.nomePopular);
       const imgTag = fotoUrl
-        ? `<img class="relatorio-especie-img" data-src="${fotoUrl}" data-fallback="${fallback}" alt="${esp.nomePopular}" />`
+        ? `<img class="relatorio-especie-img" referrerpolicy="no-referrer" data-src="${fotoUrl}" data-fallback="${fallback}" alt="${esp.nomePopular}" />`
         : `<img class="relatorio-especie-img" src="${fallback}" alt="${esp.nomePopular}" />`;
       return `
         <div class="relatorio-especie">

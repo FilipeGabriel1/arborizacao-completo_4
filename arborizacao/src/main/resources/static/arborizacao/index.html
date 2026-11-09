@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" />
-  <link rel="stylesheet" href="./styles.css?v=20261021-3" />
+  <link rel="stylesheet" href="./styles.css?v=20261106-2" />
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -30,6 +30,8 @@
         <a href="./entrar.html" class="ghost-button"><img class="ico" src="./img/icones/home.png" alt=""> Voltar ao início</a>
         <a href="./especies-publico.html" class="ghost-button">Espécies</a>
         <a href="./cadastro-areas.html" class="ghost-button">Área técnica</a>
+
+        <img src="./img/logo-prefeitura-oficial.png" alt="Prefeitura de Vitória de Santo Antão" style="padding: 5px 8px; border-radius: 8px; height: 60px; width: auto;" />
       </nav>
     </header>
 
@@ -260,7 +262,7 @@
       </div>
       <div class="sementeira-grid">
         <div class="sementeira-img">
-          <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop" alt="Sementeira Municipal">
+          <img referrerpolicy="no-referrer" src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop" alt="Sementeira Municipal">
         </div>
         <div class="sementeira-stats">
           <div class="sementeira-stat">
@@ -380,7 +382,7 @@
         <button id="galeriaFechar" class="ghost-button" type="button">Fechar</button>
       </header>
       <div class="galeria-palco">
-        <img id="galeriaImg" alt="Foto da área" />
+        <img id="galeriaImg" referrerpolicy="no-referrer" alt="Foto da área" />
         <button id="galeriaAnterior" class="galeria-nav galeria-nav-anterior" type="button" aria-label="Foto anterior">&#8249;</button>
         <button id="galeriaProxima" class="galeria-nav galeria-nav-proxima" type="button" aria-label="Próxima foto">&#8250;</button>
       </div>
@@ -391,8 +393,8 @@
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
-  <script src="./painel-arvore.js?v=20261021-1"></script>
-  <script src="./mapa-publico.js?v=20261007-2"></script>
+  <script src="./painel-arvore.js?v=20261021-2"></script>
+  <script src="./mapa-publico.js?v=20261021-1"></script>
   <script>
     (function() {
       fetch('/api/sementeira?page=0&size=500')

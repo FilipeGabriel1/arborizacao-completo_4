@@ -289,7 +289,7 @@ function montarCardCompleto(arvore) {
   const fotosHtml = fotosLista.length
     ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">${fotosLista.map((f) => {
         const u = obterUrlImagem(f.url);
-        return `<a href="${u}" target="_blank" rel="noreferrer" title="${f.descricao || 'Abrir foto em tamanho cheio'}"><img src="${u}" alt="${f.descricao || 'Foto da árvore'}" loading="lazy" style="width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.12);" onerror="this.parentElement.remove();" /></a>`;
+        return `<a href="${u}" target="_blank" rel="noreferrer" title="${f.descricao || 'Abrir foto em tamanho cheio'}"><img referrerpolicy="no-referrer" src="${u}" alt="${f.descricao || 'Foto da árvore'}" loading="lazy" style="width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.12);" onerror="this.parentElement.remove();" /></a>`;
       }).join('')}</div>`
     : '<p class="area-description">Nenhuma foto cadastrada.</p>';
 
@@ -988,7 +988,7 @@ function initMapaInventario() {
       const p = e.features[0].properties;
       fecharPopupMapa();
       const fotoAreaHtml = p.fotoUrl
-        ? '<img src="' + p.fotoUrl + '" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:#0a1510;" onerror="this.style.display=\'none\'">'
+        ? '<img referrerpolicy="no-referrer" src="' + p.fotoUrl + '" alt="" style="width:100%;height:150px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:#0a1510;" onerror="this.style.display=\'none\'">'
         : '';
       popupMapaAtual = new maplibregl.Popup()
         .setLngLat(e.lngLat)
@@ -1003,7 +1003,7 @@ function initMapaInventario() {
       let fotosPopup = [];
       try { fotosPopup = JSON.parse(p.fotos || '[]'); } catch (err) { fotosPopup = []; }
       const fotoHtml = fotosPopup.length
-        ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">' + fotosPopup.map((u) => `<img src="${u}" alt="" style="width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.12);" onerror="this.remove();" />`).join('') + '</div>'
+        ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;">' + fotosPopup.map((u) => `<img referrerpolicy="no-referrer" src="${u}" alt="" style="width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.12);" onerror="this.remove();" />`).join('') + '</div>'
         : '';
       popupMapaAtual = new maplibregl.Popup()
         .setLngLat(e.lngLat)

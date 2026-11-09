@@ -4,6 +4,32 @@
 }
 
 /* ===== SIDEBAR ===== */
+.sidebar-prefeitura {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+.sidebar-prefeitura img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.sidebar-prefeitura span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
 .sidebar {
   position: fixed;
   top: 0;

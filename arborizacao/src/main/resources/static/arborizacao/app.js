@@ -100,9 +100,11 @@ map.on('click', (event) => {
 
   const areaClicada = encontrarAreaClicada(event);
   if (areaClicada) {
-    abrirAreaParaEdicao(areaClicada.properties.id);
+    mostrarPopupAreaTecnica(areaClicada, event.lngLat);
     return;
   }
+
+  fecharPopupAreaTecnica();
 
   const { lng, lat } = event.lngLat;
 
@@ -133,6 +135,50 @@ function encontrarAreaClicada(event) {
   if (!layerIds.length) return null;
   const hits = map.queryRenderedFeatures(event.point, { layers: layerIds });
   return hits.find((feature) => feature.properties?.id) || null;
+}
+
+let popupAreaTecnica = null;
+
+function fecharPopupAreaTecnica() {
+  if (popupAreaTecnica) {
+    popupAreaTecnica.remove();
+    popupAreaTecnica = null;
+  }
+}
+
+function mostrarPopupAreaTecnica(feature, lngLat) {
+  const areaId = feature.properties?.id;
+  const area = areas.find((item) => String(item.id) === String(areaId));
+  if (!area) return;
+
+  const fotos = getFotosDaArea(area);
+  const fotosHtml = fotos.length
+    ? `<div class="area-foto">${fotos.map((url) => `<img referrerpolicy="no-referrer" src="${url}" alt="Foto de ${area.nome}" onerror="this.remove()">`).join('')}</div>`
+    : '';
+  const descricaoHtml = area.descricao
+    ? `<p style="margin:6px 0 0;font-size:0.85rem;">${area.descricao}</p>`
+    : '';
+
+  fecharPopupAreaTecnica();
+
+  popupAreaTecnica = new maplibregl.Popup({ closeButton: true, maxWidth: '280px' })
+    .setLngLat(lngLat)
+    .setHTML(`
+      <strong>${area.nome}</strong>
+      <br>Tipo: ${area.tipo || '—'}
+      ${descricaoHtml}
+      ${fotosHtml}
+      <button type="button" class="ghost-button" id="popupEditarAreaBtn" style="margin-top:10px;width:100%;padding:8px 12px;font-size:0.85rem;cursor:pointer;">Editar</button>
+    `)
+    .addTo(map);
+
+  const btn = popupAreaTecnica.getElement()?.querySelector('#popupEditarAreaBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      fecharPopupAreaTecnica();
+      abrirAreaEditModal(area);
+    });
+  }
 }
 
 function abrirAreaParaEdicao(areaId) {
@@ -410,7 +456,7 @@ function renderizarAreasEncontradas(lista, container) {
     const item = document.createElement('article');
     item.className = 'area-item';
     const fotoHtml = getFotosDaArea(area).length
-      ? `<div class="area-foto">${getFotosDaArea(area).map((url) => `<img src="${url}" alt="${area.nome || 'Foto da área'}" onerror="this.remove();" />`).join('')}</div>`
+      ? `<div class="area-foto">${getFotosDaArea(area).map((url) => `<img referrerpolicy="no-referrer" src="${url}" alt="${area.nome || 'Foto da área'}" onerror="this.remove();" />`).join('')}</div>`
       : '';
     item.innerHTML = `
       <header>
@@ -773,7 +819,7 @@ function renderAreaList() {
     areas.forEach((area) => {
       const fotos = getFotosDaArea(area);
       const fotosHtml = fotos.length
-        ? `<div class="area-foto">${fotos.map(url => `<img src="${url}" alt="${area.nome || 'Foto'}" onerror="this.remove();" />`).join('')}</div>`
+        ? `<div class="area-foto">${fotos.map(url => `<img referrerpolicy="no-referrer" src="${url}" alt="${area.nome || 'Foto'}" onerror="this.remove();" />`).join('')}</div>`
         : '';
 
       const item = document.createElement('article');

@@ -42,13 +42,13 @@
       thumbsHtml = '<div class="tela-arvore-thumbs">' + fotos.map(function (u, i) {
         var src = imageUrl(u);
         return '<button type="button" class="tela-arvore-thumb" data-src="' + escapeHtml(src) + '" style="padding:0;border:2px solid ' + (i === 0 ? '#4ade80' : 'transparent') + ';border-radius:8px;overflow:hidden;cursor:pointer;background:none;">' +
-          '<img src="' + escapeHtml(src) + '" alt="Foto ' + (i + 1) + ' da árvore" loading="lazy" style="width:52px;height:52px;object-fit:cover;display:block;" />' +
+          '<img referrerpolicy="no-referrer" src="' + escapeHtml(src) + '" alt="Foto ' + (i + 1) + ' da árvore" loading="lazy" style="width:52px;height:52px;object-fit:cover;display:block;" />' +
           '</button>';
       }).join('') + '</div>';
     }
 
     return '<div class="tela-arvore-foto">' +
-      '<img id="telaArvoreFotoPrincipal" src="' + escapeHtml(imageUrl(principal)) + '" alt="' + escapeHtml(nome) + '" loading="lazy" onerror="this.style.display=\'none\';" />' +
+      '<img id="telaArvoreFotoPrincipal" referrerpolicy="no-referrer" src="' + escapeHtml(imageUrl(principal)) + '" alt="' + escapeHtml(nome) + '" loading="lazy" onerror="this.style.display=\'none\';" />' +
       thumbsHtml +
       '</div>';
   }

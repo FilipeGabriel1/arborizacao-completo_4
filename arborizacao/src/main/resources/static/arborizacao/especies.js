@@ -102,7 +102,7 @@ function montarFotosThumbs(especie) {
   if (!fotos.length) return '';
 
   const thumbs = fotos
-    .map((url) => `<a href="${url}" target="_blank" rel="noreferrer"><img src="${url}" alt="Foto da espécie" loading="lazy" /></a>`)
+    .map((url) => `<a href="${url}" target="_blank" rel="noreferrer"><img referrerpolicy="no-referrer" src="${url}" alt="Foto da espécie" loading="lazy" /></a>`)
     .join('');
   return `<div class="area-foto-grupo">${thumbs}</div>`;
 }

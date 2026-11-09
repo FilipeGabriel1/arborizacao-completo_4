@@ -468,7 +468,7 @@
 
   function areaPopupHtml(p) {
     var foto = p.fotoUrl
-      ? '<img src="' + obterUrlImagem(p.fotoUrl) + '" alt="" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block" onerror="this.remove()">'
+      ? '<img referrerpolicy="no-referrer" src="' + obterUrlImagem(p.fotoUrl) + '" alt="" style="width:100%;max-width:240px;border-radius:8px;margin-top:6px;display:block" onerror="this.remove()">'
       : '';
     return '<strong>' + p.nome + '</strong><br/>Tipo: ' + p.tipo + foto;
   }

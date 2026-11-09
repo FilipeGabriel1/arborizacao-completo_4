@@ -3709,3 +3709,10 @@ button:focus-visible,
 .skip-link:focus {
   left: 0;
 }
+
+/* ===== LINHA DE CARDS / KPIs ===== */
+.section-cards {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}

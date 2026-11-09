@@ -49,7 +49,7 @@
         if (String(area.fotoUrl).indexOf('wikimedia.org') !== -1) {
           creditoHtml = '<p class="foto-credito" style="margin:6px 0 0;font-size:0.7rem;color:#9ca3af;line-height:1.5;">Foto: <a href="https://commons.wikimedia.org/wiki/File:Bairro_da_matriz,_Vit%C3%B3ria_de_Santo_Ant%C3%A3o.jpg" target="_blank" rel="noopener" style="color:#4ade80;">Luiz Eduardo / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt" target="_blank" rel="noopener" style="color:#4ade80;">CC BY-SA 4.0</a></p>';
         }
-        fotoDiv.innerHTML = '<img src="' + obterUrlImagem(area.fotoUrl) + '" alt="' + (area.nome || '') + '" />' + creditoHtml;
+        fotoDiv.innerHTML = '<img referrerpolicy="no-referrer" src="' + obterUrlImagem(area.fotoUrl) + '" alt="' + (area.nome || '') + '" />' + creditoHtml;
       }
 
       // Galeria
@@ -59,7 +59,7 @@
       if (fotos.length > 0) {
         document.getElementById('detGaleriaSection').classList.remove('hidden');
         document.getElementById('detGaleriaGrid').innerHTML = fotos.map(u =>
-          '<img src="' + obterUrlImagem(u) + '" alt="Foto de ' + (area.nome || '') + '" loading="lazy" />'
+          '<img referrerpolicy="no-referrer" src="' + obterUrlImagem(u) + '" alt="Foto de ' + (area.nome || '') + '" loading="lazy" />'
         ).join('');
       }
 

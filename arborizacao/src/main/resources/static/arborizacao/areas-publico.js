@@ -95,7 +95,7 @@ function renderizar(areasFiltradas) {
 
     return `
       <a href="./area-det.html?id=${area.id}" class="area-card" style="text-decoration:none;color:inherit;display:block;cursor:pointer">
-        <img class="area-card-img" src="${fotoCard}" alt="${area.nome}" onerror="this.onerror=null;this.src='${placeholder}'" />
+        <img class="area-card-img" referrerpolicy="no-referrer" src="${fotoCard}" alt="${area.nome}" onerror="this.onerror=null;this.src='${placeholder}'" />
         <div class="area-card-body">
           <p class="area-card-nome">${area.nome}</p>
           <p class="area-card-meta">${rotulosTipoArea[area.tipo] || area.tipo || ''} • ${arvoresCount} árvores</p>
