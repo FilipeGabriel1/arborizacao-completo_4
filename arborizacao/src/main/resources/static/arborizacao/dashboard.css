@@ -2037,3 +2037,13 @@ textarea[required]:focus {
   .card-metric-value { font-size: 1.3rem; }
   .card-metric-label { font-size: 0.7rem; }
 }
+
+/* Links institucionais do rodape da sidebar */
+.sidebar-footer a,
+.sidebar-footer a:visited {
+  color: #a855f7;
+  text-decoration: none;
+}
+.sidebar-footer a:hover {
+  text-decoration: underline;
+}

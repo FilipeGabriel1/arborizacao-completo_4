@@ -184,7 +184,7 @@ border-bottom: 1px solid rgba(74, 222, 128, 0.15);
     }
 
     .timeline-item.doacao::before {
-      background: #a855f7;
+      background: var(--verde-claro);
     }
 
     .timeline-header {
@@ -284,7 +284,11 @@ border-bottom: 1px solid rgba(74, 222, 128, 0.15);
       display: inline-block;
       vertical-align: -0.15em;
     }
-  </style>
+  
+    /* Links institucionais do rodape */
+    .footer a, .footer a:visited { color: #a855f7; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>

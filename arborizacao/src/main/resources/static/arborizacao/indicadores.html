@@ -324,7 +324,11 @@ border-bottom: 1px solid rgba(74, 222, 128, 0.15);
     .skip-link { position: absolute; left: -9999px; top: 0; z-index: 99999; padding: 10px 18px; background: #0d1f12; color: #4ade80; border: 1px solid rgba(74,222,128,0.5); border-radius: 0 0 8px 0; font-size: 0.85rem; font-weight: 600; text-decoration: none; }
     .skip-link:focus { left: 0; }
     a:focus-visible, button:focus-visible { outline: 2px solid #4ade80; outline-offset: 2px; }
-  </style>
+  
+    /* Links institucionais do rodape */
+    .footer a, .footer a:visited { color: #a855f7; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+</style>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -454,7 +458,7 @@ border-bottom: 1px solid rgba(74, 222, 128, 0.15);
         BOM: '#22c55e', REGULAR: '#eab308', RUIM: '#f97316', CRITICO: '#ef4444',
         PLANEJADO: '#3b82f6', EM_EXECUCAO: '#eab308', CONCLUIDO: '#22c55e', CANCELADO: '#ef4444'
       };
-      var CORES_CICLICAS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#14b8a6', '#f97316'];
+      var CORES_CICLICAS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', 'var(--verde-claro)', '#14b8a6', '#f97316'];
 
       function agrupar(arr, campo) {
         var m = {};
